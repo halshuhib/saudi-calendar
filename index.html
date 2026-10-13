@@ -31,11 +31,11 @@
             white-space: nowrap;
         }
 
-        /* خطوط الفصول */
-        .season-line-spring { border-bottom: 3.5px solid var(--col-spring, #10b981) !important; }
-        .season-line-summer { border-bottom: 3.5px solid var(--col-summer, #f97316) !important; }
-        .season-line-autumn { border-bottom: 3.5px solid var(--col-autumn, #dc2626) !important; }
-        .season-line-winter { border-bottom: 3.5px solid var(--col-winter, #2563eb) !important; }
+        /* خطوط الفصول اليومية الدقيقة */
+        .season-b-spring { border-bottom: 4px solid var(--col-spring, #10b981) !important; }
+        .season-b-summer { border-bottom: 4px solid var(--col-summer, #f97316) !important; }
+        .season-b-autumn { border-bottom: 4px solid var(--col-autumn, #dc2626) !important; }
+        .season-b-winter { border-bottom: 4px solid var(--col-winter, #2563eb) !important; }
 
         /* إعدادات الطباعة الدقيقة لورقة واحدة فقط A4 أو A3 بالعرض */
         @page {
@@ -225,7 +225,7 @@
                 <div class="flex items-center gap-2.5">
                     <img id="imgLogo" src="" alt="شعار" class="h-9 w-auto object-contain hidden bg-white/20 p-0.5 rounded border border-white/40">
                     <div class="leading-tight text-right" id="headerTitlesBox">
-                        <div id="txtHeaderNames" class="text-xs sm:text-sm md:text-base font-extrabold tracking-wide">حسين يوسف الشهيب  </div>
+                        <div id="txtHeaderNames" class="text-xs sm:text-sm md:text-base font-extrabold tracking-wide"> حسين يوسف الشهيب  </div>
                         <div id="txtHeaderOrg" class="text-[11px] sm:text-xs text-cyan-100 font-semibold">إمارة المنطقة الشرقية</div>
                     </div>
                 </div>
@@ -669,6 +669,36 @@
         }
 
         /* =========================================================================
+           حساب فصل السنة الفلكي الدقيق لكل يوم حسب التقويم الشمسي (تقويم أم القرى)
+           - الخريف: من 23 سبتمبر إلى 21 ديسمبر
+           - الشتاء: من 22 ديسمبر إلى 20 مارس
+           - الربيع: من 21 مارس إلى 20 يونيو
+           - الصيف: من 21 يونيو إلى 22 سبتمبر
+           ========================================================================= */
+        function getSeasonClassForDate(gDate) {
+            const m = gDate.getMonth() + 1; // 1 - 12
+            const d = gDate.getDate();
+            const md = m * 100 + d;
+
+            // الربيع: 21 مارس (321) حتى 20 يونيو (620)
+            if (md >= 321 && md <= 620) {
+                return 'season-b-spring';
+            }
+            // الصيف: 21 يونيو (621) حتى 22 سبتمبر (922)
+            else if (md >= 621 && md <= 922) {
+                return 'season-b-summer';
+            }
+            // الخريف: 23 سبتمبر (923) حتى 21 ديسمبر (1221)
+            else if (md >= 923 && md <= 1221) {
+                return 'season-b-autumn';
+            }
+            // الشتاء: من 22 ديسمبر حتى نهاية العام، ومن بداية العام حتى 20 مارس
+            else {
+                return 'season-b-winter';
+            }
+        }
+
+        /* =========================================================================
            حساب يوم صرف الراتب الفعلي الدقيق لكل شهر ميلادي
            القاعدة المعتمدة:
            - الأساس: يوم الراتب المحدد (مثلاً 27).
@@ -905,18 +935,13 @@
                 // حساب إزاحة عمود البداية
                 let startOffset = (mInfo.startDow - baseStartDow + 7) % 7;
 
-                // خط الفصل السنوي لكل فصل
-                let seasonClass = '';
-                if (mNumber >= 1 && mNumber <= 3) seasonClass = 'season-line-summer';
-                else if (mNumber >= 4 && mNumber <= 6) seasonClass = 'season-line-autumn';
-                else if (mNumber >= 7 && mNumber <= 9) seasonClass = 'season-line-winter';
-                else seasonClass = 'season-line-spring';
+                // تم إلغاء خط الفصل الموحد على مستوى الصف؛ ليتم حسابه يومياً لكل خلية بدقة فلكية
+                bodyHtml += `<tr class="border-b-2 border-slate-800 cal-row hover:bg-slate-50/50 transition">`;
 
-                bodyHtml += `<tr class="border-b-2 border-slate-800 ${seasonClass} cal-row hover:bg-slate-50/50 transition">`;
-
-                // عمود اسم الشهر - موسط أفقياً ورأسياً بالكامل
+                // عمود اسم الشهر - موسط أفقياً ورأسياً بالكامل مع تمييز فصل بداية الشهر
+                const monthInitialSeasonClass = getSeasonClassForDate(mInfo.startDate);
                 bodyHtml += `
-                    <td class="border-r border-l border-slate-900 bg-white px-1 py-0.5 text-center align-middle">
+                    <td class="border-r border-l border-slate-900 bg-white px-1 py-0.5 text-center align-middle ${monthInitialSeasonClass}">
                         <div class="flex flex-col items-center justify-center h-full text-center">
                             <div class="font-kashida font-black text-xs sm:text-[13px] text-slate-950 leading-tight tracking-wide text-center">${monthTitle}</div>
                             <div class="flex items-center justify-center gap-1.5 text-[9px] sm:text-[10px] font-black text-slate-700 mt-0.5 text-center">
@@ -937,6 +962,9 @@
                         const jd = mInfo.startJd + (dayNumber - 1);
                         const gDateVal = julianToGregorian(jd);
                         const hDateVal = julianToHijri(jd);
+
+                        // تحديد فصل السنة الفلكي الدقيق لهذا اليوم بالذات
+                        const daySeasonClass = getSeasonClassForDate(gDateVal);
 
                         let primaryNum = dayNumber;
                         let secondaryNum = '';
@@ -1016,7 +1044,7 @@
                         }
 
                         bodyHtml += `
-                            <td style="background-color: ${cellBg};" class="border-r border-l border-slate-300 p-0 text-center transition">
+                            <td style="background-color: ${cellBg};" class="border-r border-l border-slate-300 p-0 text-center transition ${daySeasonClass}">
                                 <div class="flex flex-col items-center justify-center h-full py-0.5">
                                     <span class="font-black ${textColor} text-[11px] sm:text-[12px] leading-tight">${primaryNum}</span>
                                     <span class="font-extrabold ${secondaryColor} text-[9px] sm:text-[10px] leading-tight">${secondaryNum}</span>
