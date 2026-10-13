@@ -200,6 +200,15 @@
                     <span>⚙️ إعداد الإجازات والرواتب</span>
                 </button>
 
+                <!-- زرا تصدير واستيراد النسخة الاحتياطية -->
+                <button id="btnExportBackup" class="px-2.5 py-1 bg-blue-700 hover:bg-blue-600 rounded-lg font-semibold transition text-xs flex items-center gap-1" title="تصدير وحفظ الإعدادات كملف احتياطي على جهازك">
+                    <span>💾 تصدير نسخة</span>
+                </button>
+                <label class="px-2.5 py-1 bg-amber-700 hover:bg-amber-600 rounded-lg font-semibold transition text-xs flex items-center gap-1 cursor-pointer" title="استيراد الإعدادات المحفوظة من ملف">
+                    <span>📂 استيراد نسخة</span>
+                    <input id="inputFileBackup" type="file" accept=".json" class="hidden">
+                </label>
+
                 <!-- خيارات مقاس الورق -->
                 <div class="flex bg-slate-800 rounded-lg p-0.5 border border-slate-700">
                     <button id="btnSizeA4" class="px-2 py-1 rounded font-semibold text-xs bg-slate-600 text-white">A4</button>
@@ -225,7 +234,7 @@
                 <div class="flex items-center gap-2.5">
                     <img id="imgLogo" src="" alt="شعار" class="h-9 w-auto object-contain hidden bg-white/20 p-0.5 rounded border border-white/40">
                     <div class="leading-tight text-right" id="headerTitlesBox">
-                        <div id="txtHeaderNames" class="text-xs sm:text-sm md:text-base font-extrabold tracking-wide"> حسين يوسف الشهيب  </div>
+                        <div id="txtHeaderNames" class="text-xs sm:text-sm md:text-base font-extrabold tracking-wide">حسين الشهيب </div>
                         <div id="txtHeaderOrg" class="text-[11px] sm:text-xs text-cyan-100 font-semibold">إمارة المنطقة الشرقية</div>
                     </div>
                 </div>
@@ -479,7 +488,7 @@
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">اسم المسؤول / المعدين:</label>
-                <input id="inputHeaderNames" type="text" value="حسين يوسف الشهيب " class="w-full p-1.5 border rounded text-xs font-bold">
+                <input id="inputHeaderNames" type="text" value="حسين الشهيب " class="w-full p-1.5 border rounded text-xs font-bold">
             </div>
 
             <div>
@@ -536,7 +545,7 @@
             customEvents: [],
 
             // الترويسة والشعار
-            headerNames: 'حسين الشهيب / فيصل باوزير',
+            headerNames: 'حسين الشهيب ',
             headerOrg: 'إمارة المنطقة الشرقية',
             logoData: '',
 
@@ -1475,6 +1484,65 @@
                     localStorage.setItem('calendar_app_config', JSON.stringify(state));
                 } catch(e) { console.error(e); }
             }
+
+            /* =========================================================================
+               ميزة تصدير واستيراد النسخة الاحتياطية (Backup Export & Import)
+               ========================================================================= */
+            // 1. تصدير الإعدادات كملف JSON
+            document.getElementById('btnExportBackup').addEventListener('click', () => {
+                try {
+                    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+                    const downloadAnchor = document.createElement('a');
+                    downloadAnchor.setAttribute("href", dataStr);
+                    downloadAnchor.setAttribute("download", `calendar_backup_${state.year}.json`);
+                    document.body.appendChild(downloadAnchor);
+                    downloadAnchor.click();
+                    downloadAnchor.remove();
+                } catch(err) {
+                    console.error("خطأ في تصدير النسخة الاحتياطية:", err);
+                }
+            });
+
+            // 2. استيراد الإعدادات من ملف JSON
+            document.getElementById('inputFileBackup').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const importedState = JSON.parse(event.target.result);
+                        if (importedState && typeof importedState === 'object') {
+                            Object.assign(state, importedState);
+                            
+                            // حفظ البيانات محلياً
+                            saveStateLocally();
+
+                            // تحديث عناصر الواجهة
+                            document.getElementById('inputYear').value = state.year;
+                            document.getElementById('txtHeaderNames').textContent = state.headerNames || '';
+                            document.getElementById('txtHeaderOrg').textContent = state.headerOrg || '';
+                            
+                            const img = document.getElementById('imgLogo');
+                            if (state.logoData) {
+                                img.src = state.logoData;
+                                img.classList.remove('hidden');
+                            } else {
+                                img.src = '';
+                                img.classList.add('hidden');
+                            }
+
+                            // إعادة رسم وتطبيق التقويم فوراً
+                            renderCalendar();
+                        }
+                    } catch (err) {
+                        console.error("فشل قراءة ملف النسخة الاحتياطية:", err);
+                    }
+                    // تصفير مدخل الملف ليسمح بإعادة اختيار نفس الملف إذا لزم
+                    e.target.value = '';
+                };
+                reader.readAsText(file);
+            });
 
             // تشغيل وتوليد الجدول أول مرة
             renderCalendar();
