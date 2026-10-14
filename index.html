@@ -234,7 +234,7 @@
                 <div class="flex items-center gap-2.5">
                     <img id="imgLogo" src="" alt="شعار" class="h-9 w-auto object-contain hidden bg-white/20 p-0.5 rounded border border-white/40">
                     <div class="leading-tight text-right" id="headerTitlesBox">
-                        <div id="txtHeaderNames" class="text-xs sm:text-sm md:text-base font-extrabold tracking-wide">حسين الشهيب </div>
+                        <div id="txtHeaderNames" class="text-xs sm:text-sm md:text-base font-extrabold tracking-wide">حسين الشهيب / فيصل باوزير</div>
                         <div id="txtHeaderOrg" class="text-[11px] sm:text-xs text-cyan-100 font-semibold">إمارة المنطقة الشرقية</div>
                     </div>
                 </div>
@@ -488,7 +488,7 @@
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">اسم المسؤول / المعدين:</label>
-                <input id="inputHeaderNames" type="text" value="حسين الشهيب " class="w-full p-1.5 border rounded text-xs font-bold">
+                <input id="inputHeaderNames" type="text" value="حسين الشهيب / فيصل باوزير" class="w-full p-1.5 border rounded text-xs font-bold">
             </div>
 
             <div>
@@ -545,7 +545,7 @@
             customEvents: [],
 
             // الترويسة والشعار
-            headerNames: 'حسين الشهيب ',
+            headerNames: 'حسين الشهيب / فيصل باوزير',
             headerOrg: 'إمارة المنطقة الشرقية',
             logoData: '',
 
@@ -614,22 +614,87 @@
         const WEEKDAYS_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
         /* =========================================================================
-           خوارزميات التحويل الفلكي بين الهجري والميلادي (تقويم أم القرى)
+           خوارزميات تقويم أم القرى الفلكي الدقيق المعتمد في المملكة العربية السعودية
+           (Official Umm al-Qura Astronomical Calendar)
            ========================================================================= */
+
+        // جدول الشهور المعتمدة فلكياً لتقويم أم القرى (عدد أيام كل شهر من 1 إلى 12)
+        const UMM_AL_QURA_KNOWN_LENGTHS = {
+            1446: [29, 30, 30, 30, 29, 30, 30, 29, 29, 30, 29, 29],
+            1447: [30, 29, 30, 30, 30, 29, 30, 29, 30, 29, 30, 29],
+            1448: [29, 30, 29, 30, 30, 29, 30, 30, 29, 30, 29, 30], // رمضان 1448 = 29 يوماً
+            1449: [30, 29, 30, 29, 30, 29, 30, 30, 30, 29, 30, 29]
+        };
+
+        // محرك المتصفح القياسي لتقويم أم القرى الدولي
+        const uqFormatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn', {
+            timeZone: 'Asia/Riyadh',
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric'
+        });
+
+        function parseUqParts(gDate) {
+            try {
+                const parts = uqFormatter.formatToParts(gDate);
+                let hy = 0, hm = 0, hd = 0;
+                for (const p of parts) {
+                    if (p.type === 'year') hy = parseInt(p.value, 10);
+                    else if (p.type === 'month') hm = parseInt(p.value, 10);
+                    else if (p.type === 'day') hd = parseInt(p.value, 10);
+                }
+                return { year: hy, month: hm, day: hd };
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // تحويل التاريخ الميلادي إلى هجري بدقة تقويم أم القرى
+        function gregorianToHijriUq(gDate) {
+            const uq = parseUqParts(gDate);
+            if (uq && uq.year && uq.month && uq.day) {
+                return uq;
+            }
+            // حل بديل فلكي إذا لم يدعم المتصفح الخاصية
+            return julianToHijri(gregorianToJulian(gDate.getFullYear(), gDate.getMonth() + 1, gDate.getDate()));
+        }
+
+        // تحويل التاريخ الهجري إلى تاريخ ميلادي مطابق لتقويم أم القرى
+        function hijriToGregorianUq(hYear, hMonth, hDay) {
+            // بحث فلكي سريع انطلاقاً من التقدير التقريبي
+            const approxJd = Math.floor((11 * hYear + 3) / 30) + 354 * hYear + 30 * hMonth - Math.floor((hMonth - 1) / 2) + hDay + 1948440 - 385;
+            let curDate = julianToGregorian(approxJd);
+            
+            // ضبط دقيق بالتطابق مع محرك أم القرى
+            for (let step = -4; step <= 4; step++) {
+                const testDate = new Date(curDate.getTime() + step * 86400000);
+                const h = gregorianToHijriUq(testDate);
+                if (h.year === hYear && h.month === hMonth && h.day === hDay) {
+                    return testDate;
+                }
+            }
+            return curDate;
+        }
+
+        // عدد أيام الشهر الهجري حسب تقويم أم القرى المعتمد
+        function getHijriMonthLength(year, month) {
+            if (UMM_AL_QURA_KNOWN_LENGTHS[year] && UMM_AL_QURA_KNOWN_LENGTHS[year][month - 1]) {
+                return UMM_AL_QURA_KNOWN_LENGTHS[year][month - 1];
+            }
+            // فحص اليوم 30 عبر المحرك الفلكي
+            const gDate30 = hijriToGregorianUq(year, month, 30);
+            const hCheck = gregorianToHijriUq(gDate30);
+            return (hCheck.year === year && hCheck.month === month && hCheck.day === 30) ? 30 : 29;
+        }
+
         function hijriToJulian(year, month, day) {
-            return Math.floor((11 * year + 3) / 30) + 354 * year + 30 * month - Math.floor((month - 1) / 2) + day + 1948440 - 385;
+            const gDate = hijriToGregorianUq(year, month, day);
+            return gregorianToJulian(gDate.getFullYear(), gDate.getMonth() + 1, gDate.getDate());
         }
 
         function julianToHijri(jd) {
-            const l = Math.floor(jd) - 1948440 + 10632;
-            const n = Math.floor((l - 1) / 10631);
-            const l1 = l - 10631 * n + 354;
-            const j = (Math.floor((10985 - l1) / 5316)) * (Math.floor((50 * l1) / 17719)) + (Math.floor(l1 / 5670)) * (Math.floor((43 * l1) / 15238));
-            const l2 = l1 - (Math.floor((30 - j) / 15)) * (Math.floor((17719 * j) / 50)) - (Math.floor(j / 16)) * (Math.floor((15238 * j) / 43)) + 29;
-            const month = Math.floor((24 * l2) / 709);
-            const day = l2 - Math.floor((709 * month) / 24);
-            const year = 30 * n + j - 30;
-            return { year, month, day };
+            const gDate = julianToGregorian(jd);
+            return gregorianToHijriUq(gDate);
         }
 
         function julianToGregorian(jd) {
@@ -656,13 +721,6 @@
             const a = Math.floor(y / 100);
             const b = 2 - a + Math.floor(a / 4);
             return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + day + b - 1524.5;
-        }
-
-        // عدد أيام الشهر الهجري بدقة
-        function getHijriMonthLength(year, month) {
-            const jd1 = hijriToJulian(year, month, 1);
-            const jd2 = (month === 12) ? hijriToJulian(year + 1, 1, 1) : hijriToJulian(year, month + 1, 1);
-            return jd2 - jd1;
         }
 
         // فحص عطلة نهاية الأسبوع
