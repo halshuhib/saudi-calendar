@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>التقويم الهجري والميلادي السنوي - الإصدار 2.5 (1448 هـ)</title>
+    <title>التقويم الهجري والميلادي السنوي - الإصدار 2.7 (1448 هـ)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -198,9 +198,8 @@
                     🌐 English (LTR)
                 </button>
 
-                <!-- شارة رقم النسخة والإصدار -->
                 <span class="bg-indigo-950 text-indigo-300 border border-indigo-700/60 px-2 py-0.5 rounded text-[11px] font-bold" title="رقم الإصدار والتحديث الحالي">
-                    الإصدار v2.5
+                    الإصدار v2.7
                 </span>
             </div>
 
@@ -248,10 +247,10 @@
         <div class="flex items-center gap-2">
             <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
             <span id="cloudStatusText">الوضع السحابي: متصل بقاعدة بيانات التقويم | السنة الحالية مستقلة ومعزولة</span>
-            <span class="text-indigo-300 font-bold bg-indigo-900/60 px-1.5 py-0.2 rounded border border-indigo-700/50">v2.5</span>
+            <span class="text-indigo-300 font-bold bg-indigo-900/60 px-1.5 py-0.2 rounded border border-indigo-700/50">v2.7</span>
         </div>
         <div id="userGreetingBox" class="font-bold text-amber-300">
-            مدير النظام: حسين يوسف الشهيب (0500686807)
+            الترويسة الافتراضية: حسين يوسف الشهيب (إمارة المنطقة الشرقية)
         </div>
     </div>
 
@@ -286,7 +285,7 @@
         </div>
     </main>
 
-    <!-- نافذة تسجيل الدخول والاشتراك (التسجيل الذاتي متاح) -->
+    <!-- نافذة تسجيل الدخول والاشتراك -->
     <div id="modalAuth" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden" style="z-index: 99999;">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-300 overflow-hidden text-right">
             <div class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center">
@@ -387,7 +386,7 @@
                     <span class="text-xl">👑</span>
                     <div>
                         <h3 class="font-black text-sm sm:text-base text-amber-400">لوحة تحكم مدير النظام - إدارة الحسابات والمشتركين</h3>
-                        <p class="text-[11px] text-slate-300">المدير: حسين يوسف الشهيب (0500686807) | الإصدار v2.5</p>
+                        <p class="text-[11px] text-slate-300">المدير: حسين يوسف الشهيب (0500686807) | الإصدار v2.7</p>
                     </div>
                 </div>
                 <button type="button" id="btnCloseAdmin" class="text-slate-300 hover:text-red-400 text-xl font-bold">✕</button>
@@ -686,6 +685,13 @@
     </div>
 
     <script>
+        // إعدادات مدير النظام الافتراضية الثابتة
+        const SYSTEM_DEFAULT_HEADER = {
+            headerNames: 'حسين يوسف الشهيب',
+            headerOrg: 'إمارة المنطقة الشرقية',
+            logoData: ''
+        };
+
         const DEFAULT_STATE = {
             lang: 'ar',
             primaryMode: 'hijri',
@@ -712,9 +718,9 @@
             ],
 
             customEvents: [],
-            headerNames: 'حسين يوسف الشهيب',
-            headerOrg: 'إمارة المنطقة الشرقية',
-            logoData: '',
+            headerNames: SYSTEM_DEFAULT_HEADER.headerNames,
+            headerOrg: SYSTEM_DEFAULT_HEADER.headerOrg,
+            logoData: SYSTEM_DEFAULT_HEADER.logoData,
 
             colors: {
                 header: '#009bb0',
@@ -916,20 +922,41 @@
             return false;
         }
 
+        function getUserStorageId() {
+            return currentUser ? currentUser.email.replace(/[@.]/g, '_') : 'global_default';
+        }
+
         function getYearStorageKey(yearNum) {
-            const userId = currentUser ? currentUser.email.replace(/[@.]/g, '_') : 'global_default';
-            return `cal_config_u_${userId}_yr_${yearNum}`;
+            return `cal_config_u_${getUserStorageId()}_yr_${yearNum}`;
+        }
+
+        // استرجاع ترويسة المستخدم الحالية (أو ترويسة مدير النظام الافتراضية)
+        function getUserHeaderConfig() {
+            try {
+                const uId = getUserStorageId();
+                const savedUserHeader = localStorage.getItem(`cal_header_user_${uId}`);
+                if (savedUserHeader) {
+                    return JSON.parse(savedUserHeader);
+                }
+            } catch(e) {}
+            return {
+                headerNames: SYSTEM_DEFAULT_HEADER.headerNames,
+                headerOrg: SYSTEM_DEFAULT_HEADER.headerOrg,
+                logoData: SYSTEM_DEFAULT_HEADER.logoData
+            };
         }
 
         function loadYearState(yearNum) {
             try {
                 const key = getYearStorageKey(yearNum);
                 const saved = localStorage.getItem(key);
+                const userHeader = getUserHeaderConfig();
+
                 if (saved) {
                     const parsed = JSON.parse(saved);
-                    state = Object.assign({}, DEFAULT_STATE, parsed);
+                    state = Object.assign({}, DEFAULT_STATE, parsed, userHeader);
                 } else {
-                    state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+                    state = Object.assign({}, JSON.parse(JSON.stringify(DEFAULT_STATE)), userHeader);
                 }
             } catch(e) {
                 state = JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -960,8 +987,18 @@
             document.documentElement.style.setProperty('--col-winter', state.colors.winter);
 
             document.getElementById('headerBar').style.backgroundColor = state.colors.header;
-            document.getElementById('txtHeaderNames').textContent = state.headerNames || 'حسين يوسف الشهيب';
-            document.getElementById('txtHeaderOrg').textContent = state.headerOrg || 'إمارة المنطقة الشرقية';
+            document.getElementById('txtHeaderNames').textContent = state.headerNames || SYSTEM_DEFAULT_HEADER.headerNames;
+            document.getElementById('txtHeaderOrg').textContent = state.headerOrg || SYSTEM_DEFAULT_HEADER.headerOrg;
+
+            // تحديث الشعار تلقائياً وبشكل دائم
+            const imgLogo = document.getElementById('imgLogo');
+            if (state.logoData && state.logoData.trim().length > 0) {
+                imgLogo.src = state.logoData;
+                imgLogo.classList.remove('hidden');
+            } else {
+                imgLogo.src = '';
+                imgLogo.classList.add('hidden');
+            }
 
             const isHijri = (state.primaryMode === 'hijri');
             const targetYear = parseInt(state.year);
@@ -1393,7 +1430,6 @@
             XLSX.writeFile(wb, `تقرير_المستخدمين_تقويم_1448_${Date.now()}.xlsx`);
         }
 
-        /* دالة تطبيق جلسة المستخدم المسجل في الواجهة */
         function applyLoggedInUI(user) {
             document.getElementById('txtAuthBtnLabel').textContent = `👤 ${user.name}`;
             document.getElementById('lblLoggedName').textContent = user.name;
@@ -1415,14 +1451,13 @@
             }
         }
 
-        /* دالة إعادة الواجهة لحالة الزائر عند تسجيل الخروج */
         function resetLoggedOutUI() {
             document.getElementById('txtAuthBtnLabel').textContent = '👤 تسجيل الدخول / اشتراك';
             document.getElementById('authBoxLoggedIn').classList.add('hidden');
             document.getElementById('authTabsContainer').classList.remove('hidden');
             document.getElementById('authBoxLogin').classList.remove('hidden');
             document.getElementById('btnOpenAdminPanel').classList.add('hidden');
-            document.getElementById('userGreetingBox').textContent = 'مدير النظام: حسين يوسف الشهيب (0500686807)';
+            document.getElementById('userGreetingBox').textContent = 'الترويسة الافتراضية: حسين يوسف الشهيب (إمارة المنطقة الشرقية)';
         }
 
         /* =========================================================================
@@ -1459,14 +1494,12 @@
             renderCalendar();
             updateAdminDashboard();
 
-            // تطبيق حالة الدخول إذا كان هناك مستخدم محفوظ
             if (currentUser) {
                 applyLoggedInUI(currentUser);
             } else {
                 resetLoggedOutUI();
             }
 
-            // أزرار كشف كلمة المرور بالعين
             const btnToggleLoginPass = document.getElementById('btnToggleLoginPass');
             const inputLoginPass = document.getElementById('inputLoginPass');
             btnToggleLoginPass.addEventListener('click', (e) => {
@@ -1493,7 +1526,6 @@
                 }
             });
 
-            // تبديل التبويبات بين تسجيل الدخول وإنشاء الحساب
             const tabBtnLogin = document.getElementById('tabBtnLogin');
             const tabBtnRegister = document.getElementById('tabBtnRegister');
             const authBoxLogin = document.getElementById('authBoxLogin');
@@ -1521,7 +1553,7 @@
                 modalAuth.classList.add('hidden');
             });
 
-            // تسجيل الدخول مع حفظ الجلسة الدائمة
+            // تسجيل الدخول مع حفظ الجلسة الدائمة واستعادة ترويسة المستخدم
             document.getElementById('btnSubmitLogin').addEventListener('click', () => {
                 const email = document.getElementById('inputLoginEmail').value.trim();
                 const pass = document.getElementById('inputLoginPass').value;
@@ -1556,7 +1588,6 @@
                     currentUser = found;
                 }
 
-                // حفظ الجلسة في التخزين المحلي لتفادي الخروج عند التحديث
                 localStorage.setItem('cal_logged_user', JSON.stringify(currentUser));
 
                 feedback.className = 'text-xs p-2 rounded bg-emerald-100 text-emerald-800 font-bold block';
@@ -1610,7 +1641,6 @@
                 subscribersList.push(newUser);
                 currentUser = newUser;
 
-                // حفظ الجلسة الدائمة
                 localStorage.setItem('cal_logged_user', JSON.stringify(currentUser));
                 saveYearStateLocally();
                 updateAdminDashboard();
@@ -1619,6 +1649,9 @@
                 feedback.textContent = 'تم إنشاء الحساب بنجاح وتوثيق بياناتك!';
 
                 applyLoggedInUI(currentUser);
+                loadYearState(state.year);
+                renderCalendar();
+
                 setTimeout(() => { modalAuth.classList.add('hidden'); }, 1200);
             });
 
@@ -1627,6 +1660,8 @@
                 currentUser = null;
                 localStorage.removeItem('cal_logged_user');
                 resetLoggedOutUI();
+                loadYearState(state.year);
+                renderCalendar();
                 modalAuth.classList.add('hidden');
             });
 
@@ -1898,8 +1933,19 @@
                 modalColors.classList.add('hidden');
             });
 
+            // نافذة الترويسة والشعار
             const modalHeader = document.getElementById('modalHeader');
-            document.getElementById('btnOpenHeaderModal').addEventListener('click', () => modalHeader.classList.remove('hidden'));
+            document.getElementById('btnOpenHeaderModal').addEventListener('click', () => {
+                document.getElementById('inputHeaderNames').value = state.headerNames || SYSTEM_DEFAULT_HEADER.headerNames;
+                document.getElementById('inputHeaderOrg').value = state.headerOrg || SYSTEM_DEFAULT_HEADER.headerOrg;
+                const btnRemove = document.getElementById('btnRemoveLogo');
+                if (state.logoData && state.logoData.trim().length > 0) {
+                    btnRemove.classList.remove('hidden');
+                } else {
+                    btnRemove.classList.add('hidden');
+                }
+                modalHeader.classList.remove('hidden');
+            });
             document.getElementById('btnCloseHeader').addEventListener('click', () => modalHeader.classList.add('hidden'));
 
             document.getElementById('inputFileLogo').addEventListener('change', (e) => {
@@ -1908,9 +1954,6 @@
                     const reader = new FileReader();
                     reader.onload = (re) => {
                         state.logoData = re.target.result;
-                        const img = document.getElementById('imgLogo');
-                        img.src = state.logoData;
-                        img.classList.remove('hidden');
                         document.getElementById('btnRemoveLogo').classList.remove('hidden');
                     };
                     reader.readAsDataURL(file);
@@ -1919,13 +1962,22 @@
 
             document.getElementById('btnRemoveLogo').addEventListener('click', () => {
                 state.logoData = '';
-                document.getElementById('imgLogo').classList.add('hidden');
+                document.getElementById('inputFileLogo').value = '';
                 document.getElementById('btnRemoveLogo').classList.add('hidden');
             });
 
+            // حفظ الترويسة والشعار بحساب المستخدم الحالي فقط وتثبيتها لديه
             document.getElementById('btnSaveHeader').addEventListener('click', () => {
-                state.headerNames = document.getElementById('inputHeaderNames').value;
-                state.headerOrg = document.getElementById('inputHeaderOrg').value;
+                state.headerNames = document.getElementById('inputHeaderNames').value.trim() || SYSTEM_DEFAULT_HEADER.headerNames;
+                state.headerOrg = document.getElementById('inputHeaderOrg').value.trim() || SYSTEM_DEFAULT_HEADER.headerOrg;
+
+                const uId = getUserStorageId();
+                localStorage.setItem(`cal_header_user_${uId}`, JSON.stringify({
+                    headerNames: state.headerNames,
+                    headerOrg: state.headerOrg,
+                    logoData: state.logoData
+                }));
+
                 saveYearStateLocally();
                 renderCalendar();
                 modalHeader.classList.add('hidden');
