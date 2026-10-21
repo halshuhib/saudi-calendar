@@ -33,20 +33,21 @@
             white-space: nowrap;
         }
 
-        .season-b-spring { border-bottom: 3.5px solid var(--col-spring, #10b981) !important; }
-        .season-b-summer { border-bottom: 3.5px solid var(--col-summer, #f97316) !important; }
-        .season-b-autumn { border-bottom: 3.5px solid var(--col-autumn, #dc2626) !important; }
-        .season-b-winter { border-bottom: 3.5px solid var(--col-winter, #2563eb) !important; }
+        /* خطوط الفصول الفلكية اليومية الدقيقة */
+        .season-b-spring { border-bottom: 3px solid var(--col-spring, #10b981) !important; }
+        .season-b-summer { border-bottom: 3px solid var(--col-summer, #f97316) !important; }
+        .season-b-autumn { border-bottom: 3px solid var(--col-autumn, #dc2626) !important; }
+        .season-b-winter { border-bottom: 3px solid var(--col-winter, #2563eb) !important; }
 
         @page {
             size: landscape;
-            margin: 0mm !important;
+            margin: 4mm !important;
         }
 
         @media print {
             @page {
                 size: landscape;
-                margin: 0mm !important;
+                margin: 4mm !important;
                 @top-left { content: none; }
                 @top-right { content: none; }
                 @bottom-left { content: none; }
@@ -56,8 +57,8 @@
                 background: #ffffff !important;
                 padding: 0 !important;
                 margin: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
+                width: 100% !important;
+                height: 100% !important;
                 overflow: hidden !important;
             }
             .no-print {
@@ -70,31 +71,36 @@
                 margin: 0 auto !important;
                 width: 100% !important;
                 max-width: 100% !important;
-                height: 100vh !important;
-                max-height: 100vh !important;
+                height: calc(100vh - 8mm) !important;
+                max-height: calc(100vh - 8mm) !important;
                 display: flex !important;
                 flex-direction: column !important;
                 justify-content: space-between !important;
                 page-break-inside: avoid !important;
                 page-break-after: avoid !important;
                 page-break-before: avoid !important;
+                overflow: hidden !important;
             }
             #headerBar {
-                padding-top: 2px !important;
-                padding-bottom: 2px !important;
-                height: 32px !important;
-                flex: 0 0 32px !important;
+                padding: 1px 8px !important;
+                height: 28px !important;
+                min-height: 28px !important;
+                max-height: 28px !important;
+                flex: 0 0 28px !important;
             }
             #headerBar h1, #headerBar div {
-                font-size: 12px !important;
-                line-height: 1.2 !important;
+                font-size: 11px !important;
+                line-height: 1.1 !important;
+            }
+            #imgLogo {
+                height: 22px !important;
             }
             .table-container {
                 flex: 1 1 auto !important;
                 display: flex !important;
                 flex-direction: column !important;
                 overflow: hidden !important;
-                height: calc(100vh - 58px) !important;
+                height: calc(100% - 52px) !important;
             }
             table {
                 width: 100% !important;
@@ -103,53 +109,61 @@
                 table-layout: fixed !important;
             }
             thead {
-                height: 44px !important;
-                flex: 0 0 44px !important;
+                height: 38px !important;
+                flex: 0 0 38px !important;
             }
             thead tr {
-                height: 44px !important;
+                height: 38px !important;
             }
             tbody {
-                height: calc(100% - 44px) !important;
+                height: calc(100% - 38px) !important;
             }
             tbody tr {
-                height: calc((100% - 44px) / 12) !important;
+                height: calc((100% - 38px) / 12) !important;
             }
             th, td {
                 padding: 0 !important;
-                line-height: 1.1 !important;
+                line-height: 1 !important;
                 vertical-align: middle !important;
             }
             .vertical-text {
-                font-size: 9.5px !important;
+                font-size: 8.5px !important;
                 font-weight: 800 !important;
+                letter-spacing: -0.5px !important;
             }
             #legendBar {
-                padding: 2px 4px !important;
-                font-size: 9px !important;
-                height: 24px !important;
-                min-height: 24px !important;
-                flex: 0 0 24px !important;
-                gap: 6px !important;
+                padding: 1px 6px !important;
+                font-size: 8.5px !important;
+                height: 22px !important;
+                min-height: 22px !important;
+                max-height: 22px !important;
+                flex: 0 0 22px !important;
+                gap: 5px !important;
+                border-top: 1.5px solid #0f172a !important;
+                background-color: #f8fafc !important;
             }
             #legendBar span {
-                font-size: 8.5px !important;
+                font-size: 8px !important;
+            }
+            #legendBar div span:first-child {
+                width: 10px !important;
+                height: 10px !important;
             }
         }
 
         .cal-row {
-            height: 36px !important;
+            height: 34px !important;
         }
 
         @media (min-width: 640px) {
             .cal-row {
-                height: 40px !important;
+                height: 38px !important;
             }
         }
 
         @media print {
             .cal-row {
-                height: calc((100% - 44px) / 12) !important;
+                height: calc((100% - 38px) / 12) !important;
             }
         }
 
@@ -186,13 +200,11 @@
             </div>
 
             <div class="flex items-center gap-1.5 flex-wrap">
-                <!-- زر لوحة الإدارة للمدير -->
                 <button id="btnOpenAdminPanel" class="px-3 py-1 bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-slate-950 font-black rounded-lg transition text-xs flex items-center gap-1 shadow-md ring-2 ring-amber-300/60 hidden">
                     <span>👑 لوحة الإدارة</span>
                     <span id="badgeSubscribersCount" class="bg-slate-900 text-amber-400 text-[10px] px-1.5 py-0.2 rounded-full font-bold">1</span>
                 </button>
 
-                <!-- زر الحساب والتسجيل -->
                 <button id="btnOpenAuthModal" class="px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded-lg font-bold transition text-xs flex items-center gap-1 shadow">
                     <span id="txtAuthBtnLabel">👤 تسجيل الدخول / اشتراك</span>
                 </button>
@@ -266,7 +278,7 @@
         </div>
     </main>
 
-    <!-- نافذة تسجيل الدخول والاشتراك (التسجيل الذاتي متاح) -->
+    <!-- نافذة تسجيل الدخول والاشتراك -->
     <div id="modalAuth" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden" style="z-index: 99999;">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-300 overflow-hidden text-right">
             <div class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center">
@@ -276,13 +288,11 @@
                 <button type="button" id="btnCloseAuth" class="text-slate-400 hover:text-red-400 text-xl font-bold p-1">✕</button>
             </div>
 
-            <!-- تبويبات الدخول والاشتراك الذاتي -->
             <div id="authTabsContainer" class="flex border-b border-slate-200 bg-slate-50 text-xs font-bold">
                 <button type="button" id="tabBtnLogin" class="flex-1 py-2.5 text-center text-sky-700 border-b-2 border-sky-600 bg-white">تسجيل الدخول</button>
                 <button type="button" id="tabBtnRegister" class="flex-1 py-2.5 text-center text-slate-500 hover:text-slate-800">إنشاء حساب جديد</button>
             </div>
 
-            <!-- تسجيل الدخول -->
             <div id="authBoxLogin" class="p-4 space-y-3 text-xs sm:text-sm">
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">البريد الإلكتروني / اسم المستخدم:</label>
@@ -309,7 +319,6 @@
                 </button>
             </div>
 
-            <!-- إنشاء حساب جديد (التسجيل الذاتي) -->
             <div id="authBoxRegister" class="p-4 space-y-3 text-xs sm:text-sm hidden">
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">الاسم الكامل:</label>
@@ -343,7 +352,6 @@
                 </button>
             </div>
 
-            <!-- تفاصيل الحساب الحالي بعد تسجيل الدخول -->
             <div id="authBoxLoggedIn" class="p-4 space-y-3 text-xs sm:text-sm hidden">
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <div class="font-extrabold text-slate-900 text-sm" id="lblLoggedName">حسين يوسف الشهيب</div>
@@ -359,7 +367,7 @@
         </div>
     </div>
 
-    <!-- لوحة تحكم مدير النظام - إدارة المستخدمين الشاملة -->
+    <!-- لوحة تحكم مدير النظام -->
     <div id="modalAdmin" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden" style="z-index: 99999;">
         <div class="bg-white rounded-xl shadow-2xl max-w-5xl w-full max-h-[92vh] flex flex-col border border-slate-300 overflow-hidden text-right">
             <div class="bg-gradient-to-r from-slate-900 to-amber-950 text-white px-5 py-3 flex justify-between items-center border-b border-amber-500/40">
@@ -438,7 +446,7 @@
         </div>
     </div>
 
-    <!-- نافذة إضافة / تعديل مستخدم (خاصة بمدير النظام) -->
+    <!-- نافذة إضافة / تعديل مستخدم -->
     <div id="modalUserForm" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden" style="z-index: 100000;">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-300 overflow-hidden text-right">
             <div class="bg-indigo-800 text-white px-4 py-2.5 flex justify-between items-center">
@@ -713,7 +721,6 @@
         let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
         let currentUser = null;
 
-        // قاعدة بيانات المستخدمين مع حالة التفعيل والحذف
         let subscribersList = [
             {
                 id: 'admin_1',
