@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>التقويم الهجري والميلادي السنوي</title>
+    <title>التقويم الهجري والميلادي السنوي - حسين يوسف الشهيب</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,7 +31,7 @@
             white-space: nowrap;
         }
 
-        /* خطوط الفصول اليومية الدقيقة */
+        /* خطوط الفصول اليومية الفلكية الدقيقة */
         .season-b-spring { border-bottom: 4px solid var(--col-spring, #10b981) !important; }
         .season-b-summer { border-bottom: 4px solid var(--col-summer, #f97316) !important; }
         .season-b-autumn { border-bottom: 4px solid var(--col-autumn, #dc2626) !important; }
@@ -158,11 +158,10 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
 
-    <!-- شريط التحكم العلوي (يختفي عند الطباعة) -->
     <header class="no-print bg-slate-900 text-white shadow-md sticky top-0 z-40 border-b border-slate-700">
         <div class="max-w-7xl mx-auto px-3 py-2 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
             
-            <!-- أزرار التحكم بالسنة والنوع -->
+            <!-- أزرار التحكم بالسنة والنوع واللغة -->
             <div class="flex items-center gap-1.5 flex-wrap">
                 <div class="flex items-center bg-slate-800 rounded-lg p-1 border border-slate-700">
                     <button id="btnPrevYear" class="px-2 py-1 hover:bg-slate-700 rounded text-slate-200 transition font-bold" title="السنة السابقة">◀</button>
@@ -183,8 +182,30 @@
                 </button>
             </div>
 
-            <!-- أزرار النوافذ المنبثقة والخيارات -->
+            <!-- معلومات المستخدم وأزرار الحساب والمزامنة -->
             <div class="flex items-center gap-1.5 flex-wrap">
+                <!-- قسم حساب المستخدم السحابي -->
+                <div id="userAccountSection" class="flex items-center bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700 gap-1.5">
+                    <span id="userStatusBadge" class="text-xs font-semibold text-slate-300 flex items-center gap-1">
+                        <span id="userStatusDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+                        <span id="txtUserLabel">زائر (غير مسجل)</span>
+                    </span>
+                    <button id="btnOpenProfileModal" class="px-2 py-0.5 bg-slate-700 hover:bg-slate-600 text-cyan-300 rounded font-bold text-xs transition hidden" title="عرض وتعديل الملف الشخصي ورقم الجوال">
+                        👤 حسابي
+                    </button>
+                    <button id="btnOpenAuthModal" class="px-2 py-0.5 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold text-xs transition">
+                        تسجيل الدخول / المدير
+                    </button>
+                    <button id="btnLogout" class="px-2 py-0.5 bg-red-600 hover:bg-red-500 text-white rounded font-bold text-xs transition hidden">
+                        خروج
+                    </button>
+                </div>
+
+                <!-- زر إعداد قاعدة البيانات السحابية -->
+                <button id="btnOpenDbModal" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-amber-300 rounded-lg font-semibold transition text-xs flex items-center gap-1" title="إعداد وربط قاعدة بيانات Firebase">
+                    <span>⚡ ربط السحابة</span>
+                </button>
+
                 <!-- زر إعداد الترويسة والشعار -->
                 <button id="btnOpenHeaderModal" class="px-2.5 py-1 bg-teal-700 hover:bg-teal-600 rounded-lg font-semibold transition text-xs flex items-center gap-1">
                     <span>🏷️ الترويسة والشعار</span>
@@ -195,17 +216,17 @@
                     <span>🎨 ألوان المناسبات</span>
                 </button>
 
-                <!-- زر إعداد الإجازات والأعياد والمناسبات -->
+                <!-- زر إعداد الإجازات والأعياد والمناسبات للسنة المحددة -->
                 <button id="btnOpenRulesModal" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold transition text-xs flex items-center gap-1 ring-2 ring-indigo-400">
-                    <span>⚙️ إعداد الإجازات والرواتب</span>
+                    <span>⚙️ إجازات السنة الحالية</span>
                 </button>
 
-                <!-- زرا تصدير واستيراد النسخة الاحتياطية -->
-                <button id="btnExportBackup" class="px-2.5 py-1 bg-blue-700 hover:bg-blue-600 rounded-lg font-semibold transition text-xs flex items-center gap-1" title="تصدير وحفظ الإعدادات كملف احتياطي على جهازك">
-                    <span>💾 تصدير نسخة</span>
+                <!-- زرا تصدير واستيراد النسخة الاحتياطية للسنة الحالية -->
+                <button id="btnExportBackup" class="px-2.5 py-1 bg-blue-700 hover:bg-blue-600 rounded-lg font-semibold transition text-xs flex items-center gap-1" title="تصدير وحفظ إعدادات هذه السنة كملف احتياطي">
+                    <span>💾 تصدير</span>
                 </button>
-                <label class="px-2.5 py-1 bg-amber-700 hover:bg-amber-600 rounded-lg font-semibold transition text-xs flex items-center gap-1 cursor-pointer" title="استيراد الإعدادات المحفوظة من ملف">
-                    <span>📂 استيراد نسخة</span>
+                <label class="px-2.5 py-1 bg-amber-700 hover:bg-amber-600 rounded-lg font-semibold transition text-xs flex items-center gap-1 cursor-pointer" title="استيراد إعدادات محفوظة من ملف">
+                    <span>📂 استيراد</span>
                     <input id="inputFileBackup" type="file" accept=".json" class="hidden">
                 </label>
 
@@ -224,7 +245,6 @@
         </div>
     </header>
 
-    <!-- مساحة التقويم الرئيسية (الجاهزة للمعاينة والطباعة) -->
     <main class="flex-1 flex justify-center items-start p-2 sm:p-4 overflow-auto">
         <div id="printArea" class="bg-white text-slate-900 border-2 border-slate-900 shadow-2xl mx-auto transition-all" style="width: 100%; max-width: 1440px;">
             
@@ -248,37 +268,188 @@
             <!-- جدول التقويم الأفقي المتصل (36 عمود للأيام) -->
             <div class="w-full overflow-x-auto table-container">
                 <table id="calendarTable" class="w-full border-collapse border border-slate-900 text-center select-none text-[10px] sm:text-[11px] md:text-xs">
-                    <!-- رأس الجدول: صف الأيام الرأسية -->
-                    <thead id="calendarHead">
-                        <!-- يُنشأ ديناميكياً بواسطة JavaScript -->
-                    </thead>
-                    <!-- جسم الجدول: صفوف الـ 12 شهراً -->
-                    <tbody id="calendarBody">
-                        <!-- يُنشأ ديناميكياً بواسطة JavaScript -->
-                    </tbody>
+                    <thead id="calendarHead"></thead>
+                    <tbody id="calendarBody"></tbody>
                 </table>
             </div>
 
             <!-- دليل الألوان (Legend) السفلي -->
             <footer id="legendBar" class="w-full p-1.5 bg-slate-50 border-t-2 border-slate-900 text-[10px] sm:text-[11px] flex flex-wrap items-center justify-center gap-3 sm:gap-4 font-bold">
-                <!-- يُنشأ ديناميكياً بواسطة JavaScript -->
             </footer>
 
         </div>
     </main>
 
-    <!-- =========================================================================
-         نافذة 1: إعداد الإجازات والأعياد والمناسبات والرواتب
-         ========================================================================= -->
+    <div id="modalAuth" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-300 overflow-hidden text-right">
+            <div class="bg-blue-800 text-white px-4 py-3 flex justify-between items-center">
+                <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">
+                    <span>🔐 تسجيل دخول مدير النظام والمستخدمين</span>
+                </h3>
+                <button id="btnCloseAuth" class="text-white hover:text-red-200 text-lg font-bold">✕</button>
+            </div>
+
+            <div class="p-4 space-y-3.5 text-xs sm:text-sm">
+                <!-- زر التعبئة التلقائية السريعة لمدير النظام -->
+                <div class="bg-amber-50 p-2.5 rounded-lg border border-amber-300 flex items-center justify-between">
+                    <div>
+                        <div class="font-bold text-amber-950">👑 حساب مدير النظام:</div>
+                        <div class="text-[11px] text-amber-900 font-semibold">حسين يوسف الشهيب (halshuhiyb)</div>
+                    </div>
+                    <button id="btnQuickFillAdmin" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded font-bold text-xs transition shadow-sm">
+                        تعبئة بياناتي
+                    </button>
+                </div>
+
+                <!-- تبويبات التبديل بين الدخول والاشتراك -->
+                <div class="flex border-b pb-2 gap-2 text-center">
+                    <button id="tabLogin" class="flex-1 py-1.5 font-bold rounded-lg bg-blue-50 text-blue-800 border border-blue-200">تسجيل الدخول</button>
+                    <button id="tabRegister" class="flex-1 py-1.5 font-semibold text-slate-600 hover:bg-slate-50 rounded-lg">إنشاء حساب جديد</button>
+                </div>
+
+                <!-- رسالة الحالة / التنبيهات -->
+                <div id="authNotice" class="hidden p-2 rounded text-xs font-semibold"></div>
+
+                <!-- حقل اسم المستخدم (يظهر عند التسجيل) -->
+                <div id="authFieldDisplayName" class="hidden space-y-1">
+                    <label class="block font-semibold text-slate-700">الاسم الكامل: <span class="text-red-500">*</span></label>
+                    <input id="inputAuthDisplayName" type="text" class="w-full p-2 border rounded font-bold text-xs" placeholder="مثلاً: حسين يوسف الشهيب">
+                </div>
+
+                <!-- حقل رقم الجوال الإلزامي (يظهر عند التسجيل) -->
+                <div id="authFieldPhone" class="hidden space-y-1">
+                    <label class="block font-semibold text-slate-700">رقم الجوال: <span class="text-red-500">* (إلزامي للتوثيق والتواصل)</span></label>
+                    <input id="inputAuthPhone" type="tel" dir="ltr" class="w-full p-2 border rounded font-bold text-xs text-left" placeholder="0500686807">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block font-semibold text-slate-700">البريد الإلكتروني / اسم المستخدم: <span class="text-red-500">*</span></label>
+                    <input id="inputAuthEmail" type="text" dir="ltr" class="w-full p-2 border rounded font-semibold text-xs text-left" placeholder="halshuhiyb@gmail.com أو halshuhiyb">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block font-semibold text-slate-700">كلمة المرور: <span class="text-red-500">*</span></label>
+                    <input id="inputAuthPassword" type="password" dir="ltr" class="w-full p-2 border rounded font-semibold text-xs text-left" placeholder="كلمة المرور">
+                </div>
+
+                <div id="verificationInfoBox" class="hidden text-[11px] text-blue-900 bg-blue-50 p-2.5 rounded border border-blue-200 leading-relaxed">
+                    📧 <strong>التحقق من البريد:</strong> سيصلك رابط تأكيد على بريدك الإلكتروني فور إنشاء الحساب للتأكد من ملكيتك له وتفعيل الحفظ السحابي الآمن.
+                </div>
+
+                <div class="flex flex-col gap-2 pt-2">
+                    <button id="btnSubmitAuth" class="w-full py-2 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-lg transition shadow-md">
+                        تسجيل الدخول
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalDb" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full border border-slate-300 overflow-hidden text-right">
+            <div class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center">
+                <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">
+                    <span>⚡ إعدادات وربط قاعدة البيانات السحابية (Firebase)</span>
+                </h3>
+                <button id="btnCloseDb" class="text-white hover:text-red-200 text-lg font-bold">✕</button>
+            </div>
+
+            <div class="p-4 space-y-3 text-xs sm:text-sm">
+                <div class="p-2.5 bg-blue-50 rounded-lg border border-blue-200 text-blue-950 text-xs leading-relaxed">
+                    🔹 <strong>حالة الاتصال:</strong> <span id="txtDbConnectionStatus" class="font-bold text-emerald-700">جاهز / متصل</span><br>
+                    يمكنك لصق إعدادات مشروع Firebase الخاص بك هنا لربط الموقع تلقائياً وحفظ إعدادات كل سنة لكل مستخدم في السحابة.
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">بيانات إعداد Firebase (JSON Config):</label>
+                    <textarea id="txtFirebaseConfigInput" rows="6" dir="ltr" class="w-full p-2 border rounded font-mono text-xs bg-slate-50 text-left" placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "your-app.firebaseapp.com",
+  "projectId": "your-app",
+  "storageBucket": "your-app.appspot.com",
+  "messagingSenderId": "...",
+  "appId": "..."
+}'></textarea>
+                </div>
+
+                <div id="dbNotice" class="hidden p-2 rounded text-xs font-semibold text-center"></div>
+
+                <div class="flex justify-between items-center pt-2 border-t">
+                    <button id="btnResetDbConfig" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 rounded font-semibold text-xs">
+                        استعادة الافتراضي
+                    </button>
+                    <button id="btnSaveDbConfig" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold text-xs transition">
+                        حفظ وربط قاعدة البيانات
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalProfile" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-300 overflow-hidden text-right">
+            <div class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center">
+                <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">
+                    <span>👤 بيانات المستخدم والملف الشخصي</span>
+                </h3>
+                <button id="btnCloseProfile" class="text-white hover:text-red-200 text-lg font-bold">✕</button>
+            </div>
+
+            <div class="p-4 space-y-3.5 text-xs sm:text-sm">
+                <!-- شارة حالة توثيق البريد الإلكتروني -->
+                <div id="boxEmailVerificationStatus" class="p-2.5 rounded-lg border flex flex-col gap-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold">حالة البريد الإلكتروني:</span>
+                        <span id="badgeEmailVerified" class="px-2 py-0.5 rounded text-[11px] font-extrabold"></span>
+                    </div>
+                    <p id="txtEmailVerificationHelp" class="text-[11px] leading-relaxed text-slate-600"></p>
+                    <button id="btnResendVerification" class="mt-1 w-full py-1 bg-amber-600 hover:bg-amber-700 text-white rounded text-xs font-bold transition hidden">
+                        📩 إعادة إرسال رابط التحقق إلى البريد
+                    </button>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block font-semibold text-slate-700">الاسم الكامل:</label>
+                    <input id="profDisplayName" type="text" class="w-full p-2 border rounded font-bold text-xs">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block font-semibold text-slate-700">البريد الإلكتروني المعتمد:</label>
+                    <input id="profEmail" type="text" dir="ltr" disabled class="w-full p-2 border rounded font-semibold text-xs bg-slate-100 text-slate-600 text-left">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block font-semibold text-slate-700">رقم الجوال المسجل: <span class="text-red-500">*</span></label>
+                    <input id="profPhone" type="tel" dir="ltr" class="w-full p-2 border rounded font-bold text-xs text-left" placeholder="0500686806">
+                </div>
+
+                <div id="profNotice" class="hidden p-2 rounded text-xs font-semibold text-center"></div>
+
+                <div class="pt-2 border-t flex justify-end gap-2">
+                    <button id="btnSaveProfile" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-lg text-xs transition">
+                        حفظ التعديلات
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="modalRules" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-slate-300 overflow-hidden text-right">
             <div class="bg-indigo-700 text-white px-4 py-2.5 flex justify-between items-center">
-                <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">⚙️ إعداد الإجازات الرسمية والأعياد والرواتب</h3>
+                <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">
+                    <span>⚙️ إعدادات الإجازات والرواتب لسنة: <span id="txtRulesYearBadge" class="bg-white/20 px-2 py-0.5 rounded text-amber-300 font-extrabold">1448</span></span>
+                </h3>
                 <button id="btnCloseRules" class="text-white hover:text-red-200 text-lg font-bold">✕</button>
             </div>
             
             <div class="p-4 overflow-y-auto space-y-4 text-xs sm:text-sm">
                 
+                <!-- تنبيه فصل السنوات -->
+                <div class="bg-blue-50 border border-blue-200 p-2.5 rounded-lg text-blue-900 text-xs">
+                    💡 <strong>نظام السنوات المستقل:</strong> كافة التعديلات في هذه النافذة تخص هذه السنة فقط وتُحفظ مستقلاً دون التأثير على السنوات الأخرى!
+                </div>
+
                 <!-- 1. يوم صرف الراتب وقاعدة العطلة -->
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <h4 class="font-bold text-indigo-900 mb-2 flex items-center gap-1.5">💰 يوم صرف الراتب المعتمد:</h4>
@@ -320,7 +491,7 @@
                     </label>
                 </div>
 
-                <!-- 4. إجازات الأعياد (تحديد البداية والمدة بالأيام والامتداد التلقائي) -->
+                <!-- 4. إجازات الأعياد -->
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-3">
                     <h4 class="font-bold text-indigo-900">🌙 إجازات عيدي الفطر والأضحى المباركين (امتداد تلقائي بين الشهور):</h4>
                     
@@ -369,7 +540,7 @@
                     </div>
                 </div>
 
-                <!-- 5. إجازات الطلاب والعطل الدراسية المتعددة -->
+                <!-- 5. إجازات الطلاب والعطل الدراسية -->
                 <div class="bg-amber-50/80 p-3 rounded-lg border-2 border-amber-300 space-y-2">
                     <div class="flex justify-between items-center">
                         <h4 class="font-extrabold text-amber-950 flex items-center gap-1.5 text-xs sm:text-sm">
@@ -380,11 +551,9 @@
                         </button>
                     </div>
                     <p class="text-[11px] text-amber-900 leading-relaxed">
-                        حدد بداية كل إجازة ومدتها بالأيام (تمتد تلقائياً للشهر اللاحق إذا تجاوزت أيامه). يمكنك إضافة إجازة الخريف، الشتاء، الإجازات المطولة، ومنتصف ونهاية العام.
+                        حدد بداية كل إجازة ومدتها بالأيام (تمتد تلقائياً للشهر اللاحق إذا تجاوزت أيامه).
                     </p>
-                    <div id="schoolHolidaysContainer" class="space-y-2 max-h-44 overflow-y-auto pr-0.5">
-                        <!-- يتم ملؤها ديناميكياً بواسطة JavaScript -->
-                    </div>
+                    <div id="schoolHolidaysContainer" class="space-y-2 max-h-44 overflow-y-auto pr-0.5"></div>
                 </div>
 
                 <!-- 6. مناسبات وتذكيرات مخصصة -->
@@ -393,9 +562,7 @@
                         <h4 class="font-bold text-indigo-900">📌 مناسبات وتذكيرات خاصة:</h4>
                         <button id="btnAddCustomEvent" class="px-2 py-0.5 bg-indigo-600 text-white rounded text-xs hover:bg-indigo-700 font-bold">+ إضافة تذكير</button>
                     </div>
-                    <div id="customEventsContainer" class="space-y-1.5 max-h-36 overflow-y-auto">
-                        <!-- يُدرج ديناميكياً -->
-                    </div>
+                    <div id="customEventsContainer" class="space-y-1.5 max-h-36 overflow-y-auto"></div>
                 </div>
 
             </div>
@@ -403,14 +570,11 @@
             <!-- أزرار الحفظ والإغلاق -->
             <div class="bg-slate-100 p-3 border-t flex justify-end gap-2">
                 <button id="btnResetRules" class="px-3 py-1.5 bg-slate-300 hover:bg-slate-400 rounded text-slate-800 font-bold text-xs">استعادة الافتراضي</button>
-                <button id="btnSaveRules" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold text-xs">حفظ وتطبيق التغييرات</button>
+                <button id="btnSaveRules" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold text-xs">حفظ وتطبيق لهذه السنة</button>
             </div>
         </div>
     </div>
 
-    <!-- =========================================================================
-         نافذة 2: ألوان المناسبات والعناصر
-         ========================================================================= -->
     <div id="modalColors" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col border border-slate-300 overflow-hidden text-right">
             <div class="bg-purple-800 text-white px-4 py-2.5 flex justify-between items-center">
@@ -476,9 +640,6 @@
         </div>
     </div>
 
-    <!-- =========================================================================
-         نافذة 3: الترويسة والشعار
-         ========================================================================= -->
     <div id="modalHeader" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-4 border border-slate-300 text-right space-y-3">
             <div class="flex justify-between items-center border-b pb-2">
@@ -510,20 +671,430 @@
         </div>
     </div>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithCustomToken, 
+            signInAnonymously, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            sendEmailVerification,
+            signOut, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc, 
+            setDoc 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // بيانات اعتماد مدير النظام الأساسية المدمجة
+        window.ADMIN_ACCOUNT = {
+            username: 'halshuhiyb',
+            email: 'halshuhiyb@gmail.com',
+            phone: '0500686806',
+            displayName: 'حسين يوسف الشهيب',
+            passwordHint: 'Hh@537573'
+        };
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'hijri-calendar-app';
+        let app = null;
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        let userProfileData = {
+            displayName: window.ADMIN_ACCOUNT.displayName,
+            phone: window.ADMIN_ACCOUNT.phone,
+            email: window.ADMIN_ACCOUNT.email,
+            createdAt: ''
+        };
+
+        // فحص إعدادات Firebase المخزنة أو البيئية
+        function getActiveFirebaseConfig() {
+            try {
+                const stored = localStorage.getItem('user_firebase_config');
+                if (stored) return JSON.parse(stored);
+            } catch(e) {}
+            if (typeof __firebase_config !== 'undefined') {
+                try {
+                    return JSON.parse(__firebase_config);
+                } catch(e) {}
+            }
+            return null;
+        }
+
+        async function initFirebaseSystem() {
+            const config = getActiveFirebaseConfig();
+            if (config && config.apiKey) {
+                try {
+                    app = initializeApp(config);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token).catch(() => signInAnonymously(auth));
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    document.getElementById('txtDbConnectionStatus').textContent = '✓ متصل بنجاح بالسحابة';
+                    document.getElementById('txtDbConnectionStatus').className = 'font-bold text-emerald-600';
+                } catch(e) {
+                    console.warn('Firebase init status:', e);
+                    document.getElementById('txtDbConnectionStatus').textContent = '⚠️ يعمل بنظام التخزين المحلي';
+                    document.getElementById('txtDbConnectionStatus').className = 'font-bold text-amber-600';
+                }
+            } else {
+                document.getElementById('txtDbConnectionStatus').textContent = '⚠️ لم يتم إدخال مفاتيح Firebase (يعمل محلياً)';
+                document.getElementById('txtDbConnectionStatus').className = 'font-bold text-slate-500';
+            }
+        }
+
+        await initFirebaseSystem();
+
+        if (auth) {
+            onAuthStateChanged(auth, async (user) => {
+                currentUser = user;
+                const userBadge = document.getElementById('userStatusBadge');
+                const userStatusDot = document.getElementById('userStatusDot');
+                const userLabel = document.getElementById('txtUserLabel');
+                const btnAuth = document.getElementById('btnOpenAuthModal');
+                const btnLogout = document.getElementById('btnLogout');
+                const btnProfile = document.getElementById('btnOpenProfileModal');
+
+                if (user && !user.isAnonymous) {
+                    await loadUserProfile(user.uid);
+
+                    const displayName = userProfileData.displayName || user.displayName || user.email.split('@')[0];
+                    userLabel.textContent = `👤 ${displayName}`;
+                    userBadge.className = 'text-xs font-semibold text-emerald-400 flex items-center gap-1';
+                    userStatusDot.className = user.emailVerified ? 'w-2 h-2 rounded-full bg-emerald-400' : 'w-2 h-2 rounded-full bg-amber-400 animate-pulse';
+
+                    btnAuth.classList.add('hidden');
+                    btnLogout.classList.remove('hidden');
+                    btnProfile.classList.remove('hidden');
+
+                    // تحميل إعدادات السنة المحددة للمستخدم من السحابة
+                    await loadYearSettingsFromCloud(window.state.year);
+                } else {
+                    userLabel.textContent = 'زائر (غير مسجل)';
+                    userBadge.className = 'text-xs font-semibold text-slate-300 flex items-center gap-1';
+                    userStatusDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+                    btnAuth.classList.remove('hidden');
+                    btnLogout.classList.add('hidden');
+                    btnProfile.classList.add('hidden');
+                }
+            });
+        }
+
+        // حفظ إعدادات كل سنة بشكل مستقل تماماً في السحابة
+        window.saveYearSettingsToCloud = async function(year) {
+            const yr = parseInt(year) || window.state.year;
+            if (!db || !currentUser || currentUser.isAnonymous) return;
+            try {
+                // حفظ خاص بالسنة في مسار مستقل: year_{yr}
+                const userYearDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'years_data', `year_${yr}`);
+                const yearSpecificData = {
+                    year: yr,
+                    primaryMode: window.state.primaryMode,
+                    salaryDay: window.state.salaryDay,
+                    salaryWeekendAdjust: window.state.salaryWeekendAdjust,
+                    weekendOption: window.state.weekendOption,
+                    enableBridging: window.state.enableBridging,
+                    fitrStartMonth: window.state.fitrStartMonth,
+                    fitrStartDay: window.state.fitrStartDay,
+                    fitrDays: window.state.fitrDays,
+                    adhaStartMonth: window.state.adhaStartMonth,
+                    adhaStartDay: window.state.adhaStartDay,
+                    adhaDays: window.state.adhaDays,
+                    schoolHolidays: window.state.schoolHolidays,
+                    customEvents: window.state.customEvents,
+                    headerNames: window.state.headerNames,
+                    headerOrg: window.state.headerOrg,
+                    logoData: window.state.logoData,
+                    colors: window.state.colors,
+                    updatedAt: new Date().toISOString()
+                };
+                await setDoc(userYearDocRef, yearSpecificData, { merge: true });
+                console.log(`Cloud: Saved isolated settings for year ${yr}`);
+            } catch (err) {
+                console.error(`Error saving year ${yr} to cloud:`, err);
+            }
+        };
+
+        // تحميل إعدادات السنة المحددة من السحابة
+        window.loadYearSettingsFromCloud = async function(year) {
+            const yr = parseInt(year) || window.state.year;
+            if (!db || !currentUser || currentUser.isAnonymous) return false;
+            try {
+                const userYearDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'years_data', `year_${yr}`);
+                const snap = await getDoc(userYearDocRef);
+                if (snap.exists()) {
+                    const data = snap.data();
+                    Object.assign(window.state, data);
+                    window.applyLoadedState();
+                    return true;
+                }
+            } catch (err) {
+                console.error(`Error loading year ${yr} from cloud:`, err);
+            }
+            return false;
+        };
+
+        async function saveUserProfile(uid, profile) {
+            if (!db || !uid) return;
+            try {
+                const profileRef = doc(db, 'artifacts', appId, 'users', uid, 'profile', 'info');
+                await setDoc(profileRef, {
+                    ...profile,
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
+            } catch(e) {
+                console.error('Error saving profile:', e);
+            }
+        }
+
+        async function loadUserProfile(uid) {
+            if (!db || !uid) return;
+            try {
+                const profileRef = doc(db, 'artifacts', appId, 'users', uid, 'profile', 'info');
+                const snap = await getDoc(profileRef);
+                if (snap.exists()) {
+                    userProfileData = snap.data();
+                } else if (currentUser) {
+                    userProfileData = {
+                        displayName: currentUser.displayName || window.ADMIN_ACCOUNT.displayName,
+                        phone: window.ADMIN_ACCOUNT.phone,
+                        email: currentUser.email || window.ADMIN_ACCOUNT.email,
+                        createdAt: new Date().toISOString()
+                    };
+                }
+            } catch(e) {
+                console.error('Error loading profile:', e);
+            }
+        }
+
+        // نافذة ربط قاعدة البيانات Firebase
+        const modalDb = document.getElementById('modalDb');
+        const txtFirebaseConfigInput = document.getElementById('txtFirebaseConfigInput');
+        const dbNotice = document.getElementById('dbNotice');
+
+        document.getElementById('btnOpenDbModal').addEventListener('click', () => {
+            const currentCfg = getActiveFirebaseConfig();
+            if (currentCfg) {
+                txtFirebaseConfigInput.value = JSON.stringify(currentCfg, null, 2);
+            }
+            dbNotice.classList.add('hidden');
+            modalDb.classList.remove('hidden');
+        });
+
+        document.getElementById('btnCloseDb').addEventListener('click', () => modalDb.classList.add('hidden'));
+
+        document.getElementById('btnSaveDbConfig').addEventListener('click', async () => {
+            const rawVal = txtFirebaseConfigInput.value.trim();
+            if (!rawVal) {
+                localStorage.removeItem('user_firebase_config');
+                showDbNotice('تم مسح إعدادات السحابة، سيعمل النظام محلياً.', 'amber');
+                return;
+            }
+            try {
+                const parsed = JSON.parse(rawVal);
+                if (!parsed.apiKey) throw new Error('مفتاح apiKey مفقود');
+                localStorage.setItem('user_firebase_config', JSON.stringify(parsed));
+                showDbNotice('تم حفظ الإعدادات بنجاح! يتم إعادة تهيئة الاتصال...', 'green');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } catch(err) {
+                showDbNotice('صيغة JSON غير صحيحة، يرجى التأكد من نسخ كائن الإعدادات بالكامل.', 'red');
+            }
+        });
+
+        document.getElementById('btnResetDbConfig').addEventListener('click', () => {
+            localStorage.removeItem('user_firebase_config');
+            txtFirebaseConfigInput.value = '';
+            showDbNotice('تمت استعادة التهيئة الافتراضية.', 'green');
+        });
+
+        function showDbNotice(msg, color) {
+            dbNotice.textContent = msg;
+            dbNotice.className = `p-2 rounded text-xs font-semibold text-center ${color === 'green' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : (color === 'amber' ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-red-100 text-red-800 border border-red-300')}`;
+            dbNotice.classList.remove('hidden');
+        }
+
+        // التعبئة التلقائية السريعة لمدير النظام
+        document.getElementById('btnQuickFillAdmin').addEventListener('click', () => {
+            document.getElementById('inputAuthEmail').value = window.ADMIN_ACCOUNT.email;
+            document.getElementById('inputAuthPassword').value = window.ADMIN_ACCOUNT.passwordHint;
+            document.getElementById('inputAuthDisplayName').value = window.ADMIN_ACCOUNT.displayName;
+            document.getElementById('inputAuthPhone').value = window.ADMIN_ACCOUNT.phone;
+            showAuthNotice('تم تعبئة بيانات مدير النظام (حسين يوسف الشهيب) جاهزة للدخول.', 'green');
+        });
+
+        // إدارة المصادقة (تسجيل ودخول)
+        let isRegisterMode = false;
+        const modalAuth = document.getElementById('modalAuth');
+        const tabLogin = document.getElementById('tabLogin');
+        const tabRegister = document.getElementById('tabRegister');
+        const authFieldDisplayName = document.getElementById('authFieldDisplayName');
+        const authFieldPhone = document.getElementById('authFieldPhone');
+        const verificationInfoBox = document.getElementById('verificationInfoBox');
+        const btnSubmitAuth = document.getElementById('btnSubmitAuth');
+        const authNotice = document.getElementById('authNotice');
+
+        document.getElementById('btnOpenAuthModal').addEventListener('click', () => {
+            modalAuth.classList.remove('hidden');
+            authNotice.classList.add('hidden');
+        });
+
+        document.getElementById('btnCloseAuth').addEventListener('click', () => modalAuth.classList.add('hidden'));
+
+        tabLogin.addEventListener('click', () => {
+            isRegisterMode = false;
+            tabLogin.className = 'flex-1 py-1.5 font-bold rounded-lg bg-blue-50 text-blue-800 border border-blue-200';
+            tabRegister.className = 'flex-1 py-1.5 font-semibold text-slate-600 hover:bg-slate-50 rounded-lg';
+            authFieldDisplayName.classList.add('hidden');
+            authFieldPhone.classList.add('hidden');
+            verificationInfoBox.classList.add('hidden');
+            btnSubmitAuth.textContent = 'تسجيل الدخول';
+            authNotice.classList.add('hidden');
+        });
+
+        tabRegister.addEventListener('click', () => {
+            isRegisterMode = true;
+            tabRegister.className = 'flex-1 py-1.5 font-bold rounded-lg bg-blue-50 text-blue-800 border border-blue-200';
+            tabLogin.className = 'flex-1 py-1.5 font-semibold text-slate-600 hover:bg-slate-50 rounded-lg';
+            authFieldDisplayName.classList.remove('hidden');
+            authFieldPhone.classList.remove('hidden');
+            verificationInfoBox.classList.remove('hidden');
+            btnSubmitAuth.textContent = 'إنشاء الحساب وتأكيد البريد';
+            authNotice.classList.add('hidden');
+        });
+
+        btnSubmitAuth.addEventListener('click', async () => {
+            let email = document.getElementById('inputAuthEmail').value.trim();
+            const password = document.getElementById('inputAuthPassword').value;
+            const displayName = document.getElementById('inputAuthDisplayName').value.trim();
+            const phone = document.getElementById('inputAuthPhone').value.trim();
+
+            if (email.toLowerCase() === window.ADMIN_ACCOUNT.username.toLowerCase()) {
+                email = window.ADMIN_ACCOUNT.email;
+            }
+
+            if (!email || !password) {
+                showAuthNotice('يرجى إدخال البريد الإلكتروني وكلمة المرور.', 'red');
+                return;
+            }
+
+            if (!auth) {
+                // وضع العمل المحلي بدون Firebase
+                if ((email === window.ADMIN_ACCOUNT.email || email === window.ADMIN_ACCOUNT.username) && password === window.ADMIN_ACCOUNT.passwordHint) {
+                    document.getElementById('txtUserLabel').textContent = `👑 ${window.ADMIN_ACCOUNT.displayName}`;
+                    document.getElementById('userStatusBadge').className = 'text-xs font-semibold text-emerald-400 flex items-center gap-1';
+                    document.getElementById('btnOpenAuthModal').classList.add('hidden');
+                    document.getElementById('btnLogout').classList.remove('hidden');
+                    document.getElementById('btnOpenProfileModal').classList.remove('hidden');
+                    showAuthNotice('مرحباً بك يا مدير النظام! تم الدخول بنجاح.', 'green');
+                    setTimeout(() => modalAuth.classList.add('hidden'), 900);
+                    return;
+                }
+                showAuthNotice('لم يتم ربط Firebase بعد، يمكنك النقر على "⚡ ربط السحابة" لربطه أو استخدام بيانات المدير.', 'amber');
+                return;
+            }
+
+            btnSubmitAuth.disabled = true;
+            btnSubmitAuth.textContent = 'جارٍ التحقق...';
+
+            try {
+                if (isRegisterMode) {
+                    const cred = await createUserWithEmailAndPassword(auth, email, password);
+                    try { await sendEmailVerification(cred.user); } catch(e){}
+                    userProfileData = {
+                        displayName: displayName || window.ADMIN_ACCOUNT.displayName,
+                        phone: phone || window.ADMIN_ACCOUNT.phone,
+                        email: email,
+                        createdAt: new Date().toISOString()
+                    };
+                    await saveUserProfile(cred.user.uid, userProfileData);
+                    await window.saveYearSettingsToCloud(window.state.year);
+                    showAuthNotice('تم إنشاء الحساب بنجاح وتم إرسال رابط التحقق إلى بريدك!', 'green');
+                } else {
+                    const cred = await signInWithEmailAndPassword(auth, email, password);
+                    await loadUserProfile(cred.user.uid);
+                    await window.loadYearSettingsFromCloud(window.state.year);
+                    showAuthNotice('تم تسجيل الدخول ومزامنة إعداداتك بنجاح!', 'green');
+                }
+                setTimeout(() => {
+                    modalAuth.classList.add('hidden');
+                    btnSubmitAuth.disabled = false;
+                    btnSubmitAuth.textContent = isRegisterMode ? 'إنشاء الحساب' : 'تسجيل الدخول';
+                }, 1000);
+            } catch(err) {
+                btnSubmitAuth.disabled = false;
+                btnSubmitAuth.textContent = isRegisterMode ? 'إنشاء الحساب' : 'تسجيل الدخول';
+                showAuthNotice('تعذر إكمال العملية: تأكد من صحة البريد وكلمة المرور.', 'red');
+            }
+        });
+
+        document.getElementById('btnLogout').addEventListener('click', async () => {
+            if (auth) {
+                await signOut(auth);
+                await signInAnonymously(auth);
+            }
+            document.getElementById('txtUserLabel').textContent = 'زائر (غير مسجل)';
+            document.getElementById('userStatusBadge').className = 'text-xs font-semibold text-slate-300 flex items-center gap-1';
+            document.getElementById('btnOpenAuthModal').classList.remove('hidden');
+            document.getElementById('btnLogout').classList.add('hidden');
+            document.getElementById('btnOpenProfileModal').classList.add('hidden');
+        });
+
+        // نافذة الملف الشخصي
+        const modalProfile = document.getElementById('modalProfile');
+        document.getElementById('btnOpenProfileModal').addEventListener('click', () => {
+            document.getElementById('profDisplayName').value = userProfileData.displayName || window.ADMIN_ACCOUNT.displayName;
+            document.getElementById('profEmail').value = userProfileData.email || window.ADMIN_ACCOUNT.email;
+            document.getElementById('profPhone').value = userProfileData.phone || window.ADMIN_ACCOUNT.phone;
+            modalProfile.classList.remove('hidden');
+        });
+        document.getElementById('btnCloseProfile').addEventListener('click', () => modalProfile.classList.add('hidden'));
+
+        document.getElementById('btnSaveProfile').addEventListener('click', async () => {
+            const newName = document.getElementById('profDisplayName').value.trim();
+            const newPhone = document.getElementById('profPhone').value.trim();
+            userProfileData.displayName = newName;
+            userProfileData.phone = newPhone;
+            if (currentUser && !currentUser.isAnonymous) {
+                await saveUserProfile(currentUser.uid, userProfileData);
+            }
+            document.getElementById('txtUserLabel').textContent = `👤 ${newName}`;
+            document.getElementById('txtHeaderNames').textContent = newName;
+            window.state.headerNames = newName;
+            modalProfile.classList.add('hidden');
+        });
+
+        function showAuthNotice(msg, color) {
+            authNotice.textContent = msg;
+            authNotice.className = `p-2 rounded text-xs font-semibold text-center ${color === 'green' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : (color === 'amber' ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-red-100 text-red-800 border border-red-300')}`;
+            authNotice.classList.remove('hidden');
+        }
+    </script>
+
     <script>
         /* =========================================================================
-           حالة التطبيق العامة (Application State)
+           حالة التطبيق الافتراضية المعتمدة لمدير النظام (Default Master Configuration)
+           تظهر لجميع الزوار تلقائياً عند فتح الصفحة
            ========================================================================= */
-        const state = {
-            lang: 'ar',                // 'ar' أو 'en'
-            primaryMode: 'hijri',      // 'hijri' أو 'greg'
-            year: 1448,                // هجري افتراضي
-            salaryDay: 27,             // يوم الراتب الميلادي
-            salaryWeekendAdjust: true, // تقديم للخميس أو تأخير للأحد
-            weekendOption: 'fri_sat',  // 'fri_sat', 'sat_sun', 'fri_only'
-            enableBridging: true,      // تجسير الوطني والتأسيس
+        const DEFAULT_SYSTEM_CONFIG = {
+            lang: 'ar',
+            primaryMode: 'hijri',
+            salaryDay: 27,
+            salaryWeekendAdjust: true,
+            weekendOption: 'fri_sat',
+            enableBridging: true,
             
-            // إجازات الأعياد بالبداية والمدة
+            // إجازات الأعياد
             fitrStartMonth: 9,
             fitrStartDay: 25,
             fitrDays: 12,
@@ -532,7 +1103,7 @@
             adhaStartDay: 5,
             adhaDays: 12,
 
-            // إجازات الطلاب والعطل الدراسية المتعددة (قابلة للتعديل والإضافة)
+            // إجازات الطلاب المعتمدة
             schoolHolidays: [
                 { id: 1, title: 'إجازة الخريف', startMonth: 5, startDay: 14, days: 10 },
                 { id: 2, title: 'إجازة منتصف العام الدراسي', startMonth: 7, startDay: 20, days: 9 },
@@ -541,22 +1112,21 @@
                 { id: 5, title: 'إجازة نهاية العام الدراسي', startMonth: 12, startDay: 16, days: 15 }
             ],
 
-            // مناسبات مخصصة
             customEvents: [],
 
-            // الترويسة والشعار
+            // الترويسة الرسمية لمدير النظام
             headerNames: 'حسين يوسف الشهيب',
             headerOrg: 'إمارة المنطقة الشرقية',
             logoData: '',
 
-            // الألوان
+            // الألوان الرسمية
             colors: {
                 header: '#009bb0',
                 salary: '#6b7280',
                 national: '#059669',
                 eid: '#cbd5e1',
                 weekend: '#fef3c7',
-                school: '#fed7aa',      // لون إجازات الطلاب المميز
+                school: '#fed7aa',
                 summer: '#f97316',
                 autumn: '#dc2626',
                 winter: '#2563eb',
@@ -564,9 +1134,14 @@
             }
         };
 
-        /* =========================================================================
-           الأسماء والترجمات
-           ========================================================================= */
+        // الحالة التشغيلية الحالية
+        const state = {
+            year: 1448,
+            ...JSON.parse(JSON.stringify(DEFAULT_SYSTEM_CONFIG))
+        };
+
+        window.state = state;
+
         const HIJRI_MONTHS_AR = [
             'محــــــــــــــــــرم (1)',
             'صفـــــــــــــــــر (2)',
@@ -613,20 +1188,13 @@
         const WEEKDAYS_AR = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
         const WEEKDAYS_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-        /* =========================================================================
-           خوارزميات تقويم أم القرى الفلكي الدقيق المعتمد في المملكة العربية السعودية
-           (Official Umm al-Qura Astronomical Calendar)
-           ========================================================================= */
-
-        // جدول الشهور المعتمدة فلكياً لتقويم أم القرى (عدد أيام كل شهر من 1 إلى 12)
         const UMM_AL_QURA_KNOWN_LENGTHS = {
             1446: [29, 30, 30, 30, 29, 30, 30, 29, 29, 30, 29, 29],
             1447: [30, 29, 30, 30, 30, 29, 30, 29, 30, 29, 30, 29],
-            1448: [29, 30, 29, 30, 30, 29, 30, 30, 29, 30, 29, 30], // رمضان 1448 = 29 يوماً
+            1448: [29, 30, 29, 30, 30, 29, 30, 30, 29, 30, 29, 30], // رمضان 1448 = 29 يوماً بدقة
             1449: [30, 29, 30, 29, 30, 29, 30, 30, 30, 29, 30, 29]
         };
 
-        // محرك المتصفح القياسي لتقويم أم القرى الدولي
         const uqFormatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn', {
             timeZone: 'Asia/Riyadh',
             year: 'numeric',
@@ -649,23 +1217,18 @@
             }
         }
 
-        // تحويل التاريخ الميلادي إلى هجري بدقة تقويم أم القرى
         function gregorianToHijriUq(gDate) {
             const uq = parseUqParts(gDate);
             if (uq && uq.year && uq.month && uq.day) {
                 return uq;
             }
-            // حل بديل فلكي إذا لم يدعم المتصفح الخاصية
             return julianToHijri(gregorianToJulian(gDate.getFullYear(), gDate.getMonth() + 1, gDate.getDate()));
         }
 
-        // تحويل التاريخ الهجري إلى تاريخ ميلادي مطابق لتقويم أم القرى
         function hijriToGregorianUq(hYear, hMonth, hDay) {
-            // بحث فلكي سريع انطلاقاً من التقدير التقريبي
             const approxJd = Math.floor((11 * hYear + 3) / 30) + 354 * hYear + 30 * hMonth - Math.floor((hMonth - 1) / 2) + hDay + 1948440 - 385;
             let curDate = julianToGregorian(approxJd);
             
-            // ضبط دقيق بالتطابق مع محرك أم القرى
             for (let step = -4; step <= 4; step++) {
                 const testDate = new Date(curDate.getTime() + step * 86400000);
                 const h = gregorianToHijriUq(testDate);
@@ -676,12 +1239,10 @@
             return curDate;
         }
 
-        // عدد أيام الشهر الهجري حسب تقويم أم القرى المعتمد
         function getHijriMonthLength(year, month) {
             if (UMM_AL_QURA_KNOWN_LENGTHS[year] && UMM_AL_QURA_KNOWN_LENGTHS[year][month - 1]) {
                 return UMM_AL_QURA_KNOWN_LENGTHS[year][month - 1];
             }
-            // فحص اليوم 30 عبر المحرك الفلكي
             const gDate30 = hijriToGregorianUq(year, month, 30);
             const hCheck = gregorianToHijriUq(gDate30);
             return (hCheck.year === year && hCheck.month === month && hCheck.day === 30) ? 30 : 29;
@@ -723,56 +1284,33 @@
             return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + day + b - 1524.5;
         }
 
-        // فحص عطلة نهاية الأسبوع
         function isDayWeekend(weekdayIndex) {
             if (state.weekendOption === 'fri_sat') {
-                return (weekdayIndex === 5 || weekdayIndex === 6); // الجمعة والسبت
+                return (weekdayIndex === 5 || weekdayIndex === 6);
             } else if (state.weekendOption === 'sat_sun') {
-                return (weekdayIndex === 6 || weekdayIndex === 0); // السبت والأحد
+                return (weekdayIndex === 6 || weekdayIndex === 0);
             } else if (state.weekendOption === 'fri_only') {
-                return (weekdayIndex === 5); // الجمعة فقط
+                return (weekdayIndex === 5);
             }
             return false;
         }
 
-        /* =========================================================================
-           حساب فصل السنة الفلكي الدقيق لكل يوم حسب التقويم الشمسي (تقويم أم القرى)
-           - الخريف: من 23 سبتمبر إلى 21 ديسمبر
-           - الشتاء: من 22 ديسمبر إلى 20 مارس
-           - الربيع: من 21 مارس إلى 20 يونيو
-           - الصيف: من 21 يونيو إلى 22 سبتمبر
-           ========================================================================= */
         function getSeasonClassForDate(gDate) {
-            const m = gDate.getMonth() + 1; // 1 - 12
+            const m = gDate.getMonth() + 1;
             const d = gDate.getDate();
             const md = m * 100 + d;
 
-            // الربيع: 21 مارس (321) حتى 20 يونيو (620)
             if (md >= 321 && md <= 620) {
                 return 'season-b-spring';
-            }
-            // الصيف: 21 يونيو (621) حتى 22 سبتمبر (922)
-            else if (md >= 621 && md <= 922) {
+            } else if (md >= 621 && md <= 922) {
                 return 'season-b-summer';
-            }
-            // الخريف: 23 سبتمبر (923) حتى 21 ديسمبر (1221)
-            else if (md >= 923 && md <= 1221) {
+            } else if (md >= 923 && md <= 1221) {
                 return 'season-b-autumn';
-            }
-            // الشتاء: من 22 ديسمبر حتى نهاية العام، ومن بداية العام حتى 20 مارس
-            else {
+            } else {
                 return 'season-b-winter';
             }
         }
 
-        /* =========================================================================
-           حساب يوم صرف الراتب الفعلي الدقيق لكل شهر ميلادي
-           القاعدة المعتمدة:
-           - الأساس: يوم الراتب المحدد (مثلاً 27).
-           - إذا وافق أول يوم عطلة أسبوعية (الجمعة في نظام الجمعة/السبت): يُقدّم للخميس (26).
-           - إذا وافق ثاني يوم عطلة أسبوعية (السبت في نظام الجمعة/السبت): يُؤخر للأحد (28).
-           - يُظلل ويُحدد يوم الاستلام الفعلي فقط (يوم واحد فقط في كل شهر ميلادي).
-           ========================================================================= */
         function getActualSalaryDayForMonth(year, month) {
             const baseTarget = parseInt(state.salaryDay) || 27;
             const maxDaysInMonth = new Date(year, month + 1, 0).getDate();
@@ -783,57 +1321,104 @@
             }
 
             const nominalDate = new Date(year, month, nominalDay);
-            const nominalDow = nominalDate.getDay(); // 0: الأحد, ..., 5: الجمعة, 6: السبت
+            const nominalDow = nominalDate.getDay();
 
             if (state.weekendOption === 'fri_sat') {
                 if (nominalDow === 5) {
-                    return nominalDay - 1; // الجمعة -> يقدّم للخميس (26)
+                    return nominalDay - 1;
                 } else if (nominalDow === 6) {
-                    return nominalDay + 1; // السبت -> يؤخر للأحد (28)
+                    return nominalDay + 1;
                 }
             } else if (state.weekendOption === 'sat_sun') {
                 if (nominalDow === 6) {
-                    return nominalDay - 1; // السبت -> يقدّم للجمعة
+                    return nominalDay - 1;
                 } else if (nominalDow === 0) {
-                    return nominalDay + 1; // الأحد -> يؤخر للاثنين
+                    return nominalDay + 1;
                 }
             } else if (state.weekendOption === 'fri_only') {
                 if (nominalDow === 5) {
-                    return nominalDay - 1; // الجمعة -> يقدّم للخميس
+                    return nominalDay - 1;
                 }
             }
 
             return nominalDay;
         }
 
-        /* =========================================================================
-           فحص قاعدة العطلات الرسمية السعودية وقواعد التجسير
-           ========================================================================= */
         function checkSaudiNationalBridgingHoliday(dateObj) {
             if (!state.enableBridging) return false;
             const m = dateObj.getMonth() + 1;
             const d = dateObj.getDate();
-            const dow = dateObj.getDay();
 
-            // 1. اليوم الوطني (23 سبتمبر)
             if (m === 9) {
                 if (d === 23) return true;
                 const natDate = new Date(dateObj.getFullYear(), 8, 23);
                 const natDow = natDate.getDay();
-                if (natDow === 1 && d === 22) return true; // الاثنين -> الأحد إجازة
-                if (natDow === 3 && d === 24) return true; // الأربعاء -> الخميس إجازة
+                if (natDow === 1 && d === 22) return true;
+                if (natDow === 3 && d === 24) return true;
             }
 
-            // 2. يوم التأسيس (22 فبراير)
             if (m === 2) {
                 if (d === 22) return true;
                 const foundDate = new Date(dateObj.getFullYear(), 1, 22);
                 const foundDow = foundDate.getDay();
-                if (foundDow === 1 && d === 21) return true; // الاثنين -> الأحد إجازة
-                if (foundDow === 3 && d === 23) return true; // الأربعاء -> الخميس إجازة
+                if (foundDow === 1 && d === 21) return true;
+                if (foundDow === 3 && d === 23) return true;
             }
 
             return false;
+        }
+
+        /* =========================================================================
+           نظام الحفظ المستقل لكل سنة على حدة (Per-Year Storage Logic)
+           ========================================================================= */
+        function getYearStorageKey(year) {
+            return `calendar_year_config_${year}`;
+        }
+
+        function saveCurrentYearState() {
+            try {
+                const yr = state.year;
+                const key = getYearStorageKey(yr);
+                localStorage.setItem(key, JSON.stringify(state));
+                
+                // حفظ سحابي إن كان المستخدم مسجلاً
+                if (typeof window.saveYearSettingsToCloud === 'function') {
+                    window.saveYearSettingsToCloud(yr);
+                }
+            } catch(e) { console.error('Error saving year state:', e); }
+        }
+
+        async function switchAndLoadYear(newYear) {
+            state.year = parseInt(newYear) || 1448;
+            document.getElementById('inputYear').value = state.year;
+            document.getElementById('txtRulesYearBadge').textContent = state.year;
+
+            // محاولة التحميل من السحابة أولاً إذا وجد حساب
+            let loaded = false;
+            if (typeof window.loadYearSettingsFromCloud === 'function') {
+                loaded = await window.loadYearSettingsFromCloud(state.year);
+            }
+
+            // إذا لم توجد في السحابة، محاولة التحميل من التخزين المحلي للسنة
+            if (!loaded) {
+                try {
+                    const localData = localStorage.getItem(getYearStorageKey(state.year));
+                    if (localData) {
+                        const parsed = JSON.parse(localData);
+                        Object.assign(state, parsed);
+                        state.year = parseInt(newYear);
+                        loaded = true;
+                    }
+                } catch(e) {}
+            }
+
+            // إذا كانت سنة جديدة لأول مرة، تطبيق الإعدادات الافتراضية
+            if (!loaded) {
+                Object.assign(state, JSON.parse(JSON.stringify(DEFAULT_SYSTEM_CONFIG)));
+                state.year = parseInt(newYear);
+            }
+
+            window.applyLoadedState();
         }
 
         /* =========================================================================
@@ -842,12 +1427,10 @@
         function renderCalendar() {
             const tableHead = document.getElementById('calendarHead');
             const tableBody = document.getElementById('calendarBody');
-            const legendBar = document.getElementById('legendBar');
             const mainTitle = document.getElementById('txtMainCalendarTitle');
             const yearLabel = document.getElementById('yearLabel');
             const dirRTL = (state.lang === 'ar');
 
-            // تحديث اتجاه المستند وخصائص CSS للمتغيرات اللونية
             document.documentElement.dir = dirRTL ? 'rtl' : 'ltr';
             document.documentElement.lang = state.lang;
             document.documentElement.style.setProperty('--col-spring', state.colors.spring);
@@ -860,7 +1443,6 @@
             const isHijri = (state.primaryMode === 'hijri');
             const targetYear = parseInt(state.year);
 
-            // تحديث العناوين في الترويسة
             if (isHijri) {
                 yearLabel.textContent = dirRTL ? 'هـ' : 'AH';
                 const startG = julianToGregorian(hijriToJulian(targetYear, 1, 1)).getFullYear();
@@ -879,22 +1461,18 @@
                     : `Gregorian Calendar for Year ${targetYear} CE ( ${hSpan} AH )`;
             }
 
-            // حساب نطاقات إجازات الأعياد عبر الشهور المتداخلة
             let eidJdRanges = [];
             let schoolJdRanges = [];
 
             if (isHijri) {
-                // عيد الفطر
                 const fitrStartJd = hijriToJulian(targetYear, parseInt(state.fitrStartMonth), parseInt(state.fitrStartDay));
                 const fitrEndJd = fitrStartJd + (parseInt(state.fitrDays) || 12) - 1;
                 eidJdRanges.push({ start: fitrStartJd, end: fitrEndJd });
 
-                // عيد الأضحى
                 const adhaStartJd = hijriToJulian(targetYear, parseInt(state.adhaStartMonth), parseInt(state.adhaStartDay));
                 const adhaEndJd = adhaStartJd + (parseInt(state.adhaDays) || 12) - 1;
                 eidJdRanges.push({ start: adhaStartJd, end: adhaEndJd });
 
-                // إجازات الطلاب والعطل الدراسية المتعددة
                 if (Array.isArray(state.schoolHolidays)) {
                     state.schoolHolidays.forEach(sh => {
                         const sMonth = parseInt(sh.startMonth) || 1;
@@ -918,7 +1496,6 @@
                 }
             }
 
-            // جمع بيانات الأشهر الـ 12
             const monthsData = [];
             let minStartDow = 7;
             for (let m = 1; m <= 12; m++) {
@@ -943,7 +1520,6 @@
                 });
             }
 
-            // صف أيام الأسبوع الرأسي الممتد لـ 36 عموداً
             const baseStartDow = minStartDow;
             const TOTAL_COLUMNS = 36;
             const colWeekdays = [];
@@ -952,7 +1528,6 @@
                 colWeekdays.push(dow);
             }
 
-            // بناء رأس الجدول (Thead)
             let headHtml = `<tr class="bg-cyan-50 border-b-2 border-slate-900 h-16 sm:h-20">`;
             const monthHeaderTitle = dirRTL ? 'الشـهــــــــــــر' : 'Month';
             headHtml += `<th class="w-28 sm:w-36 px-1 border-r border-l border-slate-900 bg-cyan-100/90 font-extrabold text-xs sm:text-sm text-slate-800">${monthHeaderTitle}</th>`;
@@ -975,9 +1550,8 @@
             headHtml += `</tr>`;
             tableHead.innerHTML = headHtml;
 
-            // بناء صفوف الأشهر الـ 12 (Tbody)
             let bodyHtml = '';
-            monthsData.forEach((mInfo, mIdx) => {
+            monthsData.forEach((mInfo) => {
                 const mNumber = mInfo.monthNum;
                 let monthTitle, subTitle1, subTitle2;
 
@@ -999,13 +1573,9 @@
                     subTitle2 = (hStart.month !== hEnd.month) ? `${shName2} ${hEnd.year}` : '';
                 }
 
-                // حساب إزاحة عمود البداية
                 let startOffset = (mInfo.startDow - baseStartDow + 7) % 7;
-
-                // تم إلغاء خط الفصل الموحد على مستوى الصف؛ ليتم حسابه يومياً لكل خلية بدقة فلكية
                 bodyHtml += `<tr class="border-b-2 border-slate-800 cal-row hover:bg-slate-50/50 transition">`;
 
-                // عمود اسم الشهر - موسط أفقياً ورأسياً بالكامل مع تمييز فصل بداية الشهر
                 const monthInitialSeasonClass = getSeasonClassForDate(mInfo.startDate);
                 bodyHtml += `
                     <td class="border-r border-l border-slate-900 bg-white px-1 py-0.5 text-center align-middle ${monthInitialSeasonClass}">
@@ -1019,7 +1589,6 @@
                     </td>
                 `;
 
-                // أعمدة الأيام الـ 36
                 for (let colIdx = 0; colIdx < TOTAL_COLUMNS; colIdx++) {
                     const dayNumber = colIdx - startOffset + 1;
                     const dow = colWeekdays[colIdx];
@@ -1029,8 +1598,6 @@
                         const jd = mInfo.startJd + (dayNumber - 1);
                         const gDateVal = julianToGregorian(jd);
                         const hDateVal = julianToHijri(jd);
-
-                        // تحديد فصل السنة الفلكي الدقيق لهذا اليوم بالذات
                         const daySeasonClass = getSeasonClassForDate(gDateVal);
 
                         let primaryNum = dayNumber;
@@ -1048,19 +1615,13 @@
                             const isFirstGreg = (gDateVal.getMonth() === mInfo.startDate.getMonth());
                             secondaryColor = isFirstGreg ? 'text-blue-700' : 'text-rose-700';
 
-                            // 1. حساب وتحديد يوم صرف الراتب الفعلي فقط
                             const actualSalaryDay = getActualSalaryDayForMonth(gDateVal.getFullYear(), gDateVal.getMonth());
                             if (gDateVal.getDate() === actualSalaryDay) {
                                 isSalaryDay = true;
                             }
 
-                            // 2. اليوم الوطني والتأسيس
                             if (checkSaudiNationalBridgingHoliday(gDateVal)) isNationalHoliday = true;
-
-                            // 3. الأعياد
                             if (eidJdRanges.some(r => jd >= r.start && jd <= r.end)) isEidHoliday = true;
-
-                            // 4. إجازات الطلاب والعطل الدراسية
                             if (schoolJdRanges.some(r => jd >= r.start && jd <= r.end)) isSchoolHoliday = true;
 
                         } else {
@@ -1077,23 +1638,20 @@
                             if (schoolJdRanges.some(r => jd >= r.start && jd <= r.end)) isSchoolHoliday = true;
                         }
 
-                        // فحص المناسبات المخصصة
                         state.customEvents.forEach(evt => {
                             if (evt.month === mNumber && dayNumber >= evt.startDay && dayNumber <= evt.endDay) {
                                 isCustomHoliday = true;
                             }
                         });
 
-                        // تطبيق الألوان: عطلات نهاية الأسبوع تظل ثابتة بلونها الخاص دائماً ولا تتغير بأي إجازة
+                        // الحفاظ على لون عطل نهاية الأسبوع ثابتاً دائماً
                         let cellBg = '#ffffff';
                         let textColor = 'text-slate-950 font-black';
 
                         if (isWk) {
-                            // عطلة نهاية الأسبوع تحتفظ بلونها الثابت دائماً
                             cellBg = state.colors.weekend;
                             textColor = 'text-amber-950 font-black';
                         } else {
-                            // تلوين الإجازات والمناسبات لأيام العمل الرسمية فقط (من الأحد إلى الخميس)
                             if (isSalaryDay) {
                                 cellBg = state.colors.salary;
                                 textColor = 'text-white font-black';
@@ -1126,7 +1684,6 @@
                             </td>
                         `;
                     } else {
-                        // خلية فارغة خارج نطاق الشهر
                         const bgEmpty = isWk ? `style="background-color: ${state.colors.weekend}; opacity: 0.5;"` : `class="bg-slate-50/70"`;
                         bodyHtml += `<td ${bgEmpty} class="border-r border-l border-slate-200 p-0"></td>`;
                     }
@@ -1136,14 +1693,9 @@
             });
 
             tableBody.innerHTML = bodyHtml;
-
-            // بناء شريط دليل الألوان (Legend)
             renderLegend(dirRTL);
         }
 
-        /* =========================================================================
-           بناء وتحديث دليل الألوان (Legend)
-           ========================================================================= */
         function renderLegend(dirRTL) {
             const legendBar = document.getElementById('legendBar');
             const l = (ar, en) => dirRTL ? ar : en;
@@ -1192,45 +1744,35 @@
             `;
         }
 
-        /* =========================================================================
-           إدارة الأحداث والتفاعل (Event Listeners)
-           ========================================================================= */
+        window.applyLoadedState = function() {
+            document.getElementById('inputYear').value = state.year;
+            document.getElementById('txtHeaderNames').textContent = state.headerNames;
+            document.getElementById('txtHeaderOrg').textContent = state.headerOrg;
+            if (state.logoData) {
+                const img = document.getElementById('imgLogo');
+                img.src = state.logoData;
+                img.classList.remove('hidden');
+            } else {
+                document.getElementById('imgLogo').classList.add('hidden');
+            }
+            renderCalendar();
+        };
+
+        // أحداث وتفاعل الصفحة
         document.addEventListener('DOMContentLoaded', () => {
 
-            // استرجاع الإعدادات المحفوظة إن وجدت
-            try {
-                const savedState = localStorage.getItem('calendar_app_config');
-                if (savedState) {
-                    const parsed = JSON.parse(savedState);
-                    Object.assign(state, parsed);
-                    document.getElementById('inputYear').value = state.year;
-                    document.getElementById('txtHeaderNames').textContent = state.headerNames;
-                    document.getElementById('txtHeaderOrg').textContent = state.headerOrg;
-                    if (state.logoData) {
-                        const img = document.getElementById('imgLogo');
-                        img.src = state.logoData;
-                        img.classList.remove('hidden');
-                    }
-                }
-            } catch(e) { console.error(e); }
-
-            // 1. أزرار السنة
+            // أزرار السنة
             document.getElementById('btnPrevYear').addEventListener('click', () => {
-                state.year = parseInt(state.year) - 1;
-                document.getElementById('inputYear').value = state.year;
-                renderCalendar();
+                switchAndLoadYear(parseInt(state.year) - 1);
             });
             document.getElementById('btnNextYear').addEventListener('click', () => {
-                state.year = parseInt(state.year) + 1;
-                document.getElementById('inputYear').value = state.year;
-                renderCalendar();
+                switchAndLoadYear(parseInt(state.year) + 1);
             });
             document.getElementById('inputYear').addEventListener('change', (e) => {
-                state.year = parseInt(e.target.value) || 1448;
-                renderCalendar();
+                switchAndLoadYear(parseInt(e.target.value) || 1448);
             });
 
-            // 2. نوع التقويم
+            // نوع التقويم
             const btnH = document.getElementById('btnModeHijri');
             const btnG = document.getElementById('btnModeGreg');
             btnH.addEventListener('click', () => {
@@ -1239,6 +1781,7 @@
                 document.getElementById('inputYear').value = state.year;
                 btnH.className = 'px-2.5 py-1 rounded font-bold transition text-xs bg-[#009bb0] text-white';
                 btnG.className = 'px-2.5 py-1 rounded font-bold transition text-xs text-slate-300 hover:text-white';
+                saveCurrentYearState();
                 renderCalendar();
             });
             btnG.addEventListener('click', () => {
@@ -1247,18 +1790,20 @@
                 document.getElementById('inputYear').value = state.year;
                 btnG.className = 'px-2.5 py-1 rounded font-bold transition text-xs bg-[#009bb0] text-white';
                 btnH.className = 'px-2.5 py-1 rounded font-bold transition text-xs text-slate-300 hover:text-white';
+                saveCurrentYearState();
                 renderCalendar();
             });
 
-            // 3. تبديل اللغة
+            // تبديل اللغة
             const btnLang = document.getElementById('btnToggleLang');
             btnLang.addEventListener('click', () => {
                 state.lang = (state.lang === 'ar') ? 'en' : 'ar';
                 btnLang.textContent = (state.lang === 'ar') ? '🌐 English (LTR)' : '🌐 العربية (RTL)';
+                saveCurrentYearState();
                 renderCalendar();
             });
 
-            // 4. مقاسات العرض والطباعة
+            // مقاسات الطباعة
             const printBox = document.getElementById('printArea');
             document.getElementById('btnSizeA4').addEventListener('click', () => {
                 printBox.style.maxWidth = '1120px';
@@ -1273,18 +1818,14 @@
                 printBox.classList.add('w-full');
             });
 
-            // 5. زر الطباعة / حفظ PDF
             document.getElementById('btnPrint').addEventListener('click', () => {
                 window.print();
             });
 
-            // =========================================================================
-            // نوافذ الإعدادات (Modals Logic)
-            // =========================================================================
-
-            // نافذة الإجازات والرواتب
+            // نافذة الإجازات للسنة الحالية
             const modalRules = document.getElementById('modalRules');
             document.getElementById('btnOpenRulesModal').addEventListener('click', () => {
+                document.getElementById('txtRulesYearBadge').textContent = state.year;
                 document.getElementById('cfgSalaryDay').value = state.salaryDay;
                 document.getElementById('cfgWeekendMode').value = state.weekendOption;
                 document.getElementById('cfgEnableBridging').checked = state.enableBridging;
@@ -1302,9 +1843,7 @@
                 modalRules.classList.remove('hidden');
             });
 
-            document.getElementById('btnCloseRules').addEventListener('click', () => {
-                modalRules.classList.add('hidden');
-            });
+            document.getElementById('btnCloseRules').addEventListener('click', () => modalRules.classList.add('hidden'));
 
             document.getElementById('btnAddSchoolHoliday').addEventListener('click', () => {
                 if (!Array.isArray(state.schoolHolidays)) state.schoolHolidays = [];
@@ -1324,7 +1863,7 @@
                 container.innerHTML = '';
                 
                 if (!Array.isArray(state.schoolHolidays) || state.schoolHolidays.length === 0) {
-                    container.innerHTML = '<div class="text-xs text-amber-800 p-2 text-center bg-white rounded border border-amber-200">لا توجد إجازات دراسية مضافة حالياً. اضغط على "+ إضافة إجازة دراسية" لإضافة إجازة.</div>';
+                    container.innerHTML = '<div class="text-xs text-amber-800 p-2 text-center bg-white rounded border border-amber-200">لا توجد إجازات دراسية مضافة حالياً.</div>';
                     return;
                 }
 
@@ -1381,36 +1920,18 @@
                 state.adhaStartDay = parseInt(document.getElementById('cfgAdhaDay').value);
                 state.adhaDays = parseInt(document.getElementById('cfgAdhaDays').value);
 
-                saveStateLocally();
+                saveCurrentYearState();
                 renderCalendar();
                 modalRules.classList.add('hidden');
             });
 
             document.getElementById('btnResetRules').addEventListener('click', () => {
-                state.salaryDay = 27;
-                state.salaryWeekendAdjust = true;
-                state.weekendOption = 'fri_sat';
-                state.enableBridging = true;
-                state.fitrStartMonth = 9;
-                state.fitrStartDay = 25;
-                state.fitrDays = 12;
-                state.adhaStartMonth = 12;
-                state.adhaStartDay = 5;
-                state.adhaDays = 12;
-                state.schoolHolidays = [
-                    { id: 1, title: 'إجازة الخريف', startMonth: 5, startDay: 14, days: 10 },
-                    { id: 2, title: 'إجازة منتصف العام الدراسي', startMonth: 7, startDay: 20, days: 9 },
-                    { id: 3, title: 'إجازة مطولة 1', startMonth: 3, startDay: 18, days: 4 },
-                    { id: 4, title: 'إجازة مطولة 2', startMonth: 8, startDay: 12, days: 4 },
-                    { id: 5, title: 'إجازة نهاية العام الدراسي', startMonth: 12, startDay: 16, days: 15 }
-                ];
-                state.customEvents = [];
-                saveStateLocally();
+                Object.assign(state, JSON.parse(JSON.stringify(DEFAULT_SYSTEM_CONFIG)));
+                saveCurrentYearState();
                 renderCalendar();
                 modalRules.classList.add('hidden');
             });
 
-            // إضافة وتعديل المناسبات الخاصة
             document.getElementById('btnAddCustomEvent').addEventListener('click', () => {
                 state.customEvents.push({
                     title: 'مناسبة خاصة',
@@ -1478,25 +1999,14 @@
                 state.colors.autumn = document.getElementById('clrAutumn').value;
                 state.colors.winter = document.getElementById('clrWinter').value;
                 state.colors.spring = document.getElementById('clrSpring').value;
-                saveStateLocally();
+                saveCurrentYearState();
                 renderCalendar();
                 modalColors.classList.add('hidden');
             });
 
             document.getElementById('btnResetColors').addEventListener('click', () => {
-                state.colors = {
-                    header: '#009bb0',
-                    salary: '#6b7280',
-                    national: '#059669',
-                    eid: '#cbd5e1',
-                    weekend: '#fef3c7',
-                    school: '#fed7aa',
-                    summer: '#f97316',
-                    autumn: '#dc2626',
-                    winter: '#2563eb',
-                    spring: '#10b981'
-                };
-                saveStateLocally();
+                state.colors = JSON.parse(JSON.stringify(DEFAULT_SYSTEM_CONFIG.colors));
+                saveCurrentYearState();
                 renderCalendar();
                 modalColors.classList.add('hidden');
             });
@@ -1540,35 +2050,25 @@
                 state.headerOrg = document.getElementById('inputHeaderOrg').value;
                 document.getElementById('txtHeaderNames').textContent = state.headerNames;
                 document.getElementById('txtHeaderOrg').textContent = state.headerOrg;
-                saveStateLocally();
+                saveCurrentYearState();
                 modalHeader.classList.add('hidden');
             });
 
-            function saveStateLocally() {
-                try {
-                    localStorage.setItem('calendar_app_config', JSON.stringify(state));
-                } catch(e) { console.error(e); }
-            }
-
-            /* =========================================================================
-               ميزة تصدير واستيراد النسخة الاحتياطية (Backup Export & Import)
-               ========================================================================= */
-            // 1. تصدير الإعدادات كملف JSON
+            // التصدير والاستيراد لسنة محددة
             document.getElementById('btnExportBackup').addEventListener('click', () => {
                 try {
                     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
                     const downloadAnchor = document.createElement('a');
                     downloadAnchor.setAttribute("href", dataStr);
-                    downloadAnchor.setAttribute("download", `calendar_backup_${state.year}.json`);
+                    downloadAnchor.setAttribute("download", `calendar_year_${state.year}_backup.json`);
                     document.body.appendChild(downloadAnchor);
                     downloadAnchor.click();
                     downloadAnchor.remove();
                 } catch(err) {
-                    console.error("خطأ في تصدير النسخة الاحتياطية:", err);
+                    console.error("Export error:", err);
                 }
             });
 
-            // 2. استيراد الإعدادات من ملف JSON
             document.getElementById('inputFileBackup').addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -1579,38 +2079,19 @@
                         const importedState = JSON.parse(event.target.result);
                         if (importedState && typeof importedState === 'object') {
                             Object.assign(state, importedState);
-                            
-                            // حفظ البيانات محلياً
-                            saveStateLocally();
-
-                            // تحديث عناصر الواجهة
-                            document.getElementById('inputYear').value = state.year;
-                            document.getElementById('txtHeaderNames').textContent = state.headerNames || '';
-                            document.getElementById('txtHeaderOrg').textContent = state.headerOrg || '';
-                            
-                            const img = document.getElementById('imgLogo');
-                            if (state.logoData) {
-                                img.src = state.logoData;
-                                img.classList.remove('hidden');
-                            } else {
-                                img.src = '';
-                                img.classList.add('hidden');
-                            }
-
-                            // إعادة رسم وتطبيق التقويم فوراً
-                            renderCalendar();
+                            saveCurrentYearState();
+                            window.applyLoadedState();
                         }
                     } catch (err) {
-                        console.error("فشل قراءة ملف النسخة الاحتياطية:", err);
+                        console.error("Backup parse error:", err);
                     }
-                    // تصفير مدخل الملف ليسمح بإعادة اختيار نفس الملف إذا لزم
                     e.target.value = '';
                 };
                 reader.readAsText(file);
             });
 
-            // تشغيل وتوليد الجدول أول مرة
-            renderCalendar();
+            // بدء تشغيل السنة المحددة
+            switchAndLoadYear(1448);
         });
     </script>
 </body>
