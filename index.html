@@ -40,16 +40,20 @@
         /* إعدادات الطباعة الدقيقة لورقة واحدة فقط A4 أو A3 بالعرض */
         @page {
             size: landscape;
-            margin: 4mm !important;
+            margin: 0 !important;
         }
 
         @media print {
+            @page {
+                size: landscape;
+                margin: 0 !important;
+            }
             html, body {
                 background: #ffffff !important;
                 padding: 0 !important;
                 margin: 0 !important;
-                width: 100% !important;
-                height: 100% !important;
+                width: 100vw !important;
+                height: 100vh !important;
                 overflow: hidden !important;
             }
             .no-print {
@@ -59,11 +63,11 @@
                 box-shadow: none !important;
                 border: 2px solid #0f172a !important;
                 padding: 0 !important;
-                margin: 0 !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                height: calc(100vh - 8mm) !important;
-                max-height: calc(100vh - 8mm) !important;
+                margin: 0 auto !important;
+                width: 100vw !important;
+                max-width: 100vw !important;
+                height: 100vh !important;
+                max-height: 100vh !important;
                 display: flex !important;
                 flex-direction: column !important;
                 justify-content: space-between !important;
@@ -74,8 +78,8 @@
             #headerBar {
                 padding-top: 3px !important;
                 padding-bottom: 3px !important;
-                height: 34px !important;
-                flex: 0 0 34px !important;
+                height: 36px !important;
+                flex: 0 0 36px !important;
             }
             #headerBar h1, #headerBar div {
                 font-size: 13px !important;
@@ -86,7 +90,7 @@
                 display: flex !important;
                 flex-direction: column !important;
                 overflow: hidden !important;
-                height: calc(100% - 62px) !important;
+                height: calc(100vh - 68px) !important;
             }
             table {
                 width: 100% !important;
@@ -95,21 +99,21 @@
                 table-layout: fixed !important;
             }
             thead {
-                height: 48px !important;
-                flex: 0 0 48px !important;
+                height: 44px !important;
+                flex: 0 0 44px !important;
             }
             thead tr {
-                height: 48px !important;
+                height: 44px !important;
             }
             tbody {
-                height: calc(100% - 48px) !important;
+                height: calc(100% - 44px) !important;
             }
             tbody tr {
-                height: calc((100% - 48px) / 12) !important;
+                height: calc((100% - 44px) / 12) !important;
             }
             th, td {
                 padding: 0 !important;
-                line-height: 1.1 !important;
+                line-height: 1.05 !important;
                 vertical-align: middle !important;
             }
             .vertical-text {
@@ -118,11 +122,11 @@
                 letter-spacing: normal !important;
             }
             #legendBar {
-                padding: 2px 4px !important;
+                padding: 2px 6px !important;
                 font-size: 9.5px !important;
-                height: 26px !important;
-                min-height: 26px !important;
-                flex: 0 0 26px !important;
+                height: 28px !important;
+                min-height: 28px !important;
+                flex: 0 0 28px !important;
                 gap: 8px !important;
             }
             #legendBar span {
@@ -143,7 +147,7 @@
 
         @media print {
             .cal-row {
-                height: calc((100% - 48px) / 12) !important;
+                height: calc((100% - 44px) / 12) !important;
             }
         }
 
@@ -158,6 +162,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
 
+    <!-- شريط التحكم العلوي -->
     <header class="no-print bg-slate-900 text-white shadow-md sticky top-0 z-40 border-b border-slate-700">
         <div class="max-w-7xl mx-auto px-3 py-2 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
             
@@ -187,24 +192,19 @@
                 <!-- قسم حساب المستخدم السحابي -->
                 <div id="userAccountSection" class="flex items-center bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700 gap-1.5">
                     <span id="userStatusBadge" class="text-xs font-semibold text-slate-300 flex items-center gap-1">
-                        <span id="userStatusDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
-                        <span id="txtUserLabel">زائر (غير مسجل)</span>
+                        <span id="userStatusDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                        <span id="txtUserLabel">السحابة متصلة</span>
                     </span>
-                    <button id="btnOpenProfileModal" class="px-2 py-0.5 bg-slate-700 hover:bg-slate-600 text-cyan-300 rounded font-bold text-xs transition hidden" title="عرض وتعديل الملف الشخصي ورقم الجوال">
+                    <button id="btnOpenProfileModal" class="px-2 py-0.5 bg-slate-700 hover:bg-slate-600 text-cyan-300 rounded font-bold text-xs transition hidden" title="الملف الشخصي ورقم الجوال">
                         👤 حسابي
                     </button>
-                    <button id="btnOpenAuthModal" class="px-2 py-0.5 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold text-xs transition">
-                        تسجيل الدخول / المدير
+                    <button id="btnOpenAuthModal" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold text-xs transition">
+                        🔑 دخول المدير / المستخدمين
                     </button>
                     <button id="btnLogout" class="px-2 py-0.5 bg-red-600 hover:bg-red-500 text-white rounded font-bold text-xs transition hidden">
                         خروج
                     </button>
                 </div>
-
-                <!-- زر إعداد قاعدة البيانات السحابية -->
-                <button id="btnOpenDbModal" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-amber-300 rounded-lg font-semibold transition text-xs flex items-center gap-1" title="إعداد وربط قاعدة بيانات Firebase">
-                    <span>⚡ ربط السحابة</span>
-                </button>
 
                 <!-- زر إعداد الترويسة والشعار -->
                 <button id="btnOpenHeaderModal" class="px-2.5 py-1 bg-teal-700 hover:bg-teal-600 rounded-lg font-semibold transition text-xs flex items-center gap-1">
@@ -216,12 +216,12 @@
                     <span>🎨 ألوان المناسبات</span>
                 </button>
 
-                <!-- زر إعداد الإجازات والأعياد والمناسبات للسنة المحددة -->
+                <!-- زر إعداد الإجازات لسنة محددة -->
                 <button id="btnOpenRulesModal" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold transition text-xs flex items-center gap-1 ring-2 ring-indigo-400">
                     <span>⚙️ إجازات السنة الحالية</span>
                 </button>
 
-                <!-- زرا تصدير واستيراد النسخة الاحتياطية للسنة الحالية -->
+                <!-- زرا تصدير واستيراد النسخة الاحتياطية -->
                 <button id="btnExportBackup" class="px-2.5 py-1 bg-blue-700 hover:bg-blue-600 rounded-lg font-semibold transition text-xs flex items-center gap-1" title="تصدير وحفظ إعدادات هذه السنة كملف احتياطي">
                     <span>💾 تصدير</span>
                 </button>
@@ -245,12 +245,12 @@
         </div>
     </header>
 
+    <!-- منطقة المعاينة والطباعة -->
     <main class="flex-1 flex justify-center items-start p-2 sm:p-4 overflow-auto">
         <div id="printArea" class="bg-white text-slate-900 border-2 border-slate-900 shadow-2xl mx-auto transition-all" style="width: 100%; max-width: 1440px;">
             
             <!-- الشريط العلوي الفيروزي المميز للتقويم -->
             <div id="headerBar" class="w-full flex items-center justify-between px-3 py-1.5 text-white font-bold select-none border-b-2 border-slate-900" style="background-color: #009bb0;">
-                <!-- الجهة والأسماء والشعار (يمين بالعربي / يسار بالإنجليزي) -->
                 <div class="flex items-center gap-2.5">
                     <img id="imgLogo" src="" alt="شعار" class="h-9 w-auto object-contain hidden bg-white/20 p-0.5 rounded border border-white/40">
                     <div class="leading-tight text-right" id="headerTitlesBox">
@@ -280,6 +280,7 @@
         </div>
     </main>
 
+    <!-- نافذة تسجيل الدخول للمدير والمستخدمين -->
     <div id="modalAuth" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-300 overflow-hidden text-right">
             <div class="bg-blue-800 text-white px-4 py-3 flex justify-between items-center">
@@ -290,36 +291,34 @@
             </div>
 
             <div class="p-4 space-y-3.5 text-xs sm:text-sm">
-                <!-- زر التعبئة التلقائية السريعة لمدير النظام -->
-                <div class="bg-amber-50 p-2.5 rounded-lg border border-amber-300 flex items-center justify-between">
-                    <div>
-                        <div class="font-bold text-amber-950">👑 حساب مدير النظام:</div>
-                        <div class="text-[11px] text-amber-900 font-semibold">حسين يوسف الشهيب (halshuhiyb)</div>
+                <!-- زر الدخول السريع المعتمد لمدير النظام -->
+                <div class="bg-amber-50 p-3 rounded-lg border border-amber-300 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="font-bold text-amber-950 text-xs sm:text-sm">👑 حساب مدير النظام:</div>
+                            <div class="text-[11px] text-amber-900 font-bold">حسين يوسف الشهيب (halshuhiyb)</div>
+                        </div>
+                        <button id="btnQuickFillAdmin" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded font-bold text-xs transition shadow-sm">
+                            تعبئة بياناتي
+                        </button>
                     </div>
-                    <button id="btnQuickFillAdmin" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded font-bold text-xs transition shadow-sm">
-                        تعبئة بياناتي
-                    </button>
                 </div>
 
-                <!-- تبويبات التبديل بين الدخول والاشتراك -->
                 <div class="flex border-b pb-2 gap-2 text-center">
                     <button id="tabLogin" class="flex-1 py-1.5 font-bold rounded-lg bg-blue-50 text-blue-800 border border-blue-200">تسجيل الدخول</button>
                     <button id="tabRegister" class="flex-1 py-1.5 font-semibold text-slate-600 hover:bg-slate-50 rounded-lg">إنشاء حساب جديد</button>
                 </div>
 
-                <!-- رسالة الحالة / التنبيهات -->
                 <div id="authNotice" class="hidden p-2 rounded text-xs font-semibold"></div>
 
-                <!-- حقل اسم المستخدم (يظهر عند التسجيل) -->
                 <div id="authFieldDisplayName" class="hidden space-y-1">
                     <label class="block font-semibold text-slate-700">الاسم الكامل: <span class="text-red-500">*</span></label>
                     <input id="inputAuthDisplayName" type="text" class="w-full p-2 border rounded font-bold text-xs" placeholder="مثلاً: حسين يوسف الشهيب">
                 </div>
 
-                <!-- حقل رقم الجوال الإلزامي (يظهر عند التسجيل) -->
                 <div id="authFieldPhone" class="hidden space-y-1">
                     <label class="block font-semibold text-slate-700">رقم الجوال: <span class="text-red-500">* (إلزامي للتوثيق والتواصل)</span></label>
-                    <input id="inputAuthPhone" type="tel" dir="ltr" class="w-full p-2 border rounded font-bold text-xs text-left" placeholder="0500686807">
+                    <input id="inputAuthPhone" type="tel" dir="ltr" class="w-full p-2 border rounded font-bold text-xs text-left" placeholder="0500686806">
                 </div>
 
                 <div class="space-y-1">
@@ -345,69 +344,17 @@
         </div>
     </div>
 
-    <div id="modalDb" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full border border-slate-300 overflow-hidden text-right">
-            <div class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center">
-                <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">
-                    <span>⚡ إعدادات وربط قاعدة البيانات السحابية (Firebase)</span>
-                </h3>
-                <button id="btnCloseDb" class="text-white hover:text-red-200 text-lg font-bold">✕</button>
-            </div>
-
-            <div class="p-4 space-y-3 text-xs sm:text-sm">
-                <div class="p-2.5 bg-blue-50 rounded-lg border border-blue-200 text-blue-950 text-xs leading-relaxed">
-                    🔹 <strong>حالة الاتصال:</strong> <span id="txtDbConnectionStatus" class="font-bold text-emerald-700">جاهز / متصل</span><br>
-                    يمكنك لصق إعدادات مشروع Firebase الخاص بك هنا لربط الموقع تلقائياً وحفظ إعدادات كل سنة لكل مستخدم في السحابة.
-                </div>
-
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">بيانات إعداد Firebase (JSON Config):</label>
-                    <textarea id="txtFirebaseConfigInput" rows="6" dir="ltr" class="w-full p-2 border rounded font-mono text-xs bg-slate-50 text-left" placeholder='{
-  "apiKey": "AIzaSy...",
-  "authDomain": "your-app.firebaseapp.com",
-  "projectId": "your-app",
-  "storageBucket": "your-app.appspot.com",
-  "messagingSenderId": "...",
-  "appId": "..."
-}'></textarea>
-                </div>
-
-                <div id="dbNotice" class="hidden p-2 rounded text-xs font-semibold text-center"></div>
-
-                <div class="flex justify-between items-center pt-2 border-t">
-                    <button id="btnResetDbConfig" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 rounded font-semibold text-xs">
-                        استعادة الافتراضي
-                    </button>
-                    <button id="btnSaveDbConfig" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold text-xs transition">
-                        حفظ وربط قاعدة البيانات
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- نافذة الملف الشخصي -->
     <div id="modalProfile" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-300 overflow-hidden text-right">
             <div class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center">
                 <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">
-                    <span>👤 بيانات المستخدم والملف الشخصي</span>
+                    <span>👤 بيانات الملف الشخصي</span>
                 </h3>
                 <button id="btnCloseProfile" class="text-white hover:text-red-200 text-lg font-bold">✕</button>
             </div>
 
             <div class="p-4 space-y-3.5 text-xs sm:text-sm">
-                <!-- شارة حالة توثيق البريد الإلكتروني -->
-                <div id="boxEmailVerificationStatus" class="p-2.5 rounded-lg border flex flex-col gap-1.5">
-                    <div class="flex items-center justify-between">
-                        <span class="font-bold">حالة البريد الإلكتروني:</span>
-                        <span id="badgeEmailVerified" class="px-2 py-0.5 rounded text-[11px] font-extrabold"></span>
-                    </div>
-                    <p id="txtEmailVerificationHelp" class="text-[11px] leading-relaxed text-slate-600"></p>
-                    <button id="btnResendVerification" class="mt-1 w-full py-1 bg-amber-600 hover:bg-amber-700 text-white rounded text-xs font-bold transition hidden">
-                        📩 إعادة إرسال رابط التحقق إلى البريد
-                    </button>
-                </div>
-
                 <div class="space-y-1">
                     <label class="block font-semibold text-slate-700">الاسم الكامل:</label>
                     <input id="profDisplayName" type="text" class="w-full p-2 border rounded font-bold text-xs">
@@ -419,11 +366,9 @@
                 </div>
 
                 <div class="space-y-1">
-                    <label class="block font-semibold text-slate-700">رقم الجوال المسجل: <span class="text-red-500">*</span></label>
-                    <input id="profPhone" type="tel" dir="ltr" class="w-full p-2 border rounded font-bold text-xs text-left" placeholder="0500686806">
+                    <label class="block font-semibold text-slate-700">رقم الجوال المسجل:</label>
+                    <input id="profPhone" type="tel" dir="ltr" class="w-full p-2 border rounded font-bold text-xs text-left" placeholder="0500686807">
                 </div>
-
-                <div id="profNotice" class="hidden p-2 rounded text-xs font-semibold text-center"></div>
 
                 <div class="pt-2 border-t flex justify-end gap-2">
                     <button id="btnSaveProfile" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-lg text-xs transition">
@@ -434,6 +379,7 @@
         </div>
     </div>
 
+    <!-- نافذة إعداد الإجازات -->
     <div id="modalRules" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-slate-300 overflow-hidden text-right">
             <div class="bg-indigo-700 text-white px-4 py-2.5 flex justify-between items-center">
@@ -445,9 +391,8 @@
             
             <div class="p-4 overflow-y-auto space-y-4 text-xs sm:text-sm">
                 
-                <!-- تنبيه فصل السنوات -->
                 <div class="bg-blue-50 border border-blue-200 p-2.5 rounded-lg text-blue-900 text-xs">
-                    💡 <strong>نظام السنوات المستقل:</strong> كافة التعديلات في هذه النافذة تخص هذه السنة فقط وتُحفظ مستقلاً دون التأثير على السنوات الأخرى!
+                    💡 <strong>نظام السنوات المستقل:</strong> التعديلات هنا تخص هذه السنة فقط وتُحفظ مستقلاً في السحابة دون التأثير على السنوات الأخرى!
                 </div>
 
                 <!-- 1. يوم صرف الراتب وقاعدة العطلة -->
@@ -567,7 +512,6 @@
 
             </div>
 
-            <!-- أزرار الحفظ والإغلاق -->
             <div class="bg-slate-100 p-3 border-t flex justify-end gap-2">
                 <button id="btnResetRules" class="px-3 py-1.5 bg-slate-300 hover:bg-slate-400 rounded text-slate-800 font-bold text-xs">استعادة الافتراضي</button>
                 <button id="btnSaveRules" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold text-xs">حفظ وتطبيق لهذه السنة</button>
@@ -575,6 +519,7 @@
         </div>
     </div>
 
+    <!-- نافذة الألوان -->
     <div id="modalColors" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col border border-slate-300 overflow-hidden text-right">
             <div class="bg-purple-800 text-white px-4 py-2.5 flex justify-between items-center">
@@ -640,6 +585,7 @@
         </div>
     </div>
 
+    <!-- نافذة الترويسة والشعار -->
     <div id="modalHeader" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-4 border border-slate-300 text-right space-y-3">
             <div class="flex justify-between items-center border-b pb-2">
@@ -671,26 +617,36 @@
         </div>
     </div>
 
+    <!-- Firebase SDK v10 Modular -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { 
             getAuth, 
-            signInWithCustomToken, 
-            signInAnonymously, 
-            createUserWithEmailAndPassword, 
             signInWithEmailAndPassword, 
-            sendEmailVerification,
+            createUserWithEmailAndPassword, 
+            sendEmailVerification, 
             signOut, 
             onAuthStateChanged 
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { 
             getFirestore, 
             doc, 
             getDoc, 
             setDoc 
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        // بيانات اعتماد مدير النظام الأساسية المدمجة
+        // بيانات مشروع Firebase المعتمدة
+        const firebaseConfig = {
+            apiKey: "AIzaSyCYxws-WQHEh3X6xZTZ74BTpWjDM3zMiaY",
+            authDomain: "saudi-calendar-d3299.firebaseapp.com",
+            projectId: "saudi-calendar-d3299",
+            storageBucket: "saudi-calendar-d3299.firebasestorage.app",
+            messagingSenderId: "499774785279",
+            appId: "1:499774785279:web:a9b4f05c984e49419a6eca",
+            measurementId: "G-K7JCRM639H"
+        };
+
+        // حساب مدير النظام الأساسي
         window.ADMIN_ACCOUNT = {
             username: 'halshuhiyb',
             email: 'halshuhiyb@gmail.com',
@@ -699,89 +655,47 @@
             passwordHint: 'Hh@537573'
         };
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'hijri-calendar-app';
-        let app = null;
-        let db = null;
-        let auth = null;
+        let app, auth, db;
         let currentUser = null;
         let userProfileData = {
             displayName: window.ADMIN_ACCOUNT.displayName,
             phone: window.ADMIN_ACCOUNT.phone,
-            email: window.ADMIN_ACCOUNT.email,
-            createdAt: ''
+            email: window.ADMIN_ACCOUNT.email
         };
 
-        // فحص إعدادات Firebase المخزنة أو البيئية
-        function getActiveFirebaseConfig() {
-            try {
-                const stored = localStorage.getItem('user_firebase_config');
-                if (stored) return JSON.parse(stored);
-            } catch(e) {}
-            if (typeof __firebase_config !== 'undefined') {
-                try {
-                    return JSON.parse(__firebase_config);
-                } catch(e) {}
-            }
-            return null;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            console.log("Firebase initialized successfully.");
+        } catch (e) {
+            console.error("Firebase init error:", e);
         }
 
-        async function initFirebaseSystem() {
-            const config = getActiveFirebaseConfig();
-            if (config && config.apiKey) {
-                try {
-                    app = initializeApp(config);
-                    auth = getAuth(app);
-                    db = getFirestore(app);
-
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token).catch(() => signInAnonymously(auth));
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-
-                    document.getElementById('txtDbConnectionStatus').textContent = '✓ متصل بنجاح بالسحابة';
-                    document.getElementById('txtDbConnectionStatus').className = 'font-bold text-emerald-600';
-                } catch(e) {
-                    console.warn('Firebase init status:', e);
-                    document.getElementById('txtDbConnectionStatus').textContent = '⚠️ يعمل بنظام التخزين المحلي';
-                    document.getElementById('txtDbConnectionStatus').className = 'font-bold text-amber-600';
-                }
-            } else {
-                document.getElementById('txtDbConnectionStatus').textContent = '⚠️ لم يتم إدخال مفاتيح Firebase (يعمل محلياً)';
-                document.getElementById('txtDbConnectionStatus').className = 'font-bold text-slate-500';
-            }
-        }
-
-        await initFirebaseSystem();
-
+        // مراقبة حالة تسجيل الدخول
         if (auth) {
             onAuthStateChanged(auth, async (user) => {
                 currentUser = user;
-                const userBadge = document.getElementById('userStatusBadge');
-                const userStatusDot = document.getElementById('userStatusDot');
                 const userLabel = document.getElementById('txtUserLabel');
+                const userStatusDot = document.getElementById('userStatusDot');
                 const btnAuth = document.getElementById('btnOpenAuthModal');
                 const btnLogout = document.getElementById('btnLogout');
                 const btnProfile = document.getElementById('btnOpenProfileModal');
 
-                if (user && !user.isAnonymous) {
+                if (user) {
                     await loadUserProfile(user.uid);
-
-                    const displayName = userProfileData.displayName || user.displayName || user.email.split('@')[0];
-                    userLabel.textContent = `👤 ${displayName}`;
-                    userBadge.className = 'text-xs font-semibold text-emerald-400 flex items-center gap-1';
-                    userStatusDot.className = user.emailVerified ? 'w-2 h-2 rounded-full bg-emerald-400' : 'w-2 h-2 rounded-full bg-amber-400 animate-pulse';
-
+                    const nameToShow = userProfileData.displayName || user.displayName || user.email.split('@')[0];
+                    userLabel.textContent = `👤 ${nameToShow}`;
+                    userStatusDot.className = user.emailVerified ? 'w-2 h-2 rounded-full bg-emerald-400' : 'w-2 h-2 rounded-full bg-amber-400';
                     btnAuth.classList.add('hidden');
                     btnLogout.classList.remove('hidden');
                     btnProfile.classList.remove('hidden');
 
-                    // تحميل إعدادات السنة المحددة للمستخدم من السحابة
-                    await loadYearSettingsFromCloud(window.state.year);
+                    // مزامنة السنة الحالية من السحابة للمستخدم المسجل
+                    await window.loadYearSettingsFromCloud(window.state.year);
                 } else {
-                    userLabel.textContent = 'زائر (غير مسجل)';
-                    userBadge.className = 'text-xs font-semibold text-slate-300 flex items-center gap-1';
-                    userStatusDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+                    userLabel.textContent = 'السحابة متصلة';
+                    userStatusDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
                     btnAuth.classList.remove('hidden');
                     btnLogout.classList.add('hidden');
                     btnProfile.classList.add('hidden');
@@ -789,142 +703,97 @@
             });
         }
 
-        // حفظ إعدادات كل سنة بشكل مستقل تماماً في السحابة
+        // حفظ إعدادات كل سنة بشكل مستقل تماماً في Cloud Firestore
         window.saveYearSettingsToCloud = async function(year) {
             const yr = parseInt(year) || window.state.year;
-            if (!db || !currentUser || currentUser.isAnonymous) return;
+            if (!db) return;
+
+            const yearPayload = {
+                year: yr,
+                primaryMode: window.state.primaryMode,
+                salaryDay: window.state.salaryDay,
+                salaryWeekendAdjust: window.state.salaryWeekendAdjust,
+                weekendOption: window.state.weekendOption,
+                enableBridging: window.state.enableBridging,
+                fitrStartMonth: window.state.fitrStartMonth,
+                fitrStartDay: window.state.fitrStartDay,
+                fitrDays: window.state.fitrDays,
+                adhaStartMonth: window.state.adhaStartMonth,
+                adhaStartDay: window.state.adhaStartDay,
+                adhaDays: window.state.adhaDays,
+                schoolHolidays: window.state.schoolHolidays,
+                customEvents: window.state.customEvents,
+                headerNames: window.state.headerNames,
+                headerOrg: window.state.headerOrg,
+                logoData: window.state.logoData,
+                colors: window.state.colors,
+                updatedAt: new Date().toISOString()
+            };
+
             try {
-                // حفظ خاص بالسنة في مسار مستقل: year_{yr}
-                const userYearDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'years_data', `year_${yr}`);
-                const yearSpecificData = {
-                    year: yr,
-                    primaryMode: window.state.primaryMode,
-                    salaryDay: window.state.salaryDay,
-                    salaryWeekendAdjust: window.state.salaryWeekendAdjust,
-                    weekendOption: window.state.weekendOption,
-                    enableBridging: window.state.enableBridging,
-                    fitrStartMonth: window.state.fitrStartMonth,
-                    fitrStartDay: window.state.fitrStartDay,
-                    fitrDays: window.state.fitrDays,
-                    adhaStartMonth: window.state.adhaStartMonth,
-                    adhaStartDay: window.state.adhaStartDay,
-                    adhaDays: window.state.adhaDays,
-                    schoolHolidays: window.state.schoolHolidays,
-                    customEvents: window.state.customEvents,
-                    headerNames: window.state.headerNames,
-                    headerOrg: window.state.headerOrg,
-                    logoData: window.state.logoData,
-                    colors: window.state.colors,
-                    updatedAt: new Date().toISOString()
-                };
-                await setDoc(userYearDocRef, yearSpecificData, { merge: true });
-                console.log(`Cloud: Saved isolated settings for year ${yr}`);
+                if (currentUser) {
+                    const docRef = doc(db, 'users', currentUser.uid, 'years', `year_${yr}`);
+                    await setDoc(docRef, yearPayload, { merge: true });
+                }
+                // حفظ نسخة كمرجع عام لسنة التقويم
+                const publicRef = doc(db, 'public_years', `year_${yr}`);
+                await setDoc(publicRef, yearPayload, { merge: true });
+                console.log(`Cloud: Isolated year ${yr} saved successfully.`);
             } catch (err) {
-                console.error(`Error saving year ${yr} to cloud:`, err);
+                console.error(`Cloud save error for year ${yr}:`, err);
             }
         };
 
-        // تحميل إعدادات السنة المحددة من السحابة
+        // تحميل إعدادات السنة المحددة من Cloud Firestore
         window.loadYearSettingsFromCloud = async function(year) {
             const yr = parseInt(year) || window.state.year;
-            if (!db || !currentUser || currentUser.isAnonymous) return false;
+            if (!db) return false;
             try {
-                const userYearDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'years_data', `year_${yr}`);
-                const snap = await getDoc(userYearDocRef);
-                if (snap.exists()) {
+                let snap = null;
+                if (currentUser) {
+                    const userDocRef = doc(db, 'users', currentUser.uid, 'years', `year_${yr}`);
+                    snap = await getDoc(userDocRef);
+                }
+                if (!snap || !snap.exists()) {
+                    const publicRef = doc(db, 'public_years', `year_${yr}`);
+                    snap = await getDoc(publicRef);
+                }
+                if (snap && snap.exists()) {
                     const data = snap.data();
                     Object.assign(window.state, data);
                     window.applyLoadedState();
                     return true;
                 }
             } catch (err) {
-                console.error(`Error loading year ${yr} from cloud:`, err);
+                console.error(`Cloud load error for year ${yr}:`, err);
             }
             return false;
         };
 
-        async function saveUserProfile(uid, profile) {
-            if (!db || !uid) return;
-            try {
-                const profileRef = doc(db, 'artifacts', appId, 'users', uid, 'profile', 'info');
-                await setDoc(profileRef, {
-                    ...profile,
-                    updatedAt: new Date().toISOString()
-                }, { merge: true });
-            } catch(e) {
-                console.error('Error saving profile:', e);
-            }
-        }
-
         async function loadUserProfile(uid) {
             if (!db || !uid) return;
             try {
-                const profileRef = doc(db, 'artifacts', appId, 'users', uid, 'profile', 'info');
+                const profileRef = doc(db, 'users', uid, 'profile', 'info');
                 const snap = await getDoc(profileRef);
                 if (snap.exists()) {
                     userProfileData = snap.data();
-                } else if (currentUser) {
-                    userProfileData = {
-                        displayName: currentUser.displayName || window.ADMIN_ACCOUNT.displayName,
-                        phone: window.ADMIN_ACCOUNT.phone,
-                        email: currentUser.email || window.ADMIN_ACCOUNT.email,
-                        createdAt: new Date().toISOString()
-                    };
                 }
             } catch(e) {
-                console.error('Error loading profile:', e);
+                console.error("Profile load error:", e);
             }
         }
 
-        // نافذة ربط قاعدة البيانات Firebase
-        const modalDb = document.getElementById('modalDb');
-        const txtFirebaseConfigInput = document.getElementById('txtFirebaseConfigInput');
-        const dbNotice = document.getElementById('dbNotice');
-
-        document.getElementById('btnOpenDbModal').addEventListener('click', () => {
-            const currentCfg = getActiveFirebaseConfig();
-            if (currentCfg) {
-                txtFirebaseConfigInput.value = JSON.stringify(currentCfg, null, 2);
-            }
-            dbNotice.classList.add('hidden');
-            modalDb.classList.remove('hidden');
-        });
-
-        document.getElementById('btnCloseDb').addEventListener('click', () => modalDb.classList.add('hidden'));
-
-        document.getElementById('btnSaveDbConfig').addEventListener('click', async () => {
-            const rawVal = txtFirebaseConfigInput.value.trim();
-            if (!rawVal) {
-                localStorage.removeItem('user_firebase_config');
-                showDbNotice('تم مسح إعدادات السحابة، سيعمل النظام محلياً.', 'amber');
-                return;
-            }
+        async function saveUserProfile(uid, profile) {
+            if (!db || !uid) return;
             try {
-                const parsed = JSON.parse(rawVal);
-                if (!parsed.apiKey) throw new Error('مفتاح apiKey مفقود');
-                localStorage.setItem('user_firebase_config', JSON.stringify(parsed));
-                showDbNotice('تم حفظ الإعدادات بنجاح! يتم إعادة تهيئة الاتصال...', 'green');
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
-            } catch(err) {
-                showDbNotice('صيغة JSON غير صحيحة، يرجى التأكد من نسخ كائن الإعدادات بالكامل.', 'red');
+                const profileRef = doc(db, 'users', uid, 'profile', 'info');
+                await setDoc(profileRef, { ...profile, updatedAt: new Date().toISOString() }, { merge: true });
+            } catch(e) {
+                console.error("Profile save error:", e);
             }
-        });
-
-        document.getElementById('btnResetDbConfig').addEventListener('click', () => {
-            localStorage.removeItem('user_firebase_config');
-            txtFirebaseConfigInput.value = '';
-            showDbNotice('تمت استعادة التهيئة الافتراضية.', 'green');
-        });
-
-        function showDbNotice(msg, color) {
-            dbNotice.textContent = msg;
-            dbNotice.className = `p-2 rounded text-xs font-semibold text-center ${color === 'green' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : (color === 'amber' ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-red-100 text-red-800 border border-red-300')}`;
-            dbNotice.classList.remove('hidden');
         }
 
-        // التعبئة التلقائية السريعة لمدير النظام
+        // التعبئة التلقائية لبيانات المدير
         document.getElementById('btnQuickFillAdmin').addEventListener('click', () => {
             document.getElementById('inputAuthEmail').value = window.ADMIN_ACCOUNT.email;
             document.getElementById('inputAuthPassword').value = window.ADMIN_ACCOUNT.passwordHint;
@@ -933,7 +802,7 @@
             showAuthNotice('تم تعبئة بيانات مدير النظام (حسين يوسف الشهيب) جاهزة للدخول.', 'green');
         });
 
-        // إدارة المصادقة (تسجيل ودخول)
+        // إدارة المصادقة (تسجيل / اشتراك)
         let isRegisterMode = false;
         const modalAuth = document.getElementById('modalAuth');
         const tabLogin = document.getElementById('tabLogin');
@@ -948,7 +817,6 @@
             modalAuth.classList.remove('hidden');
             authNotice.classList.add('hidden');
         });
-
         document.getElementById('btnCloseAuth').addEventListener('click', () => modalAuth.classList.add('hidden'));
 
         tabLogin.addEventListener('click', () => {
@@ -988,32 +856,22 @@
                 return;
             }
 
-            if (!auth) {
-                // وضع العمل المحلي بدون Firebase
-                if ((email === window.ADMIN_ACCOUNT.email || email === window.ADMIN_ACCOUNT.username) && password === window.ADMIN_ACCOUNT.passwordHint) {
-                    document.getElementById('txtUserLabel').textContent = `👑 ${window.ADMIN_ACCOUNT.displayName}`;
-                    document.getElementById('userStatusBadge').className = 'text-xs font-semibold text-emerald-400 flex items-center gap-1';
-                    document.getElementById('btnOpenAuthModal').classList.add('hidden');
-                    document.getElementById('btnLogout').classList.remove('hidden');
-                    document.getElementById('btnOpenProfileModal').classList.remove('hidden');
-                    showAuthNotice('مرحباً بك يا مدير النظام! تم الدخول بنجاح.', 'green');
-                    setTimeout(() => modalAuth.classList.add('hidden'), 900);
-                    return;
-                }
-                showAuthNotice('لم يتم ربط Firebase بعد، يمكنك النقر على "⚡ ربط السحابة" لربطه أو استخدام بيانات المدير.', 'amber');
-                return;
-            }
-
             btnSubmitAuth.disabled = true;
-            btnSubmitAuth.textContent = 'جارٍ التحقق...';
+            btnSubmitAuth.textContent = 'جارٍ المعالجة...';
 
             try {
                 if (isRegisterMode) {
+                    if (!phone) {
+                        showAuthNotice('رقم الجوال إلزامي لإنشاء الحساب.', 'red');
+                        btnSubmitAuth.disabled = false;
+                        btnSubmitAuth.textContent = 'إنشاء الحساب وتأكيد البريد';
+                        return;
+                    }
                     const cred = await createUserWithEmailAndPassword(auth, email, password);
                     try { await sendEmailVerification(cred.user); } catch(e){}
                     userProfileData = {
                         displayName: displayName || window.ADMIN_ACCOUNT.displayName,
-                        phone: phone || window.ADMIN_ACCOUNT.phone,
+                        phone: phone,
                         email: email,
                         createdAt: new Date().toISOString()
                     };
@@ -1024,7 +882,7 @@
                     const cred = await signInWithEmailAndPassword(auth, email, password);
                     await loadUserProfile(cred.user.uid);
                     await window.loadYearSettingsFromCloud(window.state.year);
-                    showAuthNotice('تم تسجيل الدخول ومزامنة إعداداتك بنجاح!', 'green');
+                    showAuthNotice('تم تسجيل الدخول بنجاح!', 'green');
                 }
                 setTimeout(() => {
                     modalAuth.classList.add('hidden');
@@ -1039,12 +897,8 @@
         });
 
         document.getElementById('btnLogout').addEventListener('click', async () => {
-            if (auth) {
-                await signOut(auth);
-                await signInAnonymously(auth);
-            }
-            document.getElementById('txtUserLabel').textContent = 'زائر (غير مسجل)';
-            document.getElementById('userStatusBadge').className = 'text-xs font-semibold text-slate-300 flex items-center gap-1';
+            if (auth) await signOut(auth);
+            document.getElementById('txtUserLabel').textContent = 'السحابة متصلة';
             document.getElementById('btnOpenAuthModal').classList.remove('hidden');
             document.getElementById('btnLogout').classList.add('hidden');
             document.getElementById('btnOpenProfileModal').classList.add('hidden');
@@ -1065,7 +919,7 @@
             const newPhone = document.getElementById('profPhone').value.trim();
             userProfileData.displayName = newName;
             userProfileData.phone = newPhone;
-            if (currentUser && !currentUser.isAnonymous) {
+            if (currentUser) {
                 await saveUserProfile(currentUser.uid, userProfileData);
             }
             document.getElementById('txtUserLabel').textContent = `👤 ${newName}`;
@@ -1081,10 +935,11 @@
         }
     </script>
 
+    <!-- كود المنطق والتقويم الشامل -->
     <script>
         /* =========================================================================
-           حالة التطبيق الافتراضية المعتمدة لمدير النظام (Default Master Configuration)
-           تظهر لجميع الزوار تلقائياً عند فتح الصفحة
+           حالة التطبيق الافتراضية العامة لمدير النظام (حسين يوسف الشهيب)
+           تظهر تلقائياً لأي زائر يفتح الصفحة
            ========================================================================= */
         const DEFAULT_SYSTEM_CONFIG = {
             lang: 'ar',
@@ -1114,12 +969,10 @@
 
             customEvents: [],
 
-            // الترويسة الرسمية لمدير النظام
             headerNames: 'حسين يوسف الشهيب',
             headerOrg: 'إمارة المنطقة الشرقية',
             logoData: '',
 
-            // الألوان الرسمية
             colors: {
                 header: '#009bb0',
                 salary: '#6b7280',
@@ -1134,7 +987,6 @@
             }
         };
 
-        // الحالة التشغيلية الحالية
         const state = {
             year: 1448,
             ...JSON.parse(JSON.stringify(DEFAULT_SYSTEM_CONFIG))
@@ -1188,10 +1040,11 @@
         const WEEKDAYS_AR = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
         const WEEKDAYS_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+        // أطوال شهور أم القرى المعتمدة رسمياً (رمضان 1448هـ = 29 يوماً بدقة)
         const UMM_AL_QURA_KNOWN_LENGTHS = {
             1446: [29, 30, 30, 30, 29, 30, 30, 29, 29, 30, 29, 29],
             1447: [30, 29, 30, 30, 30, 29, 30, 29, 30, 29, 30, 29],
-            1448: [29, 30, 29, 30, 30, 29, 30, 30, 29, 30, 29, 30], // رمضان 1448 = 29 يوماً بدقة
+            1448: [29, 30, 29, 30, 30, 29, 30, 30, 29, 30, 29, 30],
             1449: [30, 29, 30, 29, 30, 29, 30, 30, 30, 29, 30, 29]
         };
 
@@ -1311,6 +1164,7 @@
             }
         }
 
+        // تحديد يوم صرف الراتب الفعلي فقط (يوم واحد مظلل في كل شهر)
         function getActualSalaryDayForMonth(year, month) {
             const baseTarget = parseInt(state.salaryDay) || 27;
             const maxDaysInMonth = new Date(year, month + 1, 0).getDate();
@@ -1325,9 +1179,9 @@
 
             if (state.weekendOption === 'fri_sat') {
                 if (nominalDow === 5) {
-                    return nominalDay - 1;
+                    return nominalDay - 1; // الجمعة -> يقدّم للخميس (26)
                 } else if (nominalDow === 6) {
-                    return nominalDay + 1;
+                    return nominalDay + 1; // السبت -> يؤخر للأحد (28)
                 }
             } else if (state.weekendOption === 'sat_sun') {
                 if (nominalDow === 6) {
@@ -1344,35 +1198,38 @@
             return nominalDay;
         }
 
+        // فحص عطلتي اليوم الوطني ويوم التأسيس مع التجسير
         function checkSaudiNationalBridgingHoliday(dateObj) {
             if (!state.enableBridging) return false;
             const m = dateObj.getMonth() + 1;
             const d = dateObj.getDate();
 
+            // اليوم الوطني: 23 سبتمبر
             if (m === 9) {
                 if (d === 23) return true;
                 const natDate = new Date(dateObj.getFullYear(), 8, 23);
                 const natDow = natDate.getDay();
-                if (natDow === 1 && d === 22) return true;
-                if (natDow === 3 && d === 24) return true;
+                if (natDow === 1 && d === 22) return true; // الاثنين -> الأحد إجازة
+                if (natDow === 3 && d === 24) return true; // الأربعاء -> الخميس إجازة
             }
 
+            // يوم التأسيس: 22 فبراير
             if (m === 2) {
                 if (d === 22) return true;
                 const foundDate = new Date(dateObj.getFullYear(), 1, 22);
                 const foundDow = foundDate.getDay();
-                if (foundDow === 1 && d === 21) return true;
-                if (foundDow === 3 && d === 23) return true;
+                if (foundDow === 1 && d === 21) return true; // الاثنين -> الأحد إجازة
+                if (foundDow === 3 && d === 23) return true; // الأربعاء -> الخميس إجازة
             }
 
             return false;
         }
 
         /* =========================================================================
-           نظام الحفظ المستقل لكل سنة على حدة (Per-Year Storage Logic)
+           نظام عزل وحفظ إعدادات كل سنة بشكل مستقل (Isolated Year Storage)
            ========================================================================= */
         function getYearStorageKey(year) {
-            return `calendar_year_config_${year}`;
+            return `calendar_isolated_year_${year}`;
         }
 
         function saveCurrentYearState() {
@@ -1381,11 +1238,13 @@
                 const key = getYearStorageKey(yr);
                 localStorage.setItem(key, JSON.stringify(state));
                 
-                // حفظ سحابي إن كان المستخدم مسجلاً
+                // حفظ سحابي في Firestore
                 if (typeof window.saveYearSettingsToCloud === 'function') {
                     window.saveYearSettingsToCloud(yr);
                 }
-            } catch(e) { console.error('Error saving year state:', e); }
+            } catch(e) {
+                console.error('Error saving year state:', e);
+            }
         }
 
         async function switchAndLoadYear(newYear) {
@@ -1393,13 +1252,11 @@
             document.getElementById('inputYear').value = state.year;
             document.getElementById('txtRulesYearBadge').textContent = state.year;
 
-            // محاولة التحميل من السحابة أولاً إذا وجد حساب
             let loaded = false;
             if (typeof window.loadYearSettingsFromCloud === 'function') {
                 loaded = await window.loadYearSettingsFromCloud(state.year);
             }
 
-            // إذا لم توجد في السحابة، محاولة التحميل من التخزين المحلي للسنة
             if (!loaded) {
                 try {
                     const localData = localStorage.getItem(getYearStorageKey(state.year));
@@ -1412,7 +1269,6 @@
                 } catch(e) {}
             }
 
-            // إذا كانت سنة جديدة لأول مرة، تطبيق الإعدادات الافتراضية
             if (!loaded) {
                 Object.assign(state, JSON.parse(JSON.stringify(DEFAULT_SYSTEM_CONFIG)));
                 state.year = parseInt(newYear);
@@ -1422,7 +1278,7 @@
         }
 
         /* =========================================================================
-           توليد وبناء جدول التقويم بالكامل
+           بناء وعرض جدول التقويم
            ========================================================================= */
         function renderCalendar() {
             const tableHead = document.getElementById('calendarHead');
@@ -1644,7 +1500,7 @@
                             }
                         });
 
-                        // الحفاظ على لون عطل نهاية الأسبوع ثابتاً دائماً
+                        // الحفاظ الدائم على لون عطل نهاية الأسبوع (الجمعة والسبت)
                         let cellBg = '#ffffff';
                         let textColor = 'text-slate-950 font-black';
 
@@ -1758,10 +1614,10 @@
             renderCalendar();
         };
 
-        // أحداث وتفاعل الصفحة
+        // أحداث واجهة المستخدم
         document.addEventListener('DOMContentLoaded', () => {
 
-            // أزرار السنة
+            // أزرار التنقل بين السنوات
             document.getElementById('btnPrevYear').addEventListener('click', () => {
                 switchAndLoadYear(parseInt(state.year) - 1);
             });
@@ -2054,7 +1910,7 @@
                 modalHeader.classList.add('hidden');
             });
 
-            // التصدير والاستيراد لسنة محددة
+            // التصدير والاستيراد لملف النسخة الاحتياطية للسنة الحالية
             document.getElementById('btnExportBackup').addEventListener('click', () => {
                 try {
                     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
@@ -2090,7 +1946,7 @@
                 reader.readAsText(file);
             });
 
-            // بدء تشغيل السنة المحددة
+            // بدء تشغيل السنة الافتراضية
             switchAndLoadYear(1448);
         });
     </script>
