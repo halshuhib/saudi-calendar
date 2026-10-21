@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Amiri:wght@700&display=swap" rel="stylesheet">
-    <!-- SheetJS لتصدير تقرير المشتركين بصيغة Excel حقيقية -->
+    <!-- SheetJS لتصدير ملفات Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
@@ -33,7 +33,6 @@
             white-space: nowrap;
         }
 
-        /* خطوط الفصول الفلكية اليومية الدقيقة */
         .season-b-spring { border-bottom: 3.5px solid var(--col-spring, #10b981) !important; }
         .season-b-summer { border-bottom: 3.5px solid var(--col-summer, #f97316) !important; }
         .season-b-autumn { border-bottom: 3.5px solid var(--col-autumn, #dc2626) !important; }
@@ -229,7 +228,7 @@
     <div id="cloudStatusBanner" class="no-print bg-slate-800 border-b border-slate-700 px-4 py-1.5 text-[11px] text-slate-300 flex justify-between items-center">
         <div class="flex items-center gap-2">
             <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span id="cloudStatusText">الوضع السحابي: متصل بقاعدة بيانات التقويم | عزل كل سنة بشكل مستقل</span>
+            <span id="cloudStatusText">الوضع السحابي: متصل بقاعدة بيانات التقويم | السنة الحالية مستقلة ومعزولة</span>
         </div>
         <div id="userGreetingBox" class="font-bold text-amber-300">
             مدير النظام: حسين يوسف الشهيب (0500686807)
@@ -267,17 +266,18 @@
         </div>
     </main>
 
-    <!-- نافذة تسجيل الدخول والاشتراك -->
+    <!-- نافذة تسجيل الدخول والاشتراك (التسجيل الذاتي متاح) -->
     <div id="modalAuth" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden" style="z-index: 99999;">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-300 overflow-hidden text-right">
             <div class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center">
                 <h3 id="authModalTitle" class="font-bold text-sm sm:text-base flex items-center gap-2">
-                    <span>🔐 تسجيل دخول المشتركين ومدير النظام</span>
+                    <span>🔐 تسجيل الدخول / إنشاء حساب</span>
                 </h3>
                 <button type="button" id="btnCloseAuth" class="text-slate-400 hover:text-red-400 text-xl font-bold p-1">✕</button>
             </div>
 
-            <div class="flex border-b border-slate-200 bg-slate-50 text-xs font-bold">
+            <!-- تبويبات الدخول والاشتراك الذاتي -->
+            <div id="authTabsContainer" class="flex border-b border-slate-200 bg-slate-50 text-xs font-bold">
                 <button type="button" id="tabBtnLogin" class="flex-1 py-2.5 text-center text-sky-700 border-b-2 border-sky-600 bg-white">تسجيل الدخول</button>
                 <button type="button" id="tabBtnRegister" class="flex-1 py-2.5 text-center text-slate-500 hover:text-slate-800">إنشاء حساب جديد</button>
             </div>
@@ -285,7 +285,7 @@
             <!-- تسجيل الدخول -->
             <div id="authBoxLogin" class="p-4 space-y-3 text-xs sm:text-sm">
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">البريد الإلكتروني:</label>
+                    <label class="block font-bold text-slate-700 mb-1">البريد الإلكتروني / اسم المستخدم:</label>
                     <input id="inputLoginEmail" type="email" placeholder="halshuhiyb@gmail.com" class="w-full p-2 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-sky-500 outline-none" dir="ltr">
                 </div>
 
@@ -309,7 +309,7 @@
                 </button>
             </div>
 
-            <!-- إنشاء حساب جديد -->
+            <!-- إنشاء حساب جديد (التسجيل الذاتي) -->
             <div id="authBoxRegister" class="p-4 space-y-3 text-xs sm:text-sm hidden">
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">الاسم الكامل:</label>
@@ -339,11 +339,11 @@
                 <div id="regFeedback" class="text-xs p-2 rounded hidden"></div>
 
                 <button type="button" id="btnSubmitRegister" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold rounded-lg transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer">
-                    <span>إنشاء الحساب وتأكيد البريد</span>
+                    <span>إنشاء الحساب وتأكيد الاشتراك</span>
                 </button>
             </div>
 
-            <!-- الحساب المسجل -->
+            <!-- تفاصيل الحساب الحالي بعد تسجيل الدخول -->
             <div id="authBoxLoggedIn" class="p-4 space-y-3 text-xs sm:text-sm hidden">
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <div class="font-extrabold text-slate-900 text-sm" id="lblLoggedName">حسين يوسف الشهيب</div>
@@ -359,61 +359,73 @@
         </div>
     </div>
 
-    <!-- لوحة تحكم الإدارة لمدير النظام -->
+    <!-- لوحة تحكم مدير النظام - إدارة المستخدمين الشاملة -->
     <div id="modalAdmin" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden" style="z-index: 99999;">
-        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col border border-slate-300 overflow-hidden text-right">
+        <div class="bg-white rounded-xl shadow-2xl max-w-5xl w-full max-h-[92vh] flex flex-col border border-slate-300 overflow-hidden text-right">
             <div class="bg-gradient-to-r from-slate-900 to-amber-950 text-white px-5 py-3 flex justify-between items-center border-b border-amber-500/40">
                 <div class="flex items-center gap-2">
                     <span class="text-xl">👑</span>
                     <div>
-                        <h3 class="font-black text-sm sm:text-base text-amber-400">لوحة تحكم مدير النظام - قاعدة المشتركين</h3>
-                        <p class="text-[11px] text-slate-300">مدير النظام: حسين يوسف الشهيب (0500686807)</p>
+                        <h3 class="font-black text-sm sm:text-base text-amber-400">لوحة تحكم مدير النظام - إدارة الحسابات والمشتركين</h3>
+                        <p class="text-[11px] text-slate-300">المدير: حسين يوسف الشهيب (0500686807)</p>
                     </div>
                 </div>
                 <button type="button" id="btnCloseAdmin" class="text-slate-300 hover:text-red-400 text-xl font-bold">✕</button>
             </div>
 
-            <div class="p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 border-b border-slate-200">
-                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex items-center justify-between">
+            <div class="p-3 grid grid-cols-2 sm:grid-cols-4 gap-2.5 bg-slate-50 border-b border-slate-200 text-xs">
+                <div class="bg-white p-2.5 rounded-lg border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
-                        <div class="text-[11px] text-slate-500 font-bold">إجمالي المشتركين</div>
-                        <div id="statTotalUsers" class="text-2xl font-black text-sky-700">1</div>
+                        <div class="text-[11px] text-slate-500 font-bold">إجمالي المستخدمين</div>
+                        <div id="statTotalUsers" class="text-xl font-black text-sky-700">0</div>
                     </div>
-                    <span class="text-2xl">👥</span>
+                    <span class="text-xl">👥</span>
                 </div>
-                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex items-center justify-between">
+                <div class="bg-white p-2.5 rounded-lg border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
-                        <div class="text-[11px] text-slate-500 font-bold">الحسابات الموثقة</div>
-                        <div id="statVerifiedUsers" class="text-2xl font-black text-emerald-600">1</div>
+                        <div class="text-[11px] text-slate-500 font-bold">الحسابات النشطة</div>
+                        <div id="statActiveUsers" class="text-xl font-black text-emerald-600">0</div>
                     </div>
-                    <span class="text-2xl">✅</span>
+                    <span class="text-xl">✅</span>
                 </div>
-                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex items-center justify-between">
+                <div class="bg-white p-2.5 rounded-lg border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
-                        <div class="text-[11px] text-slate-500 font-bold">أرقام التواصل المسجلة</div>
-                        <div id="statPhoneUsers" class="text-2xl font-black text-indigo-600">1</div>
+                        <div class="text-[11px] text-slate-500 font-bold">الحسابات المعطلة</div>
+                        <div id="statDisabledUsers" class="text-xl font-black text-rose-600">0</div>
                     </div>
-                    <span class="text-2xl">📱</span>
+                    <span class="text-xl">⛔</span>
+                </div>
+                <div class="bg-white p-2.5 rounded-lg border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <div class="text-[11px] text-slate-500 font-bold">أرقام الجوال المسجلة</div>
+                        <div id="statPhoneUsers" class="text-xl font-black text-indigo-600">0</div>
+                    </div>
+                    <span class="text-xl">📱</span>
                 </div>
             </div>
 
-            <div class="p-3 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
-                <input id="inputSearchUsers" type="text" placeholder="🔍 بحث بالاسم أو البريد أو رقم الجوال..." class="flex-1 min-w-[200px] p-2 border border-slate-300 rounded-lg text-xs font-semibold outline-none focus:ring-2 focus:ring-amber-500">
-                <button type="button" id="btnExportUsersExcel" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition">
-                    <span>📊 تصدير تقرير المشتركين (Excel منسق)</span>
-                </button>
+            <div class="p-3 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button type="button" id="btnOpenAddUserModal" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg shadow transition flex items-center gap-1.5">
+                        <span>➕ إضافة مستخدم جديد</span>
+                    </button>
+                    <button type="button" id="btnExportUsersExcel" class="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-lg shadow transition flex items-center gap-1.5">
+                        <span>📊 تصدير Excel منسق</span>
+                    </button>
+                </div>
+                <input id="inputSearchUsers" type="text" placeholder="🔍 بحث بالاسم، البريد أو رقم الجوال..." class="w-full sm:w-64 p-1.5 border border-slate-300 rounded-lg text-xs font-semibold outline-none focus:ring-2 focus:ring-amber-500">
             </div>
 
-            <div class="flex-1 overflow-auto p-4">
+            <div class="flex-1 overflow-auto p-3">
                 <table class="w-full text-right text-xs border-collapse">
                     <thead>
                         <tr class="bg-slate-100 text-slate-700 border-b-2 border-slate-300">
                             <th class="p-2 font-black">#</th>
-                            <th class="p-2 font-black">اسم المشترك</th>
+                            <th class="p-2 font-black">اسم المستخدم</th>
                             <th class="p-2 font-black">البريد الإلكتروني</th>
                             <th class="p-2 font-black">رقم الجوال</th>
-                            <th class="p-2 font-black">تاريخ التسجيل</th>
-                            <th class="p-2 font-black">حالة التفعيل</th>
+                            <th class="p-2 font-black">الحالة</th>
+                            <th class="p-2 font-black text-center">الإجراءات والتحكم</th>
                         </tr>
                     </thead>
                     <tbody id="adminUsersTableBody" class="divide-y divide-slate-200"></tbody>
@@ -422,6 +434,55 @@
 
             <div class="p-3 bg-slate-100 border-t flex justify-end">
                 <button type="button" id="btnCloseAdminFooter" class="px-4 py-1.5 bg-slate-300 hover:bg-slate-400 text-slate-800 rounded font-bold text-xs">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة / تعديل مستخدم (خاصة بمدير النظام) -->
+    <div id="modalUserForm" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden" style="z-index: 100000;">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-300 overflow-hidden text-right">
+            <div class="bg-indigo-800 text-white px-4 py-2.5 flex justify-between items-center">
+                <h4 id="userFormModalTitle" class="font-bold text-sm flex items-center gap-1.5">
+                    <span>👤 إضافة مستخدم جديد</span>
+                </h4>
+                <button type="button" id="btnCloseUserForm" class="text-white hover:text-red-200 text-lg font-bold">✕</button>
+            </div>
+
+            <div class="p-4 space-y-3 text-xs sm:text-sm">
+                <input type="hidden" id="formUserId">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">الاسم الكامل:</label>
+                    <input id="formUserName" type="text" placeholder="اسم المستخدم" class="w-full p-2 border border-slate-300 rounded-lg text-xs font-bold outline-none">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">البريد الإلكتروني:</label>
+                    <input id="formUserEmail" type="email" placeholder="user@gmail.com" class="w-full p-2 border border-slate-300 rounded-lg text-xs font-semibold outline-none" dir="ltr">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">رقم الجوال:</label>
+                    <input id="formUserPhone" type="tel" placeholder="0500686807" class="w-full p-2 border border-slate-300 rounded-lg text-xs font-bold outline-none" dir="ltr">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1" id="lblFormUserPass">كلمة المرور:</label>
+                    <input id="formUserPass" type="text" placeholder="أدخل كلمة المرور" class="w-full p-2 border border-slate-300 rounded-lg text-xs font-semibold outline-none" dir="ltr">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">حالة الحساب:</label>
+                    <select id="formUserStatus" class="w-full p-2 border border-slate-300 rounded-lg text-xs font-bold outline-none">
+                        <option value="active">نشط (مسموح له بالدخول)</option>
+                        <option value="disabled">معطل (محظور من الدخول)</option>
+                    </select>
+                </div>
+
+                <div id="userFormFeedback" class="text-xs p-2 rounded hidden"></div>
+
+                <button type="button" id="btnSaveUserForm" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition shadow-md">
+                    حفظ بيانات المستخدم
+                </button>
             </div>
         </div>
     </div>
@@ -652,13 +713,16 @@
         let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
         let currentUser = null;
 
+        // قاعدة بيانات المستخدمين مع حالة التفعيل والحذف
         let subscribersList = [
             {
                 id: 'admin_1',
                 name: 'حسين يوسف الشهيب',
                 email: 'halshuhiyb@gmail.com',
                 phone: '0500686807',
+                password: '••••••••',
                 role: 'مدير النظام',
+                status: 'active',
                 createdAt: '2026-05-01',
                 isVerified: true
             }
@@ -1132,10 +1196,16 @@
                 if (savedUsers) subscribersList = JSON.parse(savedUsers);
             } catch(e) {}
 
-            document.getElementById('badgeSubscribersCount').textContent = subscribersList.length;
-            document.getElementById('statTotalUsers').textContent = subscribersList.length;
-            document.getElementById('statVerifiedUsers').textContent = subscribersList.filter(u => u.isVerified).length;
-            document.getElementById('statPhoneUsers').textContent = subscribersList.filter(u => u.phone && u.phone.trim().length > 0).length;
+            const total = subscribersList.length;
+            const activeCount = subscribersList.filter(u => u.status !== 'disabled').length;
+            const disabledCount = subscribersList.filter(u => u.status === 'disabled').length;
+            const phoneCount = subscribersList.filter(u => u.phone && u.phone.trim().length > 0).length;
+
+            document.getElementById('badgeSubscribersCount').textContent = total;
+            document.getElementById('statTotalUsers').textContent = total;
+            document.getElementById('statActiveUsers').textContent = activeCount;
+            document.getElementById('statDisabledUsers').textContent = disabledCount;
+            document.getElementById('statPhoneUsers').textContent = phoneCount;
 
             renderAdminUsersTable();
         }
@@ -1151,27 +1221,112 @@
             });
 
             if (list.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-500">لا يوجد مشتركون مطابقون للبحث</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-500">لا يوجد مستخدمون مطابقون</td></tr>';
                 return;
             }
 
             list.forEach((u, i) => {
                 const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50';
+                tr.className = 'hover:bg-slate-50 transition border-b';
+                
+                const isAdmin = (u.email.toLowerCase() === 'halshuhiyb@gmail.com' || u.role === 'مدير النظام');
+                const isActive = (u.status !== 'disabled');
+
+                let statusBadge = isActive 
+                    ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">نشط</span>`
+                    : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">معطل</span>`;
+
+                let actionsHtml = '';
+                if (isAdmin) {
+                    actionsHtml = `
+                        <div class="flex items-center justify-center gap-1">
+                            <span class="text-amber-600 font-extrabold text-[11px] px-2 py-0.5 bg-amber-50 rounded border border-amber-200">👑 مدير النظام (محمي)</span>
+                            <button type="button" class="btn-edit-user px-2 py-1 bg-slate-200 hover:bg-slate-300 rounded text-slate-800 font-bold text-[11px]" data-id="${u.id}">تعديل</button>
+                        </div>
+                    `;
+                } else {
+                    actionsHtml = `
+                        <div class="flex items-center justify-center gap-1.5">
+                            <button type="button" class="btn-edit-user px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded font-bold text-[11px] transition" data-id="${u.id}" title="تعديل بيانات المستخدم">
+                                ✏️ تعديل
+                            </button>
+                            <button type="button" class="btn-toggle-status px-2 py-1 ${isActive ? 'bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'} border rounded font-bold text-[11px] transition" data-id="${u.id}" title="${isActive ? 'تعطيل الحساب' : 'تفعيل الحساب'}">
+                                ${isActive ? '⛔ تعطيل' : '✅ تفعيل'}
+                            </button>
+                            <button type="button" class="btn-delete-user px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded font-bold text-[11px] transition" data-id="${u.id}" title="حذف المستخدم نهائياً">
+                                🗑️ حذف
+                            </button>
+                        </div>
+                    `;
+                }
+
                 tr.innerHTML = `
                     <td class="p-2 font-bold">${i + 1}</td>
                     <td class="p-2 font-bold text-slate-900">${u.name}</td>
                     <td class="p-2 text-slate-600" dir="ltr">${u.email}</td>
                     <td class="p-2 font-mono text-indigo-700 font-bold" dir="ltr">${u.phone || 'غير مسجل'}</td>
-                    <td class="p-2 text-slate-500">${u.createdAt || '2026-05-01'}</td>
-                    <td class="p-2">
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${u.isVerified ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                            ${u.isVerified ? 'موثق' : 'بانتظار التأكيد'}
-                        </span>
-                    </td>
+                    <td class="p-2">${statusBadge}</td>
+                    <td class="p-2 text-center">${actionsHtml}</td>
                 `;
                 tbody.appendChild(tr);
             });
+
+            tbody.querySelectorAll('.btn-edit-user').forEach(btn => {
+                btn.addEventListener('click', () => openEditUserModal(btn.getAttribute('data-id')));
+            });
+
+            tbody.querySelectorAll('.btn-toggle-status').forEach(btn => {
+                btn.addEventListener('click', () => toggleUserStatus(btn.getAttribute('data-id')));
+            });
+
+            tbody.querySelectorAll('.btn-delete-user').forEach(btn => {
+                btn.addEventListener('click', () => deleteUser(btn.getAttribute('data-id')));
+            });
+        }
+
+        function openAddUserModal() {
+            document.getElementById('formUserId').value = '';
+            document.getElementById('formUserName').value = '';
+            document.getElementById('formUserEmail').value = '';
+            document.getElementById('formUserPhone').value = '';
+            document.getElementById('formUserPass').value = '';
+            document.getElementById('formUserStatus').value = 'active';
+            document.getElementById('userFormModalTitle').innerHTML = '<span>➕ إضافة مستخدم جديد</span>';
+            document.getElementById('userFormFeedback').className = 'hidden';
+            document.getElementById('modalUserForm').classList.remove('hidden');
+        }
+
+        function openEditUserModal(userId) {
+            const user = subscribersList.find(u => u.id === userId);
+            if (!user) return;
+
+            document.getElementById('formUserId').value = user.id;
+            document.getElementById('formUserName').value = user.name || '';
+            document.getElementById('formUserEmail').value = user.email || '';
+            document.getElementById('formUserPhone').value = user.phone || '';
+            document.getElementById('formUserPass').value = user.password || '';
+            document.getElementById('formUserStatus').value = user.status || 'active';
+            document.getElementById('userFormModalTitle').innerHTML = `<span>✏️ تعديل بيانات: ${user.name}</span>`;
+            document.getElementById('userFormFeedback').className = 'hidden';
+            document.getElementById('modalUserForm').classList.remove('hidden');
+        }
+
+        function toggleUserStatus(userId) {
+            const user = subscribersList.find(u => u.id === userId);
+            if (!user) return;
+            user.status = (user.status === 'disabled') ? 'active' : 'disabled';
+            saveYearStateLocally();
+            updateAdminDashboard();
+        }
+
+        function deleteUser(userId) {
+            const user = subscribersList.find(u => u.id === userId);
+            if (!user) return;
+            if (confirm(`هل أنت متأكد من حذف حساب المشترك: "${user.name}" نهائياً من النظام؟`)) {
+                subscribersList = subscribersList.filter(u => u.id !== userId);
+                saveYearStateLocally();
+                updateAdminDashboard();
+            }
         }
 
         function exportUsersToFormattedExcel() {
@@ -1181,10 +1336,10 @@
             }
 
             const excelRows = [
-                ['تقرير المشتركين المسجلين في نظام التقويم السنوي'],
-                [`تاريخ التصدير: ${new Date().toLocaleDateString('ar-SA')} | المشرف: حسين يوسف الشهيب (0500686807)`],
+                ['تقرير المشتركين والمستخدمين في نظام التقويم السنوي'],
+                [`تاريخ التصدير: ${new Date().toLocaleDateString('ar-SA')} | المشرف العام: حسين يوسف الشهيب (0500686807)`],
                 [],
-                ['م', 'اسم المشترك', 'البريد الإلكتروني', 'رقم الجوال', 'تاريخ التسجيل', 'حالة التفعيل']
+                ['م', 'اسم المشترك', 'البريد الإلكتروني', 'رقم الجوال', 'كلمة المرور', 'حالة الحساب', 'تاريخ التسجيل']
             ];
 
             subscribersList.forEach((u, idx) => {
@@ -1193,8 +1348,9 @@
                     u.name || 'بدون اسم',
                     u.email || '',
                     u.phone || '',
-                    u.createdAt || '',
-                    u.isVerified ? 'موثق' : 'غير موثق'
+                    u.password || '••••••••',
+                    (u.status === 'disabled') ? 'معطل' : 'نشط',
+                    u.createdAt || ''
                 ]);
             });
 
@@ -1207,11 +1363,12 @@
                 { wch: 32 },
                 { wch: 18 },
                 { wch: 16 },
+                { wch: 14 },
                 { wch: 14 }
             ];
 
-            XLSX.utils.book_append_sheet(wb, ws, 'قائمة المشتركين');
-            XLSX.writeFile(wb, `تقرير_المشتركين_تقويم_1448_${Date.now()}.xlsx`);
+            XLSX.utils.book_append_sheet(wb, ws, 'المستخدمون والمشتركون');
+            XLSX.writeFile(wb, `تقرير_المستخدمين_تقويم_1448_${Date.now()}.xlsx`);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -1302,16 +1459,22 @@
                         name: 'حسين يوسف الشهيب',
                         email: 'halshuhiyb@gmail.com',
                         phone: '0500686807',
-                        isAdmin: true
+                        isAdmin: true,
+                        status: 'active'
                     };
                 } else {
                     const found = subscribersList.find(u => u.email.toLowerCase() === email.toLowerCase());
-                    currentUser = found || {
-                        name: email.split('@')[0],
-                        email: email,
-                        phone: '0500686807',
-                        isAdmin: false
-                    };
+                    if (!found) {
+                        feedback.className = 'text-xs p-2 rounded bg-rose-100 text-rose-800 font-bold block';
+                        feedback.textContent = 'الحساب غير مسجل في النظام. يمكنك إنشاء حساب جديد من تبويب "إنشاء حساب جديد".';
+                        return;
+                    }
+                    if (found.status === 'disabled') {
+                        feedback.className = 'text-xs p-2 rounded bg-rose-100 text-rose-800 font-bold block';
+                        feedback.textContent = '⛔ عذراً، هذا الحساب معطل حالياً من قبل مدير النظام.';
+                        return;
+                    }
+                    currentUser = found;
                 }
 
                 feedback.className = 'text-xs p-2 rounded bg-emerald-100 text-emerald-800 font-bold block';
@@ -1322,8 +1485,9 @@
                 document.getElementById('lblLoggedEmail').textContent = currentUser.email;
                 document.getElementById('lblLoggedPhone').textContent = `جوال: ${currentUser.phone}`;
 
-                authBoxLogin.classList.add('hidden');
-                authBoxRegister.classList.add('hidden');
+                document.getElementById('authTabsContainer').classList.add('hidden');
+                document.getElementById('authBoxLogin').classList.add('hidden');
+                document.getElementById('authBoxRegister').classList.add('hidden');
                 document.getElementById('authBoxLoggedIn').classList.remove('hidden');
 
                 checkAdminAuth();
@@ -1352,12 +1516,20 @@
                     return;
                 }
 
+                if (subscribersList.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+                    feedback.className = 'text-xs p-2 rounded bg-rose-100 text-rose-800 font-bold block';
+                    feedback.textContent = 'البريد الإلكتروني مسجل مسبقاً. يمكنك تسجيل الدخول مباشرة.';
+                    return;
+                }
+
                 const newUser = {
                     id: 'user_' + Date.now(),
                     name: name,
                     email: email,
                     phone: phone,
+                    password: pass,
                     role: 'مشترك',
+                    status: 'active',
                     createdAt: new Date().toISOString().split('T')[0],
                     isVerified: true
                 };
@@ -1368,15 +1540,16 @@
                 updateAdminDashboard();
 
                 feedback.className = 'text-xs p-2 rounded bg-emerald-100 text-emerald-800 font-bold block';
-                feedback.textContent = 'تم إنشاء الحساب بنجاح وتوثيق البريد ورقم الجوال!';
+                feedback.textContent = 'تم إنشاء الحساب بنجاح وتوثيق بياناتك!';
 
                 document.getElementById('txtAuthBtnLabel').textContent = `👤 ${currentUser.name}`;
                 document.getElementById('lblLoggedName').textContent = currentUser.name;
                 document.getElementById('lblLoggedEmail').textContent = currentUser.email;
                 document.getElementById('lblLoggedPhone').textContent = `جوال: ${currentUser.phone}`;
 
-                authBoxLogin.classList.add('hidden');
-                authBoxRegister.classList.add('hidden');
+                document.getElementById('authTabsContainer').classList.add('hidden');
+                document.getElementById('authBoxLogin').classList.add('hidden');
+                document.getElementById('authBoxRegister').classList.add('hidden');
                 document.getElementById('authBoxLoggedIn').classList.remove('hidden');
 
                 checkAdminAuth();
@@ -1387,7 +1560,8 @@
                 currentUser = null;
                 document.getElementById('txtAuthBtnLabel').textContent = '👤 تسجيل الدخول / اشتراك';
                 document.getElementById('authBoxLoggedIn').classList.add('hidden');
-                authBoxLogin.classList.remove('hidden');
+                document.getElementById('authTabsContainer').classList.remove('hidden');
+                document.getElementById('authBoxLogin').classList.remove('hidden');
                 checkAdminAuth();
                 modalAuth.classList.add('hidden');
             });
@@ -1415,6 +1589,58 @@
 
             document.getElementById('btnExportUsersExcel').addEventListener('click', () => {
                 exportUsersToFormattedExcel();
+            });
+
+            const modalUserForm = document.getElementById('modalUserForm');
+            document.getElementById('btnOpenAddUserModal').addEventListener('click', openAddUserModal);
+            document.getElementById('btnCloseUserForm').addEventListener('click', () => modalUserForm.classList.add('hidden'));
+
+            document.getElementById('btnSaveUserForm').addEventListener('click', () => {
+                const editId = document.getElementById('formUserId').value;
+                const name = document.getElementById('formUserName').value.trim();
+                const email = document.getElementById('formUserEmail').value.trim();
+                const phone = document.getElementById('formUserPhone').value.trim();
+                const pass = document.getElementById('formUserPass').value.trim();
+                const status = document.getElementById('formUserStatus').value;
+                const feedback = document.getElementById('userFormFeedback');
+
+                if (!name || !email) {
+                    feedback.className = 'text-xs p-2 rounded bg-rose-100 text-rose-800 font-bold block';
+                    feedback.textContent = 'يرجى إدخال الاسم والبريد الإلكتروني على الأقل';
+                    return;
+                }
+
+                if (editId) {
+                    const user = subscribersList.find(u => u.id === editId);
+                    if (user) {
+                        user.name = name;
+                        user.email = email;
+                        user.phone = phone;
+                        if (pass) user.password = pass;
+                        user.status = status;
+                    }
+                } else {
+                    if (subscribersList.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+                        feedback.className = 'text-xs p-2 rounded bg-rose-100 text-rose-800 font-bold block';
+                        feedback.textContent = 'البريد الإلكتروني مسجل مسبقاً لمستخدم آخر';
+                        return;
+                    }
+                    subscribersList.push({
+                        id: 'user_' + Date.now(),
+                        name: name,
+                        email: email,
+                        phone: phone || '0500686807',
+                        password: pass || '123456',
+                        role: 'مشترك',
+                        status: status,
+                        createdAt: new Date().toISOString().split('T')[0],
+                        isVerified: true
+                    });
+                }
+
+                saveYearStateLocally();
+                updateAdminDashboard();
+                modalUserForm.classList.add('hidden');
             });
 
             document.getElementById('btnPrevYear').addEventListener('click', () => {
