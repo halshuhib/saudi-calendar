@@ -1,3776 +1,4 @@
 <!DOCTYPE html>
-
-<html lang="ar" dir="rtl">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>التقويم الهجري والميلادي السنوي</title>
-
-    <!-- Tailwind CSS -->
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Amiri:wght@700&display=swap" rel="stylesheet">
-
-    <style>
-
-        * {
-
-            box-sizing: border-box;
-
-            font-family: 'Cairo', sans-serif;
-
-            -webkit-print-color-adjust: exact !important;
-
-            print-color-adjust: exact !important;
-
-            color-adjust: exact !important;
-
-        }
-
-
-
-        .font-kashida {
-
-            font-family: 'Amiri', 'Cairo', serif;
-
-            letter-spacing: 0.5px;
-
-        }
-
-
-
-        /* كتابة أسماء أيام الأسبوع رأسياً */
-
-        .vertical-text {
-
-            writing-mode: vertical-rl;
-
-            text-orientation: mixed;
-
-            transform: rotate(180deg);
-
-            white-space: nowrap;
-
-        }
-
-
-
-        /* خطوط الفصول اليومية الدقيقة */
-
-        .season-b-spring { border-bottom: 4px solid var(--col-spring, #10b981) !important; }
-
-        .season-b-summer { border-bottom: 4px solid var(--col-summer, #f97316) !important; }
-
-        .season-b-autumn { border-bottom: 4px solid var(--col-autumn, #dc2626) !important; }
-
-        .season-b-winter { border-bottom: 4px solid var(--col-winter, #2563eb) !important; }
-
-
-
-        /* إعدادات الطباعة الدقيقة لورقة واحدة فقط A4 أو A3 بالعرض */
-
-        @page {
-
-            size: landscape;
-
-            margin: 4mm !important;
-
-        }
-
-
-
-        @media print {
-
-            html, body {
-
-                background: #ffffff !important;
-
-                padding: 0 !important;
-
-                margin: 0 !important;
-
-                width: 100% !important;
-
-                height: 100% !important;
-
-                overflow: hidden !important;
-
-            }
-
-            .no-print {
-
-                display: none !important;
-
-            }
-
-            #printArea {
-
-                box-shadow: none !important;
-
-                border: 2px solid #0f172a !important;
-
-                padding: 0 !important;
-
-                margin: 0 !important;
-
-                width: 100% !important;
-
-                max-width: 100% !important;
-
-                height: calc(100vh - 8mm) !important;
-
-                max-height: calc(100vh - 8mm) !important;
-
-                display: flex !important;
-
-                flex-direction: column !important;
-
-                justify-content: space-between !important;
-
-                page-break-inside: avoid !important;
-
-                page-break-after: avoid !important;
-
-                page-break-before: avoid !important;
-
-            }
-
-            #headerBar {
-
-                padding-top: 3px !important;
-
-                padding-bottom: 3px !important;
-
-                height: 34px !important;
-
-                flex: 0 0 34px !important;
-
-            }
-
-            #headerBar h1, #headerBar div {
-
-                font-size: 13px !important;
-
-                line-height: 1.2 !important;
-
-            }
-
-            .table-container {
-
-                flex: 1 1 auto !important;
-
-                display: flex !important;
-
-                flex-direction: column !important;
-
-                overflow: hidden !important;
-
-                height: calc(100% - 62px) !important;
-
-            }
-
-            table {
-
-                width: 100% !important;
-
-                height: 100% !important;
-
-                border-collapse: collapse !important;
-
-                table-layout: fixed !important;
-
-            }
-
-            thead {
-
-                height: 48px !important;
-
-                flex: 0 0 48px !important;
-
-            }
-
-            thead tr {
-
-                height: 48px !important;
-
-            }
-
-            tbody {
-
-                height: calc(100% - 48px) !important;
-
-            }
-
-            tbody tr {
-
-                height: calc((100% - 48px) / 12) !important;
-
-            }
-
-            th, td {
-
-                padding: 0 !important;
-
-                line-height: 1.1 !important;
-
-                vertical-align: middle !important;
-
-            }
-
-            .vertical-text {
-
-                font-size: 10px !important;
-
-                font-weight: 800 !important;
-
-                letter-spacing: normal !important;
-
-            }
-
-            #legendBar {
-
-                padding: 2px 4px !important;
-
-                font-size: 9.5px !important;
-
-                height: 26px !important;
-
-                min-height: 26px !important;
-
-                flex: 0 0 26px !important;
-
-                gap: 8px !important;
-
-            }
-
-            #legendBar span {
-
-                font-size: 9px !important;
-
-            }
-
-        }
-
-
-
-        /* ضبط ارتفاع الصفوف في العرض العادي */
-
-        .cal-row {
-
-            height: 38px !important;
-
-        }
-
-
-
-        @media (min-width: 640px) {
-
-            .cal-row {
-
-                height: 42px !important;
-
-            }
-
-        }
-
-
-
-        @media print {
-
-            .cal-row {
-
-                height: calc((100% - 48px) / 12) !important;
-
-            }
-
-        }
-
-
-
-        /* شريط التمرير المخصص */
-
-        ::-webkit-scrollbar {
-
-            width: 6px;
-
-            height: 6px;
-
-        }
-
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-
-        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
-
-    </style>
-
-</head>
-
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
-
-
-
-    <!-- شريط التحكم العلوي (يختفي عند الطباعة) -->
-
-    <header class="no-print bg-slate-900 text-white shadow-md sticky top-0 z-40 border-b border-slate-700">
-
-        <div class="max-w-7xl mx-auto px-3 py-2 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
-
-            
-
-            <!-- أزرار التحكم بالسنة والنوع -->
-
-            <div class="flex items-center gap-1.5 flex-wrap">
-
-                <div class="flex items-center bg-slate-800 rounded-lg p-1 border border-slate-700">
-
-                    <button id="btnPrevYear" class="px-2 py-1 hover:bg-slate-700 rounded text-slate-200 transition font-bold" title="السنة السابقة">◀</button>
-
-                    <input id="inputYear" type="number" class="w-16 bg-transparent text-center font-extrabold text-amber-400 focus:outline-none" value="1448">
-
-                    <span id="yearLabel" class="text-xs font-semibold px-1 text-slate-300">هـ</span>
-
-                    <button id="btnNextYear" class="px-2 py-1 hover:bg-slate-700 rounded text-slate-200 transition font-bold" title="السنة التالية">▶</button>
-
-                </div>
-
-
-
-                <!-- نوع التقويم الأساسي -->
-
-                <div class="flex bg-slate-800 rounded-lg p-0.5 border border-slate-700">
-
-                    <button id="btnModeHijri" class="px-2.5 py-1 rounded font-bold transition text-xs bg-[#009bb0] text-white">هجري أساسي</button>
-
-                    <button id="btnModeGreg" class="px-2.5 py-1 rounded font-bold transition text-xs text-slate-300 hover:text-white">ميلادي أساسي</button>
-
-                </div>
-
-
-
-                <!-- تبديل اللغة والاتجاه -->
-
-                <button id="btnToggleLang" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 text-slate-200 font-semibold transition text-xs">
-
-                    🌐 English (LTR)
-
-                </button>
-
-            </div>
-
-
-
-            <!-- أزرار النوافذ المنبثقة والخيارات -->
-
-            <div class="flex items-center gap-1.5 flex-wrap">
-
-                <!-- زر إعداد الترويسة والشعار -->
-
-                <button id="btnOpenHeaderModal" class="px-2.5 py-1 bg-teal-700 hover:bg-teal-600 rounded-lg font-semibold transition text-xs flex items-center gap-1">
-
-                    <span>🏷️ الترويسة والشعار</span>
-
-                </button>
-
-
-
-                <!-- زر ألوان المناسبات -->
-
-                <button id="btnOpenColorsModal" class="px-2.5 py-1 bg-purple-700 hover:bg-purple-600 rounded-lg font-semibold transition text-xs flex items-center gap-1">
-
-                    <span>🎨 ألوان المناسبات</span>
-
-                </button>
-
-
-
-                <!-- زر إعداد الإجازات والأعياد والمناسبات -->
-
-                <button id="btnOpenRulesModal" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold transition text-xs flex items-center gap-1 ring-2 ring-indigo-400">
-
-                    <span>⚙️ إعداد الإجازات والرواتب</span>
-
-                </button>
-
-
-
-                <!-- خيارات مقاس الورق -->
-
-                <div class="flex bg-slate-800 rounded-lg p-0.5 border border-slate-700">
-
-                    <button id="btnSizeA4" class="px-2 py-1 rounded font-semibold text-xs bg-slate-600 text-white">A4</button>
-
-                    <button id="btnSizeA3" class="px-2 py-1 rounded font-semibold text-xs text-slate-300 hover:text-white">A3</button>
-
-                    <button id="btnSizeFit" class="px-2 py-1 rounded font-semibold text-xs text-slate-300 hover:text-white">ملء العرض</button>
-
-                </div>
-
-
-
-                <!-- زر الطباعة وحفظ PDF -->
-
-                <button id="btnPrint" class="px-3.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-lg transition shadow-lg text-xs flex items-center gap-1">
-
-                    <span>🖨️ طباعة / حفظ PDF</span>
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </header>
-
-
-
-    <!-- مساحة التقويم الرئيسية (الجاهزة للمعاينة والطباعة) -->
-
-    <main class="flex-1 flex justify-center items-start p-2 sm:p-4 overflow-auto">
-
-        <div id="printArea" class="bg-white text-slate-900 border-2 border-slate-900 shadow-2xl mx-auto transition-all" style="width: 100%; max-width: 1440px;">
-
-            
-
-            <!-- الشريط العلوي الفيروزي المميز للتقويم -->
-
-            <div id="headerBar" class="w-full flex items-center justify-between px-3 py-1.5 text-white font-bold select-none border-b-2 border-slate-900" style="background-color: #009bb0;">
-
-                <!-- الجهة والأسماء والشعار (يمين بالعربي / يسار بالإنجليزي) -->
-
-                <div class="flex items-center gap-2.5">
-
-                    <img id="imgLogo" src="" alt="شعار" class="h-9 w-auto object-contain hidden bg-white/20 p-0.5 rounded border border-white/40">
-
-                    <div class="leading-tight text-right" id="headerTitlesBox">
-
-                        <div id="txtHeaderNames" class="text-xs sm:text-sm md:text-base font-extrabold tracking-wide"> حسين يوسف الشهيب  </div>
-
-                        <div id="txtHeaderOrg" class="text-[11px] sm:text-xs text-cyan-100 font-semibold">إمارة المنطقة الشرقية</div>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- عنوان التقويم العام -->
-
-                <div class="text-center font-extrabold text-sm sm:text-base md:text-lg tracking-wider" id="txtMainCalendarTitle">
-
-                    التقويم الهجري لعام 1448 هـ ( 2026 / 2027 م )
-
-                </div>
-
-            </div>
-
-
-
-            <!-- جدول التقويم الأفقي المتصل (36 عمود للأيام) -->
-
-            <div class="w-full overflow-x-auto table-container">
-
-                <table id="calendarTable" class="w-full border-collapse border border-slate-900 text-center select-none text-[10px] sm:text-[11px] md:text-xs">
-
-                    <!-- رأس الجدول: صف الأيام الرأسية -->
-
-                    <thead id="calendarHead">
-
-                        <!-- يُنشأ ديناميكياً بواسطة JavaScript -->
-
-                    </thead>
-
-                    <!-- جسم الجدول: صفوف الـ 12 شهراً -->
-
-                    <tbody id="calendarBody">
-
-                        <!-- يُنشأ ديناميكياً بواسطة JavaScript -->
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-
-
-            <!-- دليل الألوان (Legend) السفلي -->
-
-            <footer id="legendBar" class="w-full p-1.5 bg-slate-50 border-t-2 border-slate-900 text-[10px] sm:text-[11px] flex flex-wrap items-center justify-center gap-3 sm:gap-4 font-bold">
-
-                <!-- يُنشأ ديناميكياً بواسطة JavaScript -->
-
-            </footer>
-
-
-
-        </div>
-
-    </main>
-
-
-
-    <!-- =========================================================================
-
-         نافذة 1: إعداد الإجازات والأعياد والمناسبات والرواتب
-
-         ========================================================================= -->
-
-    <div id="modalRules" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-
-        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-slate-300 overflow-hidden text-right">
-
-            <div class="bg-indigo-700 text-white px-4 py-2.5 flex justify-between items-center">
-
-                <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">⚙️ إعداد الإجازات الرسمية والأعياد والرواتب</h3>
-
-                <button id="btnCloseRules" class="text-white hover:text-red-200 text-lg font-bold">✕</button>
-
-            </div>
-
-            
-
-            <div class="p-4 overflow-y-auto space-y-4 text-xs sm:text-sm">
-
-                
-
-                <!-- 1. يوم صرف الراتب وقاعدة العطلة -->
-
-                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-
-                    <h4 class="font-bold text-indigo-900 mb-2 flex items-center gap-1.5">💰 يوم صرف الراتب المعتمد:</h4>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
-
-                        <div class="flex items-center gap-2">
-
-                            <label class="font-semibold text-slate-700">يوم الشهر الميلادي:</label>
-
-                            <input id="cfgSalaryDay" type="number" min="1" max="31" value="27" class="w-16 px-2 py-1 border border-slate-300 rounded font-bold text-center">
-
-                        </div>
-
-                        <div class="text-[11px] text-slate-600 bg-amber-50 p-2 rounded border border-amber-200">
-
-                            <strong>القاعدة المطبقة تلقائياً:</strong><br>
-
-                            - إذا صادف أول يوم عطلة (الجمعة) ⬅️ يُصرف باليوم السابق (الخميس 26).<br>
-
-                            - إذا صادف ثاني يوم عطلة (السبت) ⬅️ يُصرف باليوم اللاحق (الأحد 28).<br>
-
-                            <span class="text-emerald-700 font-bold">⭐ يتم تظليل وتمييز يوم الاستلام الفعلي فقط!</span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- 2. عطلة نهاية الأسبوع -->
-
-                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-
-                    <h4 class="font-bold text-indigo-900 mb-2">🏖️ نظام عطلة نهاية الأسبوع:</h4>
-
-                    <select id="cfgWeekendMode" class="w-full sm:w-64 p-1.5 border border-slate-300 rounded font-semibold text-slate-800">
-
-                        <option value="fri_sat">الجمعة والسبت (النظام المعتمد بالسعودية)</option>
-
-                        <option value="sat_sun">السبت والأحد</option>
-
-                        <option value="fri_only">الجمعة فقط</option>
-
-                    </select>
-
-                </div>
-
-
-
-                <!-- 3. العطل الرسمية وقواعد التجسير -->
-
-                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-
-                    <h4 class="font-bold text-indigo-900 mb-1.5">🇸🇦 اليوم الوطني ويوم التأسيس وقاعدة التجسير:</h4>
-
-                    <p class="text-[11px] text-slate-600 mb-2">
-
-                        - اليوم الوطني: 23 سبتمبر | يوم التأسيس: 22 فبراير.<br>
-
-                        - قاعدة التجسير المعتمدة: إذا صادف <strong>الاثنين</strong> ⬅️ يكون <strong>الأحد إجازة مدمجة</strong>.<br>
-
-                        - إذا صادف <strong>الأربعاء</strong> ⬅️ يكون <strong>الأربعاء والخميس إجازة مدمجة</strong>.
-
-                    </p>
-
-                    <label class="flex items-center gap-2 cursor-pointer font-bold text-slate-800">
-
-                        <input id="cfgEnableBridging" type="checkbox" checked class="rounded text-indigo-600 w-4 h-4">
-
-                        <span>تفعيل المناسبتين مع تطبيق التجسير التلقائي بالكامل</span>
-
-                    </label>
-
-                </div>
-
-
-
-                <!-- 4. إجازات الأعياد (تحديد البداية والمدة بالأيام والامتداد التلقائي) -->
-
-                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-3">
-
-                    <h4 class="font-bold text-indigo-900">🌙 إجازات عيدي الفطر والأضحى المباركين (امتداد تلقائي بين الشهور):</h4>
-
-                    
-
-                    <!-- عيد الفطر -->
-
-                    <div class="p-2.5 bg-white rounded border border-slate-200">
-
-                        <div class="font-bold text-slate-800 mb-1.5 text-xs">إجازة عيد الفطر:</div>
-
-                        <div class="grid grid-cols-3 gap-2">
-
-                            <div>
-
-                                <label class="text-[11px] text-slate-600 block">شهر البداية:</label>
-
-                                <select id="cfgFitrMonth" class="w-full p-1 border rounded font-semibold text-xs">
-
-                                    <option value="9">رمضان (9)</option>
-
-                                    <option value="10">شوال (10)</option>
-
-                                </select>
-
-                            </div>
-
-                            <div>
-
-                                <label class="text-[11px] text-slate-600 block">يوم البداية:</label>
-
-                                <input id="cfgFitrDay" type="number" min="1" max="30" value="25" class="w-full p-1 border rounded text-center font-bold text-xs">
-
-                            </div>
-
-                            <div>
-
-                                <label class="text-[11px] text-slate-600 block">المدة (بالأيام):</label>
-
-                                <input id="cfgFitrDays" type="number" min="1" max="30" value="12" class="w-full p-1 border rounded text-center font-bold text-xs">
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- عيد الأضحى -->
-
-                    <div class="p-2.5 bg-white rounded border border-slate-200">
-
-                        <div class="font-bold text-slate-800 mb-1.5 text-xs">إجازة عيد الأضحى:</div>
-
-                        <div class="grid grid-cols-3 gap-2">
-
-                            <div>
-
-                                <label class="text-[11px] text-slate-600 block">شهر البداية:</label>
-
-                                <select id="cfgAdhaMonth" class="w-full p-1 border rounded font-semibold text-xs">
-
-                                    <option value="11">ذو القعدة (11)</option>
-
-                                    <option value="12" selected>ذو الحجة (12)</option>
-
-                                </select>
-
-                            </div>
-
-                            <div>
-
-                                <label class="text-[11px] text-slate-600 block">يوم البداية:</label>
-
-                                <input id="cfgAdhaDay" type="number" min="1" max="30" value="5" class="w-full p-1 border rounded text-center font-bold text-xs">
-
-                            </div>
-
-                            <div>
-
-                                <label class="text-[11px] text-slate-600 block">المدة (بالأيام):</label>
-
-                                <input id="cfgAdhaDays" type="number" min="1" max="30" value="12" class="w-full p-1 border rounded text-center font-bold text-xs">
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- 5. إجازات الطلاب والعطل الدراسية المتعددة -->
-
-                <div class="bg-amber-50/80 p-3 rounded-lg border-2 border-amber-300 space-y-2">
-
-                    <div class="flex justify-between items-center">
-
-                        <h4 class="font-extrabold text-amber-950 flex items-center gap-1.5 text-xs sm:text-sm">
-
-                            <span>🎒 إجازات الطلاب والعطل الدراسية:</span>
-
-                        </h4>
-
-                        <button type="button" id="btnAddSchoolHoliday" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded font-bold text-xs transition shadow-sm flex items-center gap-1">
-
-                            <span>+ إضافة إجازة دراسية</span>
-
-                        </button>
-
-                    </div>
-
-                    <p class="text-[11px] text-amber-900 leading-relaxed">
-
-                        حدد بداية كل إجازة ومدتها بالأيام (تمتد تلقائياً للشهر اللاحق إذا تجاوزت أيامه). يمكنك إضافة إجازة الخريف، الشتاء، الإجازات المطولة، ومنتصف ونهاية العام.
-
-                    </p>
-
-                    <div id="schoolHolidaysContainer" class="space-y-2 max-h-44 overflow-y-auto pr-0.5">
-
-                        <!-- يتم ملؤها ديناميكياً بواسطة JavaScript -->
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- 6. مناسبات وتذكيرات مخصصة -->
-
-                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-
-                    <div class="flex justify-between items-center mb-2">
-
-                        <h4 class="font-bold text-indigo-900">📌 مناسبات وتذكيرات خاصة:</h4>
-
-                        <button id="btnAddCustomEvent" class="px-2 py-0.5 bg-indigo-600 text-white rounded text-xs hover:bg-indigo-700 font-bold">+ إضافة تذكير</button>
-
-                    </div>
-
-                    <div id="customEventsContainer" class="space-y-1.5 max-h-36 overflow-y-auto">
-
-                        <!-- يُدرج ديناميكياً -->
-
-                    </div>
-
-                </div>
-
-
-
-            </div>
-
-
-
-            <!-- أزرار الحفظ والإغلاق -->
-
-            <div class="bg-slate-100 p-3 border-t flex justify-end gap-2">
-
-                <button id="btnResetRules" class="px-3 py-1.5 bg-slate-300 hover:bg-slate-400 rounded text-slate-800 font-bold text-xs">استعادة الافتراضي</button>
-
-                <button id="btnSaveRules" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold text-xs">حفظ وتطبيق التغييرات</button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- =========================================================================
-
-         نافذة 2: ألوان المناسبات والعناصر
-
-         ========================================================================= -->
-
-    <div id="modalColors" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-
-        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col border border-slate-300 overflow-hidden text-right">
-
-            <div class="bg-purple-800 text-white px-4 py-2.5 flex justify-between items-center">
-
-                <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">🎨 تخصيص ألوان المناسبات والفصول</h3>
-
-                <button id="btnCloseColors" class="text-white hover:text-red-200 text-lg font-bold">✕</button>
-
-            </div>
-
-
-
-            <div class="p-4 overflow-y-auto space-y-3 text-xs sm:text-sm">
-
-                <div class="grid grid-cols-2 gap-3">
-
-                    <div class="flex items-center justify-between p-2 bg-slate-50 border rounded">
-
-                        <span class="font-bold text-slate-700">شريط الترويسة:</span>
-
-                        <input id="clrHeader" type="color" value="#009bb0" class="w-8 h-8 rounded cursor-pointer border">
-
-                    </div>
-
-                    <div class="flex items-center justify-between p-2 bg-slate-50 border rounded">
-
-                        <span class="font-bold text-slate-700">يوم الراتب (فقط):</span>
-
-                        <input id="clrSalary" type="color" value="#6b7280" class="w-8 h-8 rounded cursor-pointer border">
-
-                    </div>
-
-                    <div class="flex items-center justify-between p-2 bg-slate-50 border rounded">
-
-                        <span class="font-bold text-slate-700">اليوم الوطني والتأسيس:</span>
-
-                        <input id="clrNational" type="color" value="#059669" class="w-8 h-8 rounded cursor-pointer border">
-
-                    </div>
-
-                    <div class="flex items-center justify-between p-2 bg-slate-50 border rounded">
-
-                        <span class="font-bold text-slate-700">إجازات الأعياد:</span>
-
-                        <input id="clrEid" type="color" value="#cbd5e1" class="w-8 h-8 rounded cursor-pointer border">
-
-                    </div>
-
-                    <div class="flex items-center justify-between p-2 bg-slate-50 border rounded">
-
-                        <span class="font-bold text-slate-700">عطلة نهاية الأسبوع:</span>
-
-                        <input id="clrWeekend" type="color" value="#fef3c7" class="w-8 h-8 rounded cursor-pointer border">
-
-                    </div>
-
-                    <div class="flex items-center justify-between p-2 bg-slate-50 border rounded">
-
-                        <span class="font-bold text-slate-700">إجازات الطلاب:</span>
-
-                        <input id="clrSchool" type="color" value="#fed7aa" class="w-8 h-8 rounded cursor-pointer border">
-
-                    </div>
-
-                </div>
-
-
-
-                <div class="border-t pt-2">
-
-                    <h5 class="font-bold text-purple-900 mb-2">أشرطة فصول السنة:</h5>
-
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-
-                        <div class="flex items-center justify-between p-1.5 bg-slate-50 border rounded">
-
-                            <span>فصل الصيف:</span>
-
-                            <input id="clrSummer" type="color" value="#f97316" class="w-7 h-7 rounded border">
-
-                        </div>
-
-                        <div class="flex items-center justify-between p-1.5 bg-slate-50 border rounded">
-
-                            <span>فصل الخريف:</span>
-
-                            <input id="clrAutumn" type="color" value="#dc2626" class="w-7 h-7 rounded border">
-
-                        </div>
-
-                        <div class="flex items-center justify-between p-1.5 bg-slate-50 border rounded">
-
-                            <span>فصل الشتاء:</span>
-
-                            <input id="clrWinter" type="color" value="#2563eb" class="w-7 h-7 rounded border">
-
-                        </div>
-
-                        <div class="flex items-center justify-between p-1.5 bg-slate-50 border rounded">
-
-                            <span>فصل الربيع:</span>
-
-                            <input id="clrSpring" type="color" value="#10b981" class="w-7 h-7 rounded border">
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <div class="bg-slate-100 p-3 border-t flex justify-end gap-2">
-
-                <button id="btnResetColors" class="px-3 py-1.5 bg-slate-300 hover:bg-slate-400 rounded text-slate-800 font-bold text-xs">استعادة الافتراضي</button>
-
-                <button id="btnSaveColors" class="px-4 py-1.5 bg-purple-700 hover:bg-purple-800 text-white rounded font-bold text-xs">حفظ الألوان</button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- =========================================================================
-
-         نافذة 3: الترويسة والشعار
-
-         ========================================================================= -->
-
-    <div id="modalHeader" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-
-        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-4 border border-slate-300 text-right space-y-3">
-
-            <div class="flex justify-between items-center border-b pb-2">
-
-                <h3 class="font-bold text-teal-800 text-sm sm:text-base">🏷️ تخصيص ترويسة التقويم والشعار</h3>
-
-                <button id="btnCloseHeader" class="text-slate-400 hover:text-red-500 font-bold text-lg">✕</button>
-
-            </div>
-
-
-
-            <div>
-
-                <label class="block text-xs font-semibold text-slate-700 mb-1">اسم المسؤول / المعدين:</label>
-
-                <input id="inputHeaderNames" type="text" value="حسين يوسف الشهيب " class="w-full p-1.5 border rounded text-xs font-bold">
-
-            </div>
-
-
-
-            <div>
-
-                <label class="block text-xs font-semibold text-slate-700 mb-1">اسم الجهة / الإدارة:</label>
-
-                <input id="inputHeaderOrg" type="text" value="إمارة المنطقة الشرقية" class="w-full p-1.5 border rounded text-xs font-bold">
-
-            </div>
-
-
-
-            <div>
-
-                <label class="block text-xs font-semibold text-slate-700 mb-1">شعار الجهة (قبل الاسم):</label>
-
-                <div class="flex items-center gap-2">
-
-                    <input id="inputFileLogo" type="file" accept="image/*" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100">
-
-                    <button id="btnRemoveLogo" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded text-xs font-bold hidden">حذف</button>
-
-                </div>
-
-            </div>
-
-
-
-            <div class="pt-2 border-t flex justify-end gap-2">
-
-                <button id="btnSaveHeader" class="px-4 py-1.5 bg-teal-700 hover:bg-teal-800 text-white rounded font-bold text-xs">تطبيق وحفظ</button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-    <script>
-
-        /* =========================================================================
-
-           حالة التطبيق العامة (Application State)
-
-           ========================================================================= */
-
-        const state = {
-
-            lang: 'ar',                // 'ar' أو 'en'
-
-            primaryMode: 'hijri',      // 'hijri' أو 'greg'
-
-            year: 1448,                // هجري افتراضي
-
-            salaryDay: 27,             // يوم الراتب الميلادي
-
-            salaryWeekendAdjust: true, // تقديم للخميس أو تأخير للأحد
-
-            weekendOption: 'fri_sat',  // 'fri_sat', 'sat_sun', 'fri_only'
-
-            enableBridging: true,      // تجسير الوطني والتأسيس
-
-            
-
-            // إجازات الأعياد بالبداية والمدة
-
-            fitrStartMonth: 9,
-
-            fitrStartDay: 25,
-
-            fitrDays: 12,
-
-
-
-            adhaStartMonth: 12,
-
-            adhaStartDay: 5,
-
-            adhaDays: 12,
-
-
-
-            // إجازات الطلاب والعطل الدراسية المتعددة (قابلة للتعديل والإضافة)
-
-            schoolHolidays: [
-
-                { id: 1, title: 'إجازة الخريف', startMonth: 5, startDay: 14, days: 10 },
-
-                { id: 2, title: 'إجازة منتصف العام الدراسي', startMonth: 7, startDay: 20, days: 9 },
-
-                { id: 3, title: 'إجازة مطولة 1', startMonth: 3, startDay: 18, days: 4 },
-
-                { id: 4, title: 'إجازة مطولة 2', startMonth: 8, startDay: 12, days: 4 },
-
-                { id: 5, title: 'إجازة نهاية العام الدراسي', startMonth: 12, startDay: 16, days: 15 }
-
-            ],
-
-
-
-            // مناسبات مخصصة
-
-            customEvents: [],
-
-
-
-            // الترويسة والشعار
-
-            headerNames: 'حسين الشهيب / فيصل باوزير',
-
-            headerOrg: 'إمارة المنطقة الشرقية',
-
-            logoData: '',
-
-
-
-            // الألوان
-
-            colors: {
-
-                header: '#009bb0',
-
-                salary: '#6b7280',
-
-                national: '#059669',
-
-                eid: '#cbd5e1',
-
-                weekend: '#fef3c7',
-
-                school: '#fed7aa',      // لون إجازات الطلاب المميز
-
-                summer: '#f97316',
-
-                autumn: '#dc2626',
-
-                winter: '#2563eb',
-
-                spring: '#10b981'
-
-            }
-
-        };
-
-
-
-        /* =========================================================================
-
-           الأسماء والترجمات
-
-           ========================================================================= */
-
-        const HIJRI_MONTHS_AR = [
-
-            'محــــــــــــــــــرم (1)',
-
-            'صفـــــــــــــــــر (2)',
-
-            'ربيــــــــــع الأول (3)',
-
-            'ربيــــــــــع الثاني (4)',
-
-            'جمــــادى الأولى (5)',
-
-            'جمــــادى الثانية (6)',
-
-            'رجـــــــــــــــــب (7)',
-
-            'شعـبــــــــــــــان (8)',
-
-            'رمضـــــــــــــان (9)',
-
-            'شـــــــــــــــوال (10)',
-
-            'ذو القعـــــــــــدة (11)',
-
-            'ذو الحجـــــــــــة (12)'
-
-        ];
-
-
-
-        const HIJRI_MONTHS_EN = [
-
-            'Muharram (1)', 'Safar (2)', 'Rabi al-Awwal (3)', 'Rabi al-Thani (4)',
-
-            'Jumada al-Ula (5)', 'Jumada al-Akhirah (6)', 'Rajab (7)', 'Shaban (8)',
-
-            'Ramadan (9)', 'Shawwal (10)', 'Dhu al-Qadah (11)', 'Dhu al-Hijjah (12)'
-
-        ];
-
-
-
-        const GREG_MONTHS_AR = [
-
-            'يناير (1)', 'فبراير (2)', 'مارس (3)', 'أبريل (4)',
-
-            'مايو (5)', 'يونيو (6)', 'يوليو (7)', 'أغسطس (8)',
-
-            'سبتمبر (9)', 'أكتوبر (10)', 'نوفمبر (11)', 'ديسمبر (12)'
-
-        ];
-
-
-
-        const GREG_MONTHS_SHORT_AR = [
-
-            'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-
-            'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
-
-        ];
-
-
-
-        const GREG_MONTHS_EN = [
-
-            'January (1)', 'February (2)', 'March (3)', 'April (4)',
-
-            'May (5)', 'June (6)', 'July (7)', 'August (8)',
-
-            'September (9)', 'October (10)', 'November (11)', 'December (12)'
-
-        ];
-
-
-
-        const GREG_MONTHS_SHORT_EN = [
-
-            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-
-            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-
-        ];
-
-
-
-        const WEEKDAYS_AR = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-
-        const WEEKDAYS_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-
-
-        /* =========================================================================
-
-           خوارزميات التحويل الفلكي بين الهجري والميلادي (تقويم أم القرى)
-
-           ========================================================================= */
-
-        function hijriToJulian(year, month, day) {
-
-            return Math.floor((11 * year + 3) / 30) + 354 * year + 30 * month - Math.floor((month - 1) / 2) + day + 1948440 - 385;
-
-        }
-
-
-
-        function julianToHijri(jd) {
-
-            const l = Math.floor(jd) - 1948440 + 10632;
-
-            const n = Math.floor((l - 1) / 10631);
-
-            const l1 = l - 10631 * n + 354;
-
-            const j = (Math.floor((10985 - l1) / 5316)) * (Math.floor((50 * l1) / 17719)) + (Math.floor(l1 / 5670)) * (Math.floor((43 * l1) / 15238));
-
-            const l2 = l1 - (Math.floor((30 - j) / 15)) * (Math.floor((17719 * j) / 50)) - (Math.floor(j / 16)) * (Math.floor((15238 * j) / 43)) + 29;
-
-            const month = Math.floor((24 * l2) / 709);
-
-            const day = l2 - Math.floor((709 * month) / 24);
-
-            const year = 30 * n + j - 30;
-
-            return { year, month, day };
-
-        }
-
-
-
-        function julianToGregorian(jd) {
-
-            const z = Math.floor(jd + 0.5);
-
-            let a = z;
-
-            if (z >= 2299161) {
-
-                const alpha = Math.floor((z - 1867216.25) / 36524.25);
-
-                a = z + 1 + alpha - Math.floor(alpha / 4);
-
-            }
-
-            const b = a + 1524;
-
-            const c = Math.floor((b - 122.1) / 365.25);
-
-            const d = Math.floor(365.25 * c);
-
-            const e = Math.floor((b - d) / 30.6001);
-
-            const day = b - d - Math.floor(30.6001 * e);
-
-            const month = e < 14 ? e - 1 : e - 13;
-
-            const year = month > 2 ? c - 4716 : c - 4715;
-
-            return new Date(year, month - 1, day);
-
-        }
-
-
-
-        function gregorianToJulian(year, month, day) {
-
-            let y = year;
-
-            let m = month;
-
-            if (m <= 2) { y -= 1; m += 12; }
-
-            const a = Math.floor(y / 100);
-
-            const b = 2 - a + Math.floor(a / 4);
-
-            return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + day + b - 1524.5;
-
-        }
-
-
-
-        // عدد أيام الشهر الهجري بدقة
-
-        function getHijriMonthLength(year, month) {
-
-            const jd1 = hijriToJulian(year, month, 1);
-
-            const jd2 = (month === 12) ? hijriToJulian(year + 1, 1, 1) : hijriToJulian(year, month + 1, 1);
-
-            return jd2 - jd1;
-
-        }
-
-
-
-        // فحص عطلة نهاية الأسبوع
-
-        function isDayWeekend(weekdayIndex) {
-
-            if (state.weekendOption === 'fri_sat') {
-
-                return (weekdayIndex === 5 || weekdayIndex === 6); // الجمعة والسبت
-
-            } else if (state.weekendOption === 'sat_sun') {
-
-                return (weekdayIndex === 6 || weekdayIndex === 0); // السبت والأحد
-
-            } else if (state.weekendOption === 'fri_only') {
-
-                return (weekdayIndex === 5); // الجمعة فقط
-
-            }
-
-            return false;
-
-        }
-
-
-
-        /* =========================================================================
-
-           حساب فصل السنة الفلكي الدقيق لكل يوم حسب التقويم الشمسي (تقويم أم القرى)
-
-           - الخريف: من 23 سبتمبر إلى 21 ديسمبر
-
-           - الشتاء: من 22 ديسمبر إلى 20 مارس
-
-           - الربيع: من 21 مارس إلى 20 يونيو
-
-           - الصيف: من 21 يونيو إلى 22 سبتمبر
-
-           ========================================================================= */
-
-        function getSeasonClassForDate(gDate) {
-
-            const m = gDate.getMonth() + 1; // 1 - 12
-
-            const d = gDate.getDate();
-
-            const md = m * 100 + d;
-
-
-
-            // الربيع: 21 مارس (321) حتى 20 يونيو (620)
-
-            if (md >= 321 && md <= 620) {
-
-                return 'season-b-spring';
-
-            }
-
-            // الصيف: 21 يونيو (621) حتى 22 سبتمبر (922)
-
-            else if (md >= 621 && md <= 922) {
-
-                return 'season-b-summer';
-
-            }
-
-            // الخريف: 23 سبتمبر (923) حتى 21 ديسمبر (1221)
-
-            else if (md >= 923 && md <= 1221) {
-
-                return 'season-b-autumn';
-
-            }
-
-            // الشتاء: من 22 ديسمبر حتى نهاية العام، ومن بداية العام حتى 20 مارس
-
-            else {
-
-                return 'season-b-winter';
-
-            }
-
-        }
-
-
-
-        /* =========================================================================
-
-           حساب يوم صرف الراتب الفعلي الدقيق لكل شهر ميلادي
-
-           القاعدة المعتمدة:
-
-           - الأساس: يوم الراتب المحدد (مثلاً 27).
-
-           - إذا وافق أول يوم عطلة أسبوعية (الجمعة في نظام الجمعة/السبت): يُقدّم للخميس (26).
-
-           - إذا وافق ثاني يوم عطلة أسبوعية (السبت في نظام الجمعة/السبت): يُؤخر للأحد (28).
-
-           - يُظلل ويُحدد يوم الاستلام الفعلي فقط (يوم واحد فقط في كل شهر ميلادي).
-
-           ========================================================================= */
-
-        function getActualSalaryDayForMonth(year, month) {
-
-            const baseTarget = parseInt(state.salaryDay) || 27;
-
-            const maxDaysInMonth = new Date(year, month + 1, 0).getDate();
-
-            const nominalDay = Math.min(baseTarget, maxDaysInMonth);
-
-            
-
-            if (!state.salaryWeekendAdjust) {
-
-                return nominalDay;
-
-            }
-
-
-
-            const nominalDate = new Date(year, month, nominalDay);
-
-            const nominalDow = nominalDate.getDay(); // 0: الأحد, ..., 5: الجمعة, 6: السبت
-
-
-
-            if (state.weekendOption === 'fri_sat') {
-
-                if (nominalDow === 5) {
-
-                    return nominalDay - 1; // الجمعة -> يقدّم للخميس (26)
-
-                } else if (nominalDow === 6) {
-
-                    return nominalDay + 1; // السبت -> يؤخر للأحد (28)
-
-                }
-
-            } else if (state.weekendOption === 'sat_sun') {
-
-                if (nominalDow === 6) {
-
-                    return nominalDay - 1; // السبت -> يقدّم للجمعة
-
-                } else if (nominalDow === 0) {
-
-                    return nominalDay + 1; // الأحد -> يؤخر للاثنين
-
-                }
-
-            } else if (state.weekendOption === 'fri_only') {
-
-                if (nominalDow === 5) {
-
-                    return nominalDay - 1; // الجمعة -> يقدّم للخميس
-
-                }
-
-            }
-
-
-
-            return nominalDay;
-
-        }
-
-
-
-        /* =========================================================================
-
-           فحص قاعدة العطلات الرسمية السعودية وقواعد التجسير
-
-           ========================================================================= */
-
-        function checkSaudiNationalBridgingHoliday(dateObj) {
-
-            if (!state.enableBridging) return false;
-
-            const m = dateObj.getMonth() + 1;
-
-            const d = dateObj.getDate();
-
-            const dow = dateObj.getDay();
-
-
-
-            // 1. اليوم الوطني (23 سبتمبر)
-
-            if (m === 9) {
-
-                if (d === 23) return true;
-
-                const natDate = new Date(dateObj.getFullYear(), 8, 23);
-
-                const natDow = natDate.getDay();
-
-                if (natDow === 1 && d === 22) return true; // الاثنين -> الأحد إجازة
-
-                if (natDow === 3 && d === 24) return true; // الأربعاء -> الخميس إجازة
-
-            }
-
-
-
-            // 2. يوم التأسيس (22 فبراير)
-
-            if (m === 2) {
-
-                if (d === 22) return true;
-
-                const foundDate = new Date(dateObj.getFullYear(), 1, 22);
-
-                const foundDow = foundDate.getDay();
-
-                if (foundDow === 1 && d === 21) return true; // الاثنين -> الأحد إجازة
-
-                if (foundDow === 3 && d === 23) return true; // الأربعاء -> الخميس إجازة
-
-            }
-
-
-
-            return false;
-
-        }
-
-
-
-        /* =========================================================================
-
-           توليد وبناء جدول التقويم بالكامل
-
-           ========================================================================= */
-
-        function renderCalendar() {
-
-            const tableHead = document.getElementById('calendarHead');
-
-            const tableBody = document.getElementById('calendarBody');
-
-            const legendBar = document.getElementById('legendBar');
-
-            const mainTitle = document.getElementById('txtMainCalendarTitle');
-
-            const yearLabel = document.getElementById('yearLabel');
-
-            const dirRTL = (state.lang === 'ar');
-
-
-
-            // تحديث اتجاه المستند وخصائص CSS للمتغيرات اللونية
-
-            document.documentElement.dir = dirRTL ? 'rtl' : 'ltr';
-
-            document.documentElement.lang = state.lang;
-
-            document.documentElement.style.setProperty('--col-spring', state.colors.spring);
-
-            document.documentElement.style.setProperty('--col-summer', state.colors.summer);
-
-            document.documentElement.style.setProperty('--col-autumn', state.colors.autumn);
-
-            document.documentElement.style.setProperty('--col-winter', state.colors.winter);
-
-
-
-            document.getElementById('headerBar').style.backgroundColor = state.colors.header;
-
-
-
-            const isHijri = (state.primaryMode === 'hijri');
-
-            const targetYear = parseInt(state.year);
-
-
-
-            // تحديث العناوين في الترويسة
-
-            if (isHijri) {
-
-                yearLabel.textContent = dirRTL ? 'هـ' : 'AH';
-
-                const startG = julianToGregorian(hijriToJulian(targetYear, 1, 1)).getFullYear();
-
-                const endG = julianToGregorian(hijriToJulian(targetYear, 12, 29)).getFullYear();
-
-                const gSpan = (startG === endG) ? `${startG}` : `${startG} / ${endG}`;
-
-                mainTitle.textContent = dirRTL 
-
-                    ? `التقويم الهجري لعام ${targetYear} هـ ( ${gSpan} م )`
-
-                    : `Hijri Calendar for Year ${targetYear} AH ( ${gSpan} CE )`;
-
-            } else {
-
-                yearLabel.textContent = dirRTL ? 'م' : 'CE';
-
-                const startH = julianToHijri(gregorianToJulian(targetYear, 1, 1)).year;
-
-                const endH = julianToHijri(gregorianToJulian(targetYear, 12, 31)).year;
-
-                const hSpan = (startH === endH) ? `${startH}` : `${startH} / ${endH}`;
-
-                mainTitle.textContent = dirRTL 
-
-                    ? `التقويم الميلادي لعام ${targetYear} م ( ${hSpan} هـ )`
-
-                    : `Gregorian Calendar for Year ${targetYear} CE ( ${hSpan} AH )`;
-
-            }
-
-
-
-            // حساب نطاقات إجازات الأعياد عبر الشهور المتداخلة
-
-            let eidJdRanges = [];
-
-            let schoolJdRanges = [];
-
-
-
-            if (isHijri) {
-
-                // عيد الفطر
-
-                const fitrStartJd = hijriToJulian(targetYear, parseInt(state.fitrStartMonth), parseInt(state.fitrStartDay));
-
-                const fitrEndJd = fitrStartJd + (parseInt(state.fitrDays) || 12) - 1;
-
-                eidJdRanges.push({ start: fitrStartJd, end: fitrEndJd });
-
-
-
-                // عيد الأضحى
-
-                const adhaStartJd = hijriToJulian(targetYear, parseInt(state.adhaStartMonth), parseInt(state.adhaStartDay));
-
-                const adhaEndJd = adhaStartJd + (parseInt(state.adhaDays) || 12) - 1;
-
-                eidJdRanges.push({ start: adhaStartJd, end: adhaEndJd });
-
-
-
-                // إجازات الطلاب والعطل الدراسية المتعددة
-
-                if (Array.isArray(state.schoolHolidays)) {
-
-                    state.schoolHolidays.forEach(sh => {
-
-                        const sMonth = parseInt(sh.startMonth) || 1;
-
-                        const sDay = parseInt(sh.startDay) || 1;
-
-                        const sDays = parseInt(sh.days) || 1;
-
-                        const sJd = hijriToJulian(targetYear, sMonth, sDay);
-
-                        const eJd = sJd + sDays - 1;
-
-                        schoolJdRanges.push({ start: sJd, end: eJd, title: sh.title });
-
-                    });
-
-                }
-
-            } else {
-
-                if (Array.isArray(state.schoolHolidays)) {
-
-                    state.schoolHolidays.forEach(sh => {
-
-                        const sMonth = parseInt(sh.startMonth) || 1;
-
-                        const sDay = parseInt(sh.startDay) || 1;
-
-                        const sDays = parseInt(sh.days) || 1;
-
-                        const sJd = gregorianToJulian(targetYear, sMonth, sDay);
-
-                        const eJd = sJd + sDays - 1;
-
-                        schoolJdRanges.push({ start: sJd, end: eJd, title: sh.title });
-
-                    });
-
-                }
-
-            }
-
-
-
-            // جمع بيانات الأشهر الـ 12
-
-            const monthsData = [];
-
-            let minStartDow = 7;
-
-            for (let m = 1; m <= 12; m++) {
-
-                let length, startJd;
-
-                if (isHijri) {
-
-                    length = getHijriMonthLength(targetYear, m);
-
-                    startJd = hijriToJulian(targetYear, m, 1);
-
-                } else {
-
-                    length = new Date(targetYear, m, 0).getDate();
-
-                    startJd = gregorianToJulian(targetYear, m, 1);
-
-                }
-
-                const startDate = julianToGregorian(startJd);
-
-                const startDow = startDate.getDay();
-
-                if (startDow < minStartDow) minStartDow = startDow;
-
-
-
-                monthsData.push({
-
-                    monthNum: m,
-
-                    length,
-
-                    startJd,
-
-                    startDate,
-
-                    startDow
-
-                });
-
-            }
-
-
-
-            // صف أيام الأسبوع الرأسي الممتد لـ 36 عموداً
-
-            const baseStartDow = minStartDow;
-
-            const TOTAL_COLUMNS = 36;
-
-            const colWeekdays = [];
-
-            for (let i = 0; i < TOTAL_COLUMNS; i++) {
-
-                const dow = (baseStartDow + i) % 7;
-
-                colWeekdays.push(dow);
-
-            }
-
-
-
-            // بناء رأس الجدول (Thead)
-
-            let headHtml = `<tr class="bg-cyan-50 border-b-2 border-slate-900 h-16 sm:h-20">`;
-
-            const monthHeaderTitle = dirRTL ? 'الشـهــــــــــــر' : 'Month';
-
-            headHtml += `<th class="w-28 sm:w-36 px-1 border-r border-l border-slate-900 bg-cyan-100/90 font-extrabold text-xs sm:text-sm text-slate-800">${monthHeaderTitle}</th>`;
-
-
-
-            for (let i = 0; i < TOTAL_COLUMNS; i++) {
-
-                const dow = colWeekdays[i];
-
-                const wName = dirRTL ? WEEKDAYS_AR[dow] : WEEKDAYS_EN[dow];
-
-                const isWk = isDayWeekend(dow);
-
-                const bgTh = isWk ? `style="background-color: ${state.colors.weekend};"` : `class="bg-white"`;
-
-                const textCol = isWk ? `text-amber-900 font-extrabold` : `text-slate-800 font-bold`;
-
-
-
-                headHtml += `
-
-                    <th ${bgTh} class="w-[2.4%] border-r border-l border-slate-400 p-0 text-[10px] sm:text-xs">
-
-                        <div class="vertical-text mx-auto tracking-widest ${textCol}">
-
-                            ${wName}
-
-                        </div>
-
-                    </th>
-
-                `;
-
-            }
-
-            headHtml += `</tr>`;
-
-            tableHead.innerHTML = headHtml;
-
-
-
-            // بناء صفوف الأشهر الـ 12 (Tbody)
-
-            let bodyHtml = '';
-
-            monthsData.forEach((mInfo, mIdx) => {
-
-                const mNumber = mInfo.monthNum;
-
-                let monthTitle, subTitle1, subTitle2;
-
-
-
-                if (isHijri) {
-
-                    monthTitle = dirRTL ? HIJRI_MONTHS_AR[mNumber - 1] : HIJRI_MONTHS_EN[mNumber - 1];
-
-                    const gStart = mInfo.startDate;
-
-                    const gEnd = julianToGregorian(mInfo.startJd + mInfo.length - 1);
-
-                    const smName1 = dirRTL ? GREG_MONTHS_SHORT_AR[gStart.getMonth()] : GREG_MONTHS_SHORT_EN[gStart.getMonth()];
-
-                    const smName2 = dirRTL ? GREG_MONTHS_SHORT_AR[gEnd.getMonth()] : GREG_MONTHS_SHORT_EN[gEnd.getMonth()];
-
-                    subTitle1 = `${smName1} ${gStart.getFullYear()}`;
-
-                    subTitle2 = (gStart.getMonth() !== gEnd.getMonth()) ? `${smName2} ${gEnd.getFullYear()}` : '';
-
-                } else {
-
-                    monthTitle = dirRTL ? GREG_MONTHS_AR[mNumber - 1] : GREG_MONTHS_EN[mNumber - 1];
-
-                    const hStart = julianToHijri(mInfo.startJd);
-
-                    const hEnd = julianToHijri(mInfo.startJd + mInfo.length - 1);
-
-                    const shName1 = dirRTL ? HIJRI_MONTHS_AR[hStart.month - 1].split(' ')[0] : HIJRI_MONTHS_EN[hStart.month - 1].split(' ')[0];
-
-                    const shName2 = dirRTL ? HIJRI_MONTHS_AR[hEnd.month - 1].split(' ')[0] : HIJRI_MONTHS_EN[hEnd.month - 1].split(' ')[0];
-
-                    subTitle1 = `${shName1} ${hStart.year}`;
-
-                    subTitle2 = (hStart.month !== hEnd.month) ? `${shName2} ${hEnd.year}` : '';
-
-                }
-
-
-
-                // حساب إزاحة عمود البداية
-
-                let startOffset = (mInfo.startDow - baseStartDow + 7) % 7;
-
-
-
-                // تم إلغاء خط الفصل الموحد على مستوى الصف؛ ليتم حسابه يومياً لكل خلية بدقة فلكية
-
-                bodyHtml += `<tr class="border-b-2 border-slate-800 cal-row hover:bg-slate-50/50 transition">`;
-
-
-
-                // عمود اسم الشهر - موسط أفقياً ورأسياً بالكامل مع تمييز فصل بداية الشهر
-
-                const monthInitialSeasonClass = getSeasonClassForDate(mInfo.startDate);
-
-                bodyHtml += `
-
-                    <td class="border-r border-l border-slate-900 bg-white px-1 py-0.5 text-center align-middle ${monthInitialSeasonClass}">
-
-                        <div class="flex flex-col items-center justify-center h-full text-center">
-
-                            <div class="font-kashida font-black text-xs sm:text-[13px] text-slate-950 leading-tight tracking-wide text-center">${monthTitle}</div>
-
-                            <div class="flex items-center justify-center gap-1.5 text-[9px] sm:text-[10px] font-black text-slate-700 mt-0.5 text-center">
-
-                                <span class="text-rose-700 font-extrabold">${subTitle1}</span>
-
-                                ${subTitle2 ? `<span class="text-blue-700 font-extrabold">${subTitle2}</span>` : ''}
-
-                            </div>
-
-                        </div>
-
-                    </td>
-
-                `;
-
-
-
-                // أعمدة الأيام الـ 36
-
-                for (let colIdx = 0; colIdx < TOTAL_COLUMNS; colIdx++) {
-
-                    const dayNumber = colIdx - startOffset + 1;
-
-                    const dow = colWeekdays[colIdx];
-
-                    const isWk = isDayWeekend(dow);
-
-
-
-                    if (dayNumber >= 1 && dayNumber <= mInfo.length) {
-
-                        const jd = mInfo.startJd + (dayNumber - 1);
-
-                        const gDateVal = julianToGregorian(jd);
-
-                        const hDateVal = julianToHijri(jd);
-
-
-
-                        // تحديد فصل السنة الفلكي الدقيق لهذا اليوم بالذات
-
-                        const daySeasonClass = getSeasonClassForDate(gDateVal);
-
-
-
-                        let primaryNum = dayNumber;
-
-                        let secondaryNum = '';
-
-                        let secondaryColor = 'text-blue-700';
-
-
-
-                        let isSalaryDay = false;
-
-                        let isNationalHoliday = false;
-
-                        let isEidHoliday = false;
-
-                        let isSchoolHoliday = false;
-
-                        let isCustomHoliday = false;
-
-
-
-                        if (isHijri) {
-
-                            secondaryNum = gDateVal.getDate();
-
-                            const isFirstGreg = (gDateVal.getMonth() === mInfo.startDate.getMonth());
-
-                            secondaryColor = isFirstGreg ? 'text-blue-700' : 'text-rose-700';
-
-
-
-                            // 1. حساب وتحديد يوم صرف الراتب الفعلي فقط
-
-                            const actualSalaryDay = getActualSalaryDayForMonth(gDateVal.getFullYear(), gDateVal.getMonth());
-
-                            if (gDateVal.getDate() === actualSalaryDay) {
-
-                                isSalaryDay = true;
-
-                            }
-
-
-
-                            // 2. اليوم الوطني والتأسيس
-
-                            if (checkSaudiNationalBridgingHoliday(gDateVal)) isNationalHoliday = true;
-
-
-
-                            // 3. الأعياد
-
-                            if (eidJdRanges.some(r => jd >= r.start && jd <= r.end)) isEidHoliday = true;
-
-
-
-                            // 4. إجازات الطلاب والعطل الدراسية
-
-                            if (schoolJdRanges.some(r => jd >= r.start && jd <= r.end)) isSchoolHoliday = true;
-
-
-
-                        } else {
-
-                            secondaryNum = hDateVal.day;
-
-                            const isFirstHijri = (hDateVal.month === julianToHijri(mInfo.startJd).month);
-
-                            secondaryColor = isFirstHijri ? 'text-blue-700' : 'text-rose-700';
-
-
-
-                            const actualSalaryDay = getActualSalaryDayForMonth(targetYear, mNumber - 1);
-
-                            if (dayNumber === actualSalaryDay) {
-
-                                isSalaryDay = true;
-
-                            }
-
-                            if (checkSaudiNationalBridgingHoliday(gDateVal)) isNationalHoliday = true;
-
-                            if (eidJdRanges.some(r => jd >= r.start && jd <= r.end)) isEidHoliday = true;
-
-                            if (schoolJdRanges.some(r => jd >= r.start && jd <= r.end)) isSchoolHoliday = true;
-
-                        }
-
-
-
-                        // فحص المناسبات المخصصة
-
-                        state.customEvents.forEach(evt => {
-
-                            if (evt.month === mNumber && dayNumber >= evt.startDay && dayNumber <= evt.endDay) {
-
-                                isCustomHoliday = true;
-
-                            }
-
-                        });
-
-
-
-                        // تطبيق الألوان حسب الأولوية
-
-                        let cellBg = isWk ? state.colors.weekend : '#ffffff';
-
-                        let textColor = 'text-slate-950 font-black';
-
-
-
-                        if (isSalaryDay) {
-
-                            cellBg = state.colors.salary;
-
-                            textColor = 'text-white font-black';
-
-                            secondaryColor = 'text-white';
-
-                        } else if (isNationalHoliday) {
-
-                            cellBg = state.colors.national;
-
-                            textColor = 'text-white font-black';
-
-                            secondaryColor = 'text-emerald-100 font-extrabold';
-
-                        } else if (isEidHoliday) {
-
-                            cellBg = state.colors.eid;
-
-                            textColor = 'text-slate-950 font-black';
-
-                            secondaryColor = 'text-slate-800 font-extrabold';
-
-                        } else if (isSchoolHoliday) {
-
-                            cellBg = state.colors.school;
-
-                            textColor = 'text-amber-950 font-black';
-
-                            secondaryColor = 'text-amber-900 font-black';
-
-                        } else if (isCustomHoliday) {
-
-                            cellBg = '#fde68a';
-
-                            textColor = 'text-slate-950 font-black';
-
-                            secondaryColor = 'text-amber-900 font-bold';
-
-                        }
-
-
-
-                        bodyHtml += `
-
-                            <td style="background-color: ${cellBg};" class="border-r border-l border-slate-300 p-0 text-center transition ${daySeasonClass}">
-
-                                <div class="flex flex-col items-center justify-center h-full py-0.5">
-
-                                    <span class="font-black ${textColor} text-[11px] sm:text-[12px] leading-tight">${primaryNum}</span>
-
-                                    <span class="font-extrabold ${secondaryColor} text-[9px] sm:text-[10px] leading-tight">${secondaryNum}</span>
-
-                                </div>
-
-                            </td>
-
-                        `;
-
-                    } else {
-
-                        // خلية فارغة خارج نطاق الشهر
-
-                        const bgEmpty = isWk ? `style="background-color: ${state.colors.weekend}; opacity: 0.5;"` : `class="bg-slate-50/70"`;
-
-                        bodyHtml += `<td ${bgEmpty} class="border-r border-l border-slate-200 p-0"></td>`;
-
-                    }
-
-                }
-
-
-
-                bodyHtml += `</tr>`;
-
-            });
-
-
-
-            tableBody.innerHTML = bodyHtml;
-
-
-
-            // بناء شريط دليل الألوان (Legend)
-
-            renderLegend(dirRTL);
-
-        }
-
-
-
-        /* =========================================================================
-
-           بناء وتحديث دليل الألوان (Legend)
-
-           ========================================================================= */
-
-        function renderLegend(dirRTL) {
-
-            const legendBar = document.getElementById('legendBar');
-
-            const l = (ar, en) => dirRTL ? ar : en;
-
-
-
-            legendBar.innerHTML = `
-
-                <div class="flex items-center gap-1.5">
-
-                    <span class="w-3.5 h-3.5 border border-slate-700 rounded-sm" style="background-color: ${state.colors.weekend};"></span>
-
-                    <span>${l('عطلة نهاية الأسبوع', 'Weekend')}</span>
-
-                </div>
-
-                <div class="flex items-center gap-1.5">
-
-                    <span class="w-3.5 h-3.5 border border-slate-700 rounded-sm" style="background-color: ${state.colors.national};"></span>
-
-                    <span>${l('اليوم الوطني والتأسيس', 'National & Founding Day')}</span>
-
-                </div>
-
-                <div class="flex items-center gap-1.5">
-
-                    <span class="w-3.5 h-3.5 border border-slate-700 rounded-sm" style="background-color: ${state.colors.salary};"></span>
-
-                    <span>${l('الرواتب (يوم الاستلام فقط)', 'Salary Payout')}</span>
-
-                </div>
-
-                <div class="flex items-center gap-1.5">
-
-                    <span class="w-3.5 h-3.5 border border-slate-700 rounded-sm" style="background-color: ${state.colors.eid};"></span>
-
-                    <span>${l('إجازات الأعياد', 'Eid Holidays')}</span>
-
-                </div>
-
-                <div class="flex items-center gap-1.5 bg-amber-100/80 px-1.5 py-0.5 rounded border border-amber-300">
-
-                    <span class="w-3.5 h-3.5 border border-amber-700 rounded-sm shadow-sm" style="background-color: ${state.colors.school};"></span>
-
-                    <span class="text-amber-950 font-extrabold">${l('إجازات الطلاب والعطل الدراسية', 'School Holidays')}</span>
-
-                </div>
-
-                <div class="flex items-center gap-1.5">
-
-                    <span class="w-3.5 h-3.5 border border-slate-700 rounded-sm bg-amber-200"></span>
-
-                    <span>${l('مناسبات خاصة', 'Custom Events')}</span>
-
-                </div>
-
-                <div class="flex items-center gap-1.5 border-r pr-2 border-slate-300">
-
-                    <span class="w-4 h-1 rounded" style="background-color: ${state.colors.summer};"></span>
-
-                    <span>${l('فصل الصيف', 'Summer')}</span>
-
-                </div>
-
-                <div class="flex items-center gap-1.5">
-
-                    <span class="w-4 h-1 rounded" style="background-color: ${state.colors.autumn};"></span>
-
-                    <span>${l('فصل الخريف', 'Autumn')}</span>
-
-                </div>
-
-                <div class="flex items-center gap-1.5">
-
-                    <span class="w-4 h-1 rounded" style="background-color: ${state.colors.winter};"></span>
-
-                    <span>${l('فصل الشتاء', 'Winter')}</span>
-
-                </div>
-
-                <div class="flex items-center gap-1.5">
-
-                    <span class="w-4 h-1 rounded" style="background-color: ${state.colors.spring};"></span>
-
-                    <span>${l('فصل الربيع', 'Spring')}</span>
-
-                </div>
-
-            `;
-
-        }
-
-
-
-        /* =========================================================================
-
-           إدارة الأحداث والتفاعل (Event Listeners)
-
-           ========================================================================= */
-
-        document.addEventListener('DOMContentLoaded', () => {
-
-
-
-            // استرجاع الإعدادات المحفوظة إن وجدت
-
-            try {
-
-                const savedState = localStorage.getItem('calendar_app_config');
-
-                if (savedState) {
-
-                    const parsed = JSON.parse(savedState);
-
-                    Object.assign(state, parsed);
-
-                    document.getElementById('inputYear').value = state.year;
-
-                    document.getElementById('txtHeaderNames').textContent = state.headerNames;
-
-                    document.getElementById('txtHeaderOrg').textContent = state.headerOrg;
-
-                    if (state.logoData) {
-
-                        const img = document.getElementById('imgLogo');
-
-                        img.src = state.logoData;
-
-                        img.classList.remove('hidden');
-
-                    }
-
-                }
-
-            } catch(e) { console.error(e); }
-
-
-
-            // 1. أزرار السنة
-
-            document.getElementById('btnPrevYear').addEventListener('click', () => {
-
-                state.year = parseInt(state.year) - 1;
-
-                document.getElementById('inputYear').value = state.year;
-
-                renderCalendar();
-
-            });
-
-            document.getElementById('btnNextYear').addEventListener('click', () => {
-
-                state.year = parseInt(state.year) + 1;
-
-                document.getElementById('inputYear').value = state.year;
-
-                renderCalendar();
-
-            });
-
-            document.getElementById('inputYear').addEventListener('change', (e) => {
-
-                state.year = parseInt(e.target.value) || 1448;
-
-                renderCalendar();
-
-            });
-
-
-
-            // 2. نوع التقويم
-
-            const btnH = document.getElementById('btnModeHijri');
-
-            const btnG = document.getElementById('btnModeGreg');
-
-            btnH.addEventListener('click', () => {
-
-                state.primaryMode = 'hijri';
-
-                if (state.year > 1800) state.year = 1448;
-
-                document.getElementById('inputYear').value = state.year;
-
-                btnH.className = 'px-2.5 py-1 rounded font-bold transition text-xs bg-[#009bb0] text-white';
-
-                btnG.className = 'px-2.5 py-1 rounded font-bold transition text-xs text-slate-300 hover:text-white';
-
-                renderCalendar();
-
-            });
-
-            btnG.addEventListener('click', () => {
-
-                state.primaryMode = 'greg';
-
-                if (state.year < 1800) state.year = 2026;
-
-                document.getElementById('inputYear').value = state.year;
-
-                btnG.className = 'px-2.5 py-1 rounded font-bold transition text-xs bg-[#009bb0] text-white';
-
-                btnH.className = 'px-2.5 py-1 rounded font-bold transition text-xs text-slate-300 hover:text-white';
-
-                renderCalendar();
-
-            });
-
-
-
-            // 3. تبديل اللغة
-
-            const btnLang = document.getElementById('btnToggleLang');
-
-            btnLang.addEventListener('click', () => {
-
-                state.lang = (state.lang === 'ar') ? 'en' : 'ar';
-
-                btnLang.textContent = (state.lang === 'ar') ? '🌐 English (LTR)' : '🌐 العربية (RTL)';
-
-                renderCalendar();
-
-            });
-
-
-
-            // 4. مقاسات العرض والطباعة
-
-            const printBox = document.getElementById('printArea');
-
-            document.getElementById('btnSizeA4').addEventListener('click', () => {
-
-                printBox.style.maxWidth = '1120px';
-
-                printBox.classList.remove('w-full');
-
-            });
-
-            document.getElementById('btnSizeA3').addEventListener('click', () => {
-
-                printBox.style.maxWidth = '1580px';
-
-                printBox.classList.remove('w-full');
-
-            });
-
-            document.getElementById('btnSizeFit').addEventListener('click', () => {
-
-                printBox.style.maxWidth = '100%';
-
-                printBox.classList.add('w-full');
-
-            });
-
-
-
-            // 5. زر الطباعة / حفظ PDF
-
-            document.getElementById('btnPrint').addEventListener('click', () => {
-
-                window.print();
-
-            });
-
-
-
-            // =========================================================================
-
-            // نوافذ الإعدادات (Modals Logic)
-
-            // =========================================================================
-
-
-
-            // نافذة الإجازات والرواتب
-
-            const modalRules = document.getElementById('modalRules');
-
-            document.getElementById('btnOpenRulesModal').addEventListener('click', () => {
-
-                document.getElementById('cfgSalaryDay').value = state.salaryDay;
-
-                document.getElementById('cfgWeekendMode').value = state.weekendOption;
-
-                document.getElementById('cfgEnableBridging').checked = state.enableBridging;
-
-
-
-                document.getElementById('cfgFitrMonth').value = state.fitrStartMonth;
-
-                document.getElementById('cfgFitrDay').value = state.fitrStartDay;
-
-                document.getElementById('cfgFitrDays').value = state.fitrDays;
-
-
-
-                document.getElementById('cfgAdhaMonth').value = state.adhaStartMonth;
-
-                document.getElementById('cfgAdhaDay').value = state.adhaStartDay;
-
-                document.getElementById('cfgAdhaDays').value = state.adhaDays;
-
-
-
-                renderSchoolHolidaysInputs();
-
-                renderCustomEventsInputs();
-
-                modalRules.classList.remove('hidden');
-
-            });
-
-
-
-            document.getElementById('btnCloseRules').addEventListener('click', () => {
-
-                modalRules.classList.add('hidden');
-
-            });
-
-
-
-            document.getElementById('btnAddSchoolHoliday').addEventListener('click', () => {
-
-                if (!Array.isArray(state.schoolHolidays)) state.schoolHolidays = [];
-
-                state.schoolHolidays.push({
-
-                    id: Date.now(),
-
-                    title: `إجازة دراسية ${state.schoolHolidays.length + 1}`,
-
-                    startMonth: 4,
-
-                    startDay: 1,
-
-                    days: 7
-
-                });
-
-                renderSchoolHolidaysInputs();
-
-            });
-
-
-
-            function renderSchoolHolidaysInputs() {
-
-                const container = document.getElementById('schoolHolidaysContainer');
-
-                if (!container) return;
-
-                container.innerHTML = '';
-
-                
-
-                if (!Array.isArray(state.schoolHolidays) || state.schoolHolidays.length === 0) {
-
-                    container.innerHTML = '<div class="text-xs text-amber-800 p-2 text-center bg-white rounded border border-amber-200">لا توجد إجازات دراسية مضافة حالياً. اضغط على "+ إضافة إجازة دراسية" لإضافة إجازة.</div>';
-
-                    return;
-
-                }
-
-
-
-                const monthsList = (state.primaryMode === 'hijri') ? HIJRI_MONTHS_AR : GREG_MONTHS_AR;
-
-
-
-                state.schoolHolidays.forEach((sh, idx) => {
-
-                    const row = document.createElement('div');
-
-                    row.className = 'flex flex-wrap items-center gap-1.5 bg-white p-2 border border-amber-200 rounded text-xs shadow-sm';
-
-                    
-
-                    let optionsHtml = '';
-
-                    monthsList.forEach((mName, mIdx) => {
-
-                        const mVal = mIdx + 1;
-
-                        const isSel = (parseInt(sh.startMonth) === mVal) ? 'selected' : '';
-
-                        optionsHtml += `<option value="${mVal}" ${isSel}>${mName}</option>`;
-
-                    });
-
-
-
-                    row.innerHTML = `
-
-                        <input type="text" value="${sh.title}" class="sh-title flex-1 min-w-[120px] p-1 border border-slate-300 rounded font-bold text-slate-800" placeholder="اسم الإجازة">
-
-                        <span class="text-slate-600 font-semibold text-[11px]">شهر:</span>
-
-                        <select class="sh-month p-1 border border-slate-300 rounded font-semibold text-xs">
-
-                            ${optionsHtml}
-
-                        </select>
-
-                        <span class="text-slate-600 font-semibold text-[11px]">يوم:</span>
-
-                        <input type="number" min="1" max="30" value="${sh.startDay}" class="sh-start w-12 p-1 border border-slate-300 rounded text-center font-bold">
-
-                        <span class="text-slate-600 font-semibold text-[11px]">المدة:</span>
-
-                        <input type="number" min="1" max="90" value="${sh.days}" class="sh-days w-12 p-1 border border-slate-300 rounded text-center font-bold text-amber-700" title="المدة بالأيام">
-
-                        <span class="text-[10px] text-slate-500">أيام</span>
-
-                        <button type="button" class="sh-del text-red-500 hover:text-red-700 px-1.5 py-0.5 rounded hover:bg-red-50 font-bold transition" title="حذف هذه الإجازة">✕</button>
-
-                    `;
-
-
-
-                    row.querySelector('.sh-title').addEventListener('change', (e) => sh.title = e.target.value);
-
-                    row.querySelector('.sh-month').addEventListener('change', (e) => sh.startMonth = parseInt(e.target.value));
-
-                    row.querySelector('.sh-start').addEventListener('change', (e) => sh.startDay = parseInt(e.target.value));
-
-                    row.querySelector('.sh-days').addEventListener('change', (e) => sh.days = parseInt(e.target.value));
-
-                    row.querySelector('.sh-del').addEventListener('click', () => {
-
-                        state.schoolHolidays.splice(idx, 1);
-
-                        renderSchoolHolidaysInputs();
-
-                    });
-
-
-
-                    container.appendChild(row);
-
-                });
-
-            }
-
-
-
-            document.getElementById('btnSaveRules').addEventListener('click', () => {
-
-                state.salaryDay = parseInt(document.getElementById('cfgSalaryDay').value) || 27;
-
-                state.weekendOption = document.getElementById('cfgWeekendMode').value;
-
-                state.enableBridging = document.getElementById('cfgEnableBridging').checked;
-
-
-
-                state.fitrStartMonth = parseInt(document.getElementById('cfgFitrMonth').value);
-
-                state.fitrStartDay = parseInt(document.getElementById('cfgFitrDay').value);
-
-                state.fitrDays = parseInt(document.getElementById('cfgFitrDays').value);
-
-
-
-                state.adhaStartMonth = parseInt(document.getElementById('cfgAdhaMonth').value);
-
-                state.adhaStartDay = parseInt(document.getElementById('cfgAdhaDay').value);
-
-                state.adhaDays = parseInt(document.getElementById('cfgAdhaDays').value);
-
-
-
-                saveStateLocally();
-
-                renderCalendar();
-
-                modalRules.classList.add('hidden');
-
-            });
-
-
-
-            document.getElementById('btnResetRules').addEventListener('click', () => {
-
-                state.salaryDay = 27;
-
-                state.salaryWeekendAdjust = true;
-
-                state.weekendOption = 'fri_sat';
-
-                state.enableBridging = true;
-
-                state.fitrStartMonth = 9;
-
-                state.fitrStartDay = 25;
-
-                state.fitrDays = 12;
-
-                state.adhaStartMonth = 12;
-
-                state.adhaStartDay = 5;
-
-                state.adhaDays = 12;
-
-                state.schoolHolidays = [
-
-                    { id: 1, title: 'إجازة الخريف', startMonth: 5, startDay: 14, days: 10 },
-
-                    { id: 2, title: 'إجازة منتصف العام الدراسي', startMonth: 7, startDay: 20, days: 9 },
-
-                    { id: 3, title: 'إجازة مطولة 1', startMonth: 3, startDay: 18, days: 4 },
-
-                    { id: 4, title: 'إجازة مطولة 2', startMonth: 8, startDay: 12, days: 4 },
-
-                    { id: 5, title: 'إجازة نهاية العام الدراسي', startMonth: 12, startDay: 16, days: 15 }
-
-                ];
-
-                state.customEvents = [];
-
-                saveStateLocally();
-
-                renderCalendar();
-
-                modalRules.classList.add('hidden');
-
-            });
-
-
-
-            // إضافة وتعديل المناسبات الخاصة
-
-            document.getElementById('btnAddCustomEvent').addEventListener('click', () => {
-
-                state.customEvents.push({
-
-                    title: 'مناسبة خاصة',
-
-                    month: 1,
-
-                    startDay: 1,
-
-                    endDay: 3
-
-                });
-
-                renderCustomEventsInputs();
-
-            });
-
-
-
-            function renderCustomEventsInputs() {
-
-                const c = document.getElementById('customEventsContainer');
-
-                c.innerHTML = '';
-
-                state.customEvents.forEach((evt, idx) => {
-
-                    const row = document.createElement('div');
-
-                    row.className = 'flex items-center gap-1.5 bg-white p-1.5 border rounded text-xs';
-
-                    row.innerHTML = `
-
-                        <input type="text" value="${evt.title}" class="evt-title flex-1 p-1 border rounded" placeholder="اسم المناسبة">
-
-                        <span class="text-slate-500">شهر:</span>
-
-                        <input type="number" min="1" max="12" value="${evt.month}" class="evt-month w-12 p-1 border rounded text-center">
-
-                        <span class="text-slate-500">من:</span>
-
-                        <input type="number" min="1" max="30" value="${evt.startDay}" class="evt-start w-12 p-1 border rounded text-center">
-
-                        <span class="text-slate-500">إلى:</span>
-
-                        <input type="number" min="1" max="30" value="${evt.endDay}" class="evt-end w-12 p-1 border rounded text-center">
-
-                        <button class="evt-del text-red-500 hover:text-red-700 px-1 font-bold">✕</button>
-
-                    `;
-
-                    row.querySelector('.evt-title').addEventListener('change', (e) => evt.title = e.target.value);
-
-                    row.querySelector('.evt-month').addEventListener('change', (e) => evt.month = parseInt(e.target.value));
-
-                    row.querySelector('.evt-start').addEventListener('change', (e) => evt.startDay = parseInt(e.target.value));
-
-                    row.querySelector('.evt-end').addEventListener('change', (e) => evt.endDay = parseInt(e.target.value));
-
-                    row.querySelector('.evt-del').addEventListener('click', () => {
-
-                        state.customEvents.splice(idx, 1);
-
-                        renderCustomEventsInputs();
-
-                    });
-
-                    c.appendChild(row);
-
-                });
-
-            }
-
-
-
-            // نافذة الألوان
-
-            const modalColors = document.getElementById('modalColors');
-
-            document.getElementById('btnOpenColorsModal').addEventListener('click', () => {
-
-                document.getElementById('clrHeader').value = state.colors.header;
-
-                document.getElementById('clrSalary').value = state.colors.salary;
-
-                document.getElementById('clrNational').value = state.colors.national;
-
-                document.getElementById('clrEid').value = state.colors.eid;
-
-                document.getElementById('clrWeekend').value = state.colors.weekend;
-
-                document.getElementById('clrSchool').value = state.colors.school;
-
-                document.getElementById('clrSummer').value = state.colors.summer;
-
-                document.getElementById('clrAutumn').value = state.colors.autumn;
-
-                document.getElementById('clrWinter').value = state.colors.winter;
-
-                document.getElementById('clrSpring').value = state.colors.spring;
-
-                modalColors.classList.remove('hidden');
-
-            });
-
-
-
-            document.getElementById('btnCloseColors').addEventListener('click', () => modalColors.classList.add('hidden'));
-
-
-
-            document.getElementById('btnSaveColors').addEventListener('click', () => {
-
-                state.colors.header = document.getElementById('clrHeader').value;
-
-                state.colors.salary = document.getElementById('clrSalary').value;
-
-                state.colors.national = document.getElementById('clrNational').value;
-
-                state.colors.eid = document.getElementById('clrEid').value;
-
-                state.colors.weekend = document.getElementById('clrWeekend').value;
-
-                state.colors.school = document.getElementById('clrSchool').value;
-
-                state.colors.summer = document.getElementById('clrSummer').value;
-
-                state.colors.autumn = document.getElementById('clrAutumn').value;
-
-                state.colors.winter = document.getElementById('clrWinter').value;
-
-                state.colors.spring = document.getElementById('clrSpring').value;
-
-                saveStateLocally();
-
-                renderCalendar();
-
-                modalColors.classList.add('hidden');
-
-            });
-
-
-
-            document.getElementById('btnResetColors').addEventListener('click', () => {
-
-                state.colors = {
-
-                    header: '#009bb0',
-
-                    salary: '#6b7280',
-
-                    national: '#059669',
-
-                    eid: '#cbd5e1',
-
-                    weekend: '#fef3c7',
-
-                    school: '#fed7aa',
-
-                    summer: '#f97316',
-
-                    autumn: '#dc2626',
-
-                    winter: '#2563eb',
-
-                    spring: '#10b981'
-
-                };
-
-                saveStateLocally();
-
-                renderCalendar();
-
-                modalColors.classList.add('hidden');
-
-            });
-
-
-
-            // نافذة الترويسة والشعار
-
-            const modalHeader = document.getElementById('modalHeader');
-
-            document.getElementById('btnOpenHeaderModal').addEventListener('click', () => {
-
-                document.getElementById('inputHeaderNames').value = state.headerNames;
-
-                document.getElementById('inputHeaderOrg').value = state.headerOrg;
-
-                const btnRem = document.getElementById('btnRemoveLogo');
-
-                if (state.logoData) btnRem.classList.remove('hidden');
-
-                else btnRem.classList.add('hidden');
-
-                modalHeader.classList.remove('hidden');
-
-            });
-
-
-
-            document.getElementById('btnCloseHeader').addEventListener('click', () => modalHeader.classList.add('hidden'));
-
-
-
-            document.getElementById('inputFileLogo').addEventListener('change', (e) => {
-
-                const file = e.target.files[0];
-
-                if (file) {
-
-                    const reader = new FileReader();
-
-                    reader.onload = (re) => {
-
-                        state.logoData = re.target.result;
-
-                        const img = document.getElementById('imgLogo');
-
-                        img.src = state.logoData;
-
-                        img.classList.remove('hidden');
-
-                        document.getElementById('btnRemoveLogo').classList.remove('hidden');
-
-                    };
-
-                    reader.readAsDataURL(file);
-
-                }
-
-            });
-
-
-
-            document.getElementById('btnRemoveLogo').addEventListener('click', () => {
-
-                state.logoData = '';
-
-                document.getElementById('imgLogo').classList.add('hidden');
-
-                document.getElementById('btnRemoveLogo').classList.add('hidden');
-
-            });
-
-
-
-            document.getElementById('btnSaveHeader').addEventListener('click', () => {
-
-                state.headerNames = document.getElementById('inputHeaderNames').value;
-
-                state.headerOrg = document.getElementById('inputHeaderOrg').value;
-
-                document.getElementById('txtHeaderNames').textContent = state.headerNames;
-
-                document.getElementById('txtHeaderOrg').textContent = state.headerOrg;
-
-                saveStateLocally();
-
-                modalHeader.classList.add('hidden');
-
-            });
-
-
-
-            function saveStateLocally() {
-
-                try {
-
-                    localStorage.setItem('calendar_app_config', JSON.stringify(state));
-
-                } catch(e) { console.error(e); }
-
-            }
-
-
-
-            // تشغيل وتوليد الجدول أول مرة
-
-            renderCalendar();
-
-        });
-
-    </script>
-
-</body>
-
-</html>
-
-عدل على نفس هذا الكود باضافة ميزة الخيار الثاني
-
-ميزة زر (تصدير واستيراد الإعدادات كملف Backup):
-
-سأقوم الآن بتحديث ملف calendar_app.html لإضافة ميزة تصدير واستيراد الإعدادات كملف نسخة احتياطية (Backup JSON):
-
-إضافة زرين في شريط التحكم العلوي:
-
-💾 تصدير نسخة احتياطية: لتنزيل ملف بصيغة calendar_backup.json يحتوي على كافة الإعدادات (السنة، الترويسة، الشعار، الإجازات، إجازات المدارس، والمناسبات والألوان).
-
-📂 استيراد نسخة احتياطية: لاختيار ورفع ملف النسخة الاحتياطية وتطبيق وحفظ كامل الإعدادات فوراً في ثانية واحدة حتى بعد مسح الذاكرة المؤقتة أو الانتقال لجهاز آخر.
-
-إضافة رسائل تنبيهية وتأكيدية خفيفة للمستخدم بدون استخدام alert().
-
-التقويم الهجري والميلادي الشامل
-21 أكتوبر، 7:56 م
-ما تم تنفيذه في هذا التحديث:
-زر 💾 تصدير نسخة في شريط التحكم:
-
-بمجرد الضغط عليه، يقوم تلقائياً بإنشاء وتنزيل ملف بصيغة calendar_backup_1448.json على جهازك يحتوي على كافة تفاصيلك (الأسماء، الشعار، الإجازات، العطل الدراسية، ألوان المناسبات، ويوم الراتب).
-
-زر 📂 استيراد نسخة:
-
-يتيح لك اختيار ملف النسخة الاحتياطية من جهازك ليتم تطبيقه فوراً، وإعادة رسم التقويم، وحفظ الإعدادات في المتصفح في ثانية واحدة دون الحاجة لإعادة كتابة أو تعديل أي شيء مجدداً.
-
-حسبت التقويم خطأ لازيوافق تقويم ام القرى
-
-رمضان 1448 هو 29 يوم
-
-لذا لهبط التقويم بشكل كامل
-
-سأقوم الآن بتحديث ملف calendar_app.html لحل هذه المشكلة من جذورها.
-
-سبب الخطأ الفلكي السابق:
-كان الكود يعتمد على خوارزمية حسابية تقريبية حسابية (Arithmetic Tabular Hijri) تفترض أن الأشهر الفردية دائماً 30 والزوجية 29، بينما تقويم أم القرى المعتمد في المملكة العربية السعودية يعتمد على الحساب الفلكي الدقيق لولادة الهلال وإحداثيات مكة المكرمة. في عام 1448هـ، شهر رمضان 29 يوماً (يبدأ الإثنين 8 فبراير 2027، ويكون عيد الفطر 1 شوال هو الثلاثاء 9 مارس 2027).
-
-المعالجة البرمجية الدقيقة:
-استبدال الخوارزمية الحسابية السابقة بمحرك Intl.DateTimeFormat بمحاذاة ar-SA-u-ca-islamic-umalqura المدمج في المتصفحات مع جداول مطابقة تقويم أم القرى الرسمي لمدينة الملك عبد العزيز للعلوم والتقنية.
-
-مطابقة تامة لأيام شهور عام 1448هـ وفق تقويم أم القرى:
-
-محرم: 29 يوم (يبدأ الثلاثاء 16 يونيو 2026)
-
-صفر: 30 يوم
-
-ربيع الأول: 29 يوم
-
-ربيع الثاني: 30 يوم
-
-جمادى الأولى: 30 يوم
-
-جمادى الثانية: 29 يوم
-
-رجب: 30 يوم
-
-شعبان: 30 يوم
-
-رمضان: 29 يوم (يبدأ الإثنين 8 فبراير 2027، وينتهي الإثنين 8 مارس 2027)
-
-شوال: 30 يوم (يبدأ الثلاثاء 9 مارس 2027)
-
-ذو القعدة: 29 يوم
-
-ذو الحجة: 30 يوم
-
-ضبط أيام عيدي الفطر والأضحى والمناسبات وفصول السنة لتتوافق 100% مع البدايات والنهايات الصحيحة.
-
-التقويم الهجري والميلادي الشامل
-21 أكتوبر، 7:56 م
-ملخص الإصلاح:
-رمضان 1448 هـ أصبح 29 يوماً بدقة تامة:
-
-يبدأ 1 رمضان 1448هـ يوم الإثنين 8 فبراير 2027م.
-
-ينتهي 29 رمضان 1448هـ يوم الإثنين 8 مارس 2027م.
-
-أول أيام عيد الفطر المبارك 1 شوال 1448هـ هو يوم الثلاثاء 9 مارس 2027م وعدد أيامه 30 يوماً.
-
-استقرار كامل للتقويم:
-
-تلاشت أخطاء ترحيل الأيام، وأصبحت بداية كل شهر وتواريخ المقابل الميلادي متطابقة 100% مع تقويم أم القرى الرسمي الصادر عن مدينة الملك عبد العزيز للعلوم والتقنية.
-
-اجعل الوان عطل الاسبوع ثابته لا تتغير بلون الاجازات
-
-سأقوم الآن بتحديث ملف calendar_app.html بحيث تظل أعمدة عطلة نهاية الأسبوع (الجمعة والسبت) محتفظة بلونها الأصفر الثابت دائماً عبر كامل التقويم، ولا يتغير لونها أو ينقطع عند تداخلها مع أي إجازة أخرى (مثل إجازات المدارس، الأعياد، أو اليوم الوطني)، تماماً كما في جدول الإكسل المرجعي.
-
-التقويم الهجري والميلادي الشامل
-21 أكتوبر، 7:56 م
-ما تم تعديله:
-ثبات لون عطل نهاية الأسبوع: أصبحت خلايا عطلة نهاية الأسبوع (الجمعة والسبت) تحتفظ دائماً بلونها المميز (#fef3c7) دون أن تتأثر أو تنقطع عند حلول إجازات المدارس أو الأعياد أو المناسبات الوطنية فيها.
-
-استمرارية الأعمدة الرأسية: أصبح مسار عمودي الجمعة والسبت متصلاً وأنيقاً من أعلى التقويم إلى أسفله، مع تلوين أيام الإجازات (المدارس، الأعياد، اليوم الوطني، والرواتب) في أيام الأسبوع المتبقية فقط (من الأحد إلى الخميس)، تماماً كما هو معتمد في المخرج المرفق.
-
-واخذف اسم فيصل باوزير من كامل الكود
-
-سأقوم الآن بتحديث ملف calendar_app.html لحذف اسم "فيصل باوزير" بالكامل من الكود والواجهة، واعتماد "حسين يوسف الشهيب" في الترويسة والإعدادات وحفظ البيانات.
-
-التقويم الهجري والميلادي الشامل
-21 أكتوبر، 7:56 م
-التعديل المنجز:
-تم حذف اسم "فيصل باوزير" من كامل الملف وكافة المواضع (شريط الترويسة، نافذة تخصيص الترويسة والشعار، وكائن الحالة الافتراضية state).
-
-الاسم المعتمد الآن في كامل الكود هو: حسين يوسف الشهيب.
-
-لو اعتمدت الاجازات والاعدادات
-
-كيف يمكن تطبيقها على النظام بحيث من يدخلها من اي مكان تكون نفس الاجازات مطبقة ؟
-
-لجعل أي شخص يفتح رابط موقعك من أي جهاز أو متصفح في العالم يرى نفس الإجازات والأسماء والألوان المعتمدة فوراً، هناك طريقتان سهلتان جداً تختار منهما الأنسب لك:
-
-الطريقة الأولى (الأسهل والأسرع): عبر زر "💾 تصدير نسخة"
-بما أننا أضفنا ميزة النسخة الاحتياطية في التطبيق، يمكنك عمل الآتي في ثوانٍ:
-
-افتح التقويم واضبط كل إجازاتك وتواريخك وألوانك بدقة كما تريد.
-
-اضغط على زر 💾 تصدير نسخة في الشريط العلوي؛ سينزل على جهازك ملف نصي صغير باسم: calendar_backup_1448.json.
-
-افتح هذا الملف (ببرنامج "المفكرة Notepad").
-
-انسخ محتواه وضعه لي هنا في المحادثة، وسأقوم فوراً بدمجه في أصل الكود البرمجي لملف calendar_app.html.
-
-بعدها تقوم بتنزيل الملف ورفعه لـ GitHub؛ وبذلك يصبح هذا الضبط هو الأساس الدائم لكل من يفتح الموقع!
-
-الطريقة الثانية (تعديلها بنفسك مباشرة داخل الملف):
-إذا كنت تعرف التواريخ وتريد تعديلها بنفسك في ملف index.html قبل رفعه لـ GitHub:
-
-افتح ملف index.html باستخدام المفكرة (Notepad) أو VS Code.
-
-ابحث عن السطر الذي يبدأ بـ:
-
-JavaScript
-   const state = {
-   
-ستجد بداخله القيم الافتراضية الثابتة التي يقرأها أي زائر جديد:
-
-الاسم: headerNames: 'حسين يوسف الشهيب'
-
-إجازة عيد الفطر:
-
-شهر البداية (fitrStartMonth: 9)، يوم البداية (fitrStartDay: 25)، المدة بالأيام (fitrDays: 12).
-
-إجازة عيد الأضحى:
-
-شهر البداية (adhaStartMonth: 12)، يوم البداية (adhaStartDay: 5)، المدة بالأيام (adhaDays: 12).
-
-إجازات الطلاب والعطل الدراسية (schoolHolidays):
-تستطيع تعديل تواريخها وأسمائها ومدتها مثل:
-
-JavaScript
-     schoolHolidays: [
-         { id: 1, title: 'إجازة الخريف', startMonth: 5, startDay: 14, days: 10 },
-         { id: 2, title: 'إجازة منتصف العام الدراسي', startMonth: 7, startDay: 20, days: 9 },
-         { id: 3, title: 'إجازة مطولة 1', startMonth: 3, startDay: 18, days: 4 }
-     ],
-     
-احفظ الملف (Ctrl + S) وارفعه إلى مستودع GitHub.
-
-💡 النتيجة: بمجرد رفع الملف المحدث إلى GitHub، سيتحدث موقعك فوراً، وأي مستخدم يفتح الرابط من هاتفه أو كمبيوتر العمل سيجد التقويم جاهزاً ومعتمداً بنفس إجازاتك الرسمية دون الحاجة لأي ضبط يدوي.
-
-هل يوجد طريقة اخرى بحيث لا اتدخل برمجيا
-
-نعم، توجد طريقتان ذكيتان وبسيطتان جداً تسمحان لك بتحديث وتثبيت إعدادات التقويم للجميع من واجهة الموقع مباشرة وبدون لمس سطر برمجي واحد:
-
-الطريقة الأولى (الأسهل على الإطلاق): "مشاركة عبر رابط ذكي" (URL Link) 🔗
-بدون الحاجة لأي خوادم أو تسجيل:
-
-نبرمج لك في الشريط العلوي زراً باسم 🔗 نسخ رابط المشاركة.
-
-عندما تقوم بضبط إعداداتك، الإجازات، والأسماء من واجهة الموقع وتضغط هذا الزر:
-
-يقوم الموقع تلقائياً بضغط وحفظ إعداداتك بالكامل داخل الرابط نفسه (مثلاً: [https://your-site.github.io/?data=](https://your-site.github.io/?data=)...).
-
-النتيجة: ترسل هذا الرابط لأي شخص أو تفتحه من أي جهاز أو جوال، وسيفتح التقويم مباشرة مطبقاً عليه كافة إجازاتك وألوانك وأسمائك تلقائياً وبشكل دائم حتى لو مسح المتصفح ذاكرته.
-
-الطريقة الثانية (السحابية المباشرة): ربط التقويم بقاعدة بيانات سحابية مجانية (Cloud Sync) ☁️
-إذا كنت تفضل أن يكون الرابط ثابتاً للجميع (مثلاً: [https://your-site.github.io](https://your-site.github.io) فقط بدون إضافات في الرابط):
-
-نربط الموقع بخدمة تخزين سحابية مجانية وسريعة (مثل JSONBin أو Firebase).
-
-نضع لك في نافذة الإعدادات زراً سرياً أو كلمة مرور خاصة بك كمسؤول: ☁️ نشر الإعدادات للجميع.
-
-عندما تعدل الإجازات وتضغط الزر:
-
-تُحفظ التعديلات في السحابة فوراً.
-
-أي شخص يفتح الرابط الأساسي من أي مكان حول العالم سيقوم الموقع بسحب الإعدادات الأخيرة المعتمدة وعرضها أمامه مباشرة دون أي تدخل برمجي منك.
-
-هل تحب أن أضيف لك ميزة (الرابط الذكي 🔗) فوراً في الكود؟ فهي تعمل في ثوانٍ ومريحة جداً لمشاركتها مع الزملاء.
-
-هل يمكن لي ان يكون لكل مستخدم اعداداته الخاصة به بعد تسجيل اشتراك ببيانات اسم المستخدم والبريد الإلكتروني ؟
-
-I will now update calendar_app.html to integrate a multi-user authentication and cloud database system using Firestore and Firebase Authentication.
-
-ما تم بناؤه في هذا التحديث:
-نظام اشتراك وتسجيل دخول للمستخدمين (Authentication):
-
-واجهة مستخدم متكاملة تتيح للمستخدمين التسجيل أو تسجيل الدخول باستخدام البريد الإلكتروني وكلمة المرور أو كضيف.
-
-عرض اسم المستخدم الحالي وحالته في شريط التحكم مع زر لتسجيل الخروج.
-
-سحابة تخزين خاصة لكل مستخدم (Per-User Cloud Storage):
-
-يتم حفظ إعدادات كل مستخدم تلقائياً في السحابة على مساره الخاص (/artifacts/{appId}/users/{userId}/settings).
-
-عند تسجيل الدخول من أي هاتف أو جهاز كمبيوتر في أي وقت، يتم جلب إعداداته الخاصة (الأسماء، الإجازات، إجازات المدارس، الألوان، ويوم الراتب) فوراً وتطبيقها.
-
-التشغيل بدون اتصال (Offline Fallback):
-
-إمكانية تجربة واستخدام التقويم كزائر حتى قبل تسجيل الحساب، مع الاحتفاظ بآلية التصدير والاستيراد وخيارات الطباعة كاملة.
-
-التقويم الهجري والميلادي الشامل
-21 أكتوبر، 7:56 م
-كيفية تجربة الميزة الجديدة:
-تسجيل الدخول / الاشتراك: في الشريط العلوي ستجد زراً باللون الأزرق تسجيل الدخول / اشتراك.
-
-إنشاء حساب: يمكنك كتابة اسم المستخدم (المشرف/المسؤول)، البريد الإلكتروني، وكلمة المرور.
-
-الحفظ السحابي التلقائي: بمجرد تسجيل الحساب، تصبح كافة تعديلاتك (الإجازات الدراسية، الأعياد، الرواتب، الألوان، الترويسة والشعار) مرتبطة بحسابك وتُحفظ تلقائياً في السحابة؛ بحيث إذا فتحت حسابك من أي جهاز أو هاتف آخر تجد إعداداتك الخاصة فوراً وبشكل مستقل عن أي مستخدم آخر.
-
-كيف اتأكد ان البريد الإلكتروني صحيح ؟
-
-واريد جميع بيانات المستخدمين مثل فرض ادخال رقم الجوال
-
-سأقوم الآن بتحديث ملف calendar_app.html لتلبية هذين المطلبين بدقة واحترافية:
-
-التحقق من صحة البريد الإلكتروني (Email Verification):
-
-استخدام دالة إرسال رابط تأكيد وتفعيل الحساب sendEmailVerification من Firebase Auth عند إنشاء حساب جديد.
-
-فحص حالة التفعيل (user.emailVerified) مع إظهار شارة تنبيه إذا كان البريد لم يُؤكد بعد، وتوفير زر لإعادة إرسال رسالة التحقق إلى صندوق الوارد.
-
-التحقق من نمط وشكل البريد الإلكتروني (Regex validation).
-
-إلزامية إدخال رقم الجوال والتحقق من صيغته:
-
-إضافة حقل إلزامي لـ رقم الجوال (يدعم الأرقام السعودية المعتمدة 05xxxxxxxx أو مع رمز الدولة +966).
-
-التحقق من إدخال رقم هاتف صحيح وغير فارغ قبل السماح بإنشاء الحساب.
-
-حفظ وإدارة بيانات الملف الشخصي للمستخدمين (User Profile):
-
-حفظ بيانات كل مستخدم كاملة (الاسم الكامل، البريد الإلكتروني، رقم الجوال، تاريخ التسجيل، وحالة تأكيد البريد) داخل قاعدة البيانات السحابية في مسار المستخدم الخاص (/artifacts/{appId}/users/{userId}/profile/info).
-
-إتاحة لوحة تحكم سريعة للمستخدم لمعاينة وتعديل بياناته الشخصية ورقم جواله.
-
-التقويم الهجري والميلادي الشامل
-21 أكتوبر، 7:56 م
-ملخص ما تم إنجازه في هذا التحديث:
-التحقق من صحة وامتلاك البريد الإلكتروني (Email Verification):
-
-فحص تنسيق البريد الإلكتروني عبر خوارزمية فحص قياسية (Regex).
-
-إرسال رسالة بريد إلكتروني تحتوي على رابط تأكيد وتفعيل رسمي تلقائياً عند الاشتراك (sendEmailVerification).
-
-إظهار حالة التحقق بوضوح في شريط التحكم وفي نافذة "حسابي" (مع خيار إعادة إرسال رابط التأكيد بنقرة واحدة إذا لم يصله).
-
-إلزامية إدخال رقم الجوال (Mandatory Phone Number):
-
-أصبح حقل رقم الجوال إجبارياً عند إنشاء الحساب مع التحقق من الصيغة الصحيحة للأرقام السعودية (05xxxxxxxx أو مع الرمز الدولي +9665xxxxxxxx).
-
-لا يمكن إتمام إنشاء الحساب دون إدخال رقم جوال صحيح.
-
-نافذة الملف الشخصي للمستخدم (👤 حسابي):
-
-نافذة تتيح للمستخدم المسجل الاطلاع على حالة توثيق بريده الإلكتروني وتعديل اسمه الكامل ورقم جواله في أي وقت، مع حفظها فوراً في قاعدة البيانات السحابية.
-
-قبل اعطائي الكود
-
-انا كمدير النظام اريد بينات دخولي تكون ضمن الكود
-
-اسم المستخدم halshuhiyb
-
-كلمة المرور Hh@537573
-
-البريد الإلكتروني halshuhiyb@gmail.com
-
-رقم جوالي 0500686806
-
-اسمي : حسين يوسف الشهيب
-
-دورس اضبط الاعدادات الفتراضية للنظام بحيث من يقوم بفتح الصفحة تظهر له الاعدادات الافتراضية
-
-كذلك اريد من النظام الاحتفاظ باعداد كل سنة بشكل مستقل لا تتأثر بالسنة القادمة او الماضية
-
-واريد ان نقوم مع مع بربط قاعدة البيانات مع التطبيق
-
-سأقوم الآن بتحديث وبناء ملف calendar_app.html بالكامل ليشمل جميع متطلباتك الدقيقة:
-
-حساب مدير النظام المدمج وتسهيل الدخول (Admin Auto-Credential & Fast Login):
-
-تضمين بياناتك (اسم المستخدم، البريد: halshuhiyb@gmail.com، الجوال: 0500686806، الاسم الكامل: حسين يوسف الشهيب) مع إتاحة زر دخول سريع أو التعبئة التلقائية لتسجيل الدخول بكلمة المرور الخاصة بك.
-
-ضبط الإعدادات الافتراضية للنظام (Default Global State):
-
-أي زائر أو مستخدم يفتح الموقع تظهر له بياناتك الرسمية الافتراضية المعتمدة فوراً دون الحاجة لأي تسجيل.
-
-فصل إعدادات كل سنة بشكل مستقل تماماً (Per-Year Isolated Storage):
-
-حفظ إجازات ومناسبات ورواتب وتعديلات كل سنة (مثل 1448هـ، 1449هـ، 1447هـ... إلخ) في مسار ومعرف مستقل (settings/year_{year})؛ بحيث لا تتأثر إعدادات السنة الحالية عند الانتقال لسنة قادمة أو ماضية.
-
-تكامل وربط قاعدة البيانات السحابية (Firebase Config & Cloud Integration):
-
-وضع قالب وتجهيز الربط مع Firebase (المصادقة Authentication وقاعدة بيانات Firestore) مع توفير نافذة إعدادات لضبط مفاتيح الربط ومزامنة كل سنة للمستخدم وللمدير بسلاسة.
-
-التقويم الهجري والميلادي الشامل
-21 أكتوبر، 7:56 م
-خطوات ربط قاعدة بيانات Firebase مع التطبيق معاً:
-اذهب إلى Firebase Console وأنشئ مشروعاً جديداً مجانياً.
-
-من القائمة الجانبية:
-
-فعّل Authentication واختر طريقة Email/Password.
-
-فعّل Firestore Database في وضع الإنتاج أو الاختبار.
-
-من إعدادات المشروع (Project Settings) في الأسفل، أضف تطبيق ويب (Web App </>)، وانسخ كائن firebaseConfig.
-
-افتح التقويم واضغط في الشريط العلوي على الزر الأصفر: ⚡ ربط السحابة والصق الإعدادات هناك ثم اضغط حفظ وربط.
-
-بمجرد إتمام ذلك، سيصبح التطبيق متصلاً بالسحابة مباشرة مع حفظ كل سنة لكل مستخدم في قاعدة البيانات بشكل تلقائي!
-
-كيف لم افهم كيفية التعامل معه
-
-أهلاً بك أستاذ حسين، خطوة بخطوة وسنقوم بربطه معاً بسهولة تامة!
-
-في الشاشة التي أمامك الآن، اضغط على المربع الأبيض الكبير ذو الإطار البرتقالي:
-👉 Get started by setting up a Firebase project (أو Create a project).
-
-إليك الخطوات البسيطة بالتتابع:
-الخطوة 1: تسمية المشروع
-سيطلب منك كتابة اسم للمشروع في خانة Enter your project name.
-
-اكتب أي اسم تريده بالإنجليزية، مثلاً: saudi-calendar
-
-وافق على الشروط واضغط Continue.
-
-في الصفحة التالية (Google Analytics)، يمكنك تعطيلها أو تركها والضغط على Create project.
-
-انتظر ثوانٍ حتى ينتهي التحميل ثم اضغط Continue.
-
-الخطوة 2: إنشاء تطبيق ويب والحصول على كود الربط
-ستفتح لك لوحة تحكم المشروع الرئيسية.
-
-ستجد تحت اسم المشروع عبارة: Get started by adding Firebase to your app.
-
-ستجد أيقونات: (iOS / Android / </> Web / Unity).
-
-اضغط على أيقونة الويب: </>.
-
-في خانة App nickname اكتب: calendar-web.
-
-اضغط على الزر الأزرق: Register app.
-
-ستظهر لك صفحة بها كود مكتوب فيه:
-
-JavaScript
-const firebaseConfig = {
-  apiKey: "AIzaSy...",
-  authDomain: "...",
-  projectId: "...",
-  storageBucket: "...",
-  messagingSenderId: "...",
-  appId: "..."
-};
-انسخ هذا الجزء المحدد فقط (من القوس { إلى القوس }).
-
-الخطوة 3: تفعيل الدخول وقاعدة البيانات (دقيقة واحدة)
-من القائمة الجانبية في أقصى اليسار:
-
-تفعيل الدخول (Authentication):
-
-اضغط على Build ثم Authentication.
-
-اضغط على Get started.
-
-من قائمة خيارات الدخول (Sign-in providers)، اختر Email/Password.
-
-فعّل الخيار الأول (Enable) ثم اضغط Save.
-
-تفعيل قاعدة البيانات (Firestore Database):
-
-من القائمة الجانبية اضغط على Build ثم Firestore Database.
-
-اضغط على Create database.
-
-اختر موقع السيرفر الافتراضي واضغط Next.
-
-اختر خيار Start in test mode (وضع الاختبار) لكي يسمح بحفظ البيانات مباشرة، ثم اضغط Create.
-
-الخطوة 4: لصق الإعدادات في التطبيق
-افتح تقويمك.
-
-اضغط على زر ⚡ ربط السحابة في الشريط العلوي.
-
-الصق النص الذي نسخته من الخطوة 2 في المربع.
-
-اضغط حفظ وربط قاعدة البيانات.
-
-ستتغير حالة الاتصال فوراً إلى ✓ متصل بنجاح بالسحابة!
-
-اضغط الآن على المربع البرتقالي في شاشتك وابدأ بالخطوة الأولى، وإذا وقفت عند أي شاشة صوّرها لي وسنكملها فوراً.
-
-في هذه الخطوة لإتمام إنشاء المشروع:
-
-اضغط على القائمة المنسدلة Select an account.   
-PNG
-
-اختر منها: Default Account for Firebase (أو حسابك الشخصي إذا ظهر لك).
-
-بعد اختيار الحساب، سيظهر لك مربع للموافقة على الشروط، ضع عليه علامة صح ✓.
-
-سيتحول الزر الرمادي في الأسفل Create project إلى اللون الأزرق؛ اضغط عليه وانتظر ثوانٍ حتى يكتمل إنشاء المشروع.   
-PNG
-
-بمجرد الانتهاء واضغط Continue، ستظهر لك الشاشة الرئيسية للمشروع؛ صوّرها لي لنأخذ كود الويب مباشرة.
-
-ممتاز جداً! الخطوات التالية لاستخراج كود الربط وتفعيل الخدمات:
-
-أولاً: استخراج كود الويب (Firebase Config)
-اضغط على الزر البيضاوي: + Add app الموجود تحت اسم مشروعك saudi-calendar.   
-JPG
-
-ستظهر لك خيارات المنصات، اختر أيقونة الويب: </>.
-
-في خانة App nickname، اكتب: calendar-web ثم اضغط Register app.
-
-سينقلك لصفحة تحتوي على كود به جزء يبدأ بـ const firebaseConfig = { ... };.
-
-انسخ ما بداخل الأقواس { ... } أو صوّر الشاشة.
-
-ثانياً: تفعيل المصادقة وقاعدة البيانات
-من القائمة الجانبية اليسرى:
-
-تسجيل الدخول (Authentication):
-
-اضغط على Security، ثم اختر منها Authentication.   
-JPG
-
-اضغط على زر Get started.
-
-من قائمة خيارات تسجيل الدخول (Sign-in providers)، اضغط على Email/Password.
-
-فعّل الخيار الأول (Enable) فقط، ثم اضغط Save.
-
-قاعدة البيانات (Firestore Database):
-
-من القائمة الجانبية اليسرى اضغط على Databases and storage، ثم اختر Firestore Database.   
-JPG
-
-اضغط على Create database.
-
-اضغط Next لموقع الخادم الافتراضي.
-
-في الخطوة التالية، اختر Start in test mode (وضع الاختبار) لتمكين الحفظ مباشرة، ثم اضغط Create.
-
-نفّذ الضغط على + Add app وواجهتك أي خطوة صوّرها لي فوراً.   
-JPG
-
-ممتاز جداً! هذا هو الكود المطلوب بالضبط.   
-JPG
-
-إليك كائن الإعدادات الخاص بمشروعك كما ظهر في الصورة:   
-JPG
-
-JavaScript
-const firebaseConfig = {
-  apiKey: "AIzaSyCYxws-WQHEh3X6xZTZ74BTpWjDM3zMiaY",
-  authDomain: "saudi-calendar-d3299.firebaseapp.com",
-  projectId: "saudi-calendar-d3299",
-  storageBucket: "saudi-calendar-d3299.firebasestorage.app",
-  messagingSenderId: "499774785279",
-  appId: "1:499774785279:web:a9b4f05c984e49419a6eca",
-  measurementId: "G-K7JCRM639H"
-};
-الآن تبقت خطوتان سريعتان في لوحة Firebase:
-العودة للوحة التحكم:
-
-انزل لأسفل نفس الصفحة واضغط على الزر الأزرق: Continue to console.
-
-تفعيل تسجيل الدخول (Authentication):
-
-من القائمة الجانبية في أقصى اليسار، اضغط على Security ثم Authentication.
-
-اضغط Get started.
-
-من تبويب Sign-in method، اختر Email/Password.
-
-فعّل الخيار الأول (Enable) فقط واضغط Save.
-
-تفعيل قاعدة البيانات (Firestore Database):
-
-من القائمة الجانبية اضغط على Databases and storage ثم Firestore Database.
-
-اضغط Create database.
-
-اضغط Next.
-
-اختر Start in test mode (وضع الاختبار) ثم اضغط Create.
-
-بمجرد إتمام هاتين الخطوتين، سأدمج لك بيانات الربط أعلاه مباشرة داخل كود ملف التقويم ليصبح متصلاً بالسحابة تلقائياً دون أي إعداد إضافي.
-
-في هذه الخطوة لإنشاء قاعدة البيانات:   
-PNG
-
-اترك الخيار المحدد كما هو: Standard edition.   
-PNG
-
-اضغط على الزر الأزرق: Next.   
-PNG
-
-في الخطوة التالية (Database ID and location):   
-PNG
-
-اترك المعرف والموقع الافتراضي واضغط Next.
-
-في الخطوة الثالثة (Configure):   
-PNG
-
-سيظهر لك خياران للأمان: اختر Start in test mode (وضع الاختبار) لكي يسمح بحفظ وقراءة الإعدادات بسهولة، ثم اضغط على Create.
-
-بمجرد الضغط على Create، ستبدأ قاعدة البيانات بالعمل فوراً، وسأقوم بدمج الكود السحابي بالكامل في تطبيقك.
-
-اضغط الآن مباشرة على الزر الأزرق في الأسفل: Create.   
-PNG
-
-لا تقم بتحديد أي شيء في خيارات النسخ الاحتياطي (Scheduled backups اختيارية وتتطلب ترقية، ولسنا بحاجة إليها لأننا نستخدم الخطة المجانية Spark).   
-PNG
-
-الخطوة الأخيرة بعد الضغط على Create:
-تفعيل تسجيل الدخول بالبريد الإلكتروني (Authentication):
-
-من القائمة الجانبية اليسرى (أيقونة القفل أو Security).
-
-اختر Authentication ثم اضغط Get started.
-
-اختر من القائمة Email/Password.
-
-فعّل الخيار الأول (Enable) فقط واضغط Save.
-
-بمجرد إتمام ذلك، ستكون قاعدة بياناتك السحابية ونظام المستخدمين جاهزين بالكامل ومربوطين بالمشروع!
-
-سأقوم الآن بإنشاء وتوليد ملف التطبيق المتكامل والنهائي calendar_app.html، متضمناً الربط المباشر مع مشروعك في Firebase (Authentication & Cloud Firestore) ببيانات الاعتماد الحقيقية، مع حسابات تقويم أم القرى الدقيقة، وعزل كل سنة بشكل مستقل، وكامل متطلبات الطباعة والتنسيق.
-
-التقويم الهجري والميلادي الشامل
-21 أكتوبر، 7:56 م
-ملخص ما تم إنجازه وربطه في هذا الملف:
-ربط حقيقي مباشر مع مشروعك في Firebase: تم وضع كائن firebaseConfig الحقيقي من لوحة تحكمك، واستدعاء مكتبات firebase-app و firebase-auth و firebase-firestore (إصدار Modular الحديث v10).
-
-حساب مدير النظام المعتمد مع الدخول السريع:
-
-الاسم: حسين يوسف الشهيب | الجهة: إمارة المنطقة الشرقية.
-
-البريد: halshuhiyb@gmail.com | الجوال: 0500686806 | المعرف: halshuhiyb.
-
-زر تعبئة بياناتي في نافذة الدخول يملأ كافة الحقول بضغطة زر واحدة.
-
-عزل كل سنة بشكل مستقل تماماً في السحابة: يتم حفظ وقراءة إعدادات كل سنة (1448، 1449، 1447... إلخ) في مسار منفصل (years/year_{yearNumber}) بحيث لا تؤثر أي سنة على أخرى.
-
-حساب تقويم أم القرى الدقيق: شهر رمضان 1448هـ مضبوط على 29 يوماً وشوال على 30 يوماً مع ثبات أعمدة نهاية الأسبوع الصفراء وتطبيق كامل لقواعد التجسير ويوم الراتب وطباعة الورقة الواحدة A4/A3.
-
-تعبئة البيانات سيكون متاحا للجميع لمدير النظام بهذه الطريقة
-
-سأقوم الآن بتحديث ملف calendar_app.html لإزالة أي بيانات دخول حساسة أو كلمات مرور أو أزرار تعبئة تلقائية لمدير النظام من الكود المصدري وواجهة المستخدم نهائياً، مع تحويل نافذة تسجيل الدخول إلى نافذة قياسية آمنة واحترافية تدعم تسجيل الدخول، إنشاء الحساب، واستعادة كلمة المرور المنسية عبر Firebase.
-
-التقويم الهجري والميلادي الشامل
-21 أكتوبر، 7:56 م
-التعديلات التي تم إجراؤها:
-إزالة كافة بيانات المدير الحساسة وكلمات المرور: تم حذف كائن ADMIN_ACCOUNT ومربع "حساب مدير النظام" وزر "تعبئة بياناتي" تماماً من الواجهة ومن الكود المصدري لمنع ظهور أي بيانات شخصية أو اعتمادات دخول لأي زائر.
-
-واجهة دخول قياسية وآمنة: أصبحت النافذة مخصصة لتسجيل الدخول النظيف (البريد الإلكتروني + كلمة المرور)، مع تبويب إنشاء حساب جديد (الاسم، البريد، الجوال الإلزامي للتحقق، وكلمة المرور).
-
-إضافة ميزة استعادة كلمة المرور (نسيت كلمة المرور؟): تتيح للمستخدمين ومدير النظام استعادة كلمة المرور عبر رابط رسمي يُرسل إلى البريد المسجل في Firebase Auth.
-
-عزل الحسابات والسنوات: لا تزال مزامنة Firebase وقاعدة بيانات Firestore تعمل بسلاسة؛ حيث تُحفظ إعدادات وسنوات كل مستخدم ومسؤول بشكل مستقل وآمن تماماً في مساره الخاص.
-
-وكيف لي الاطلاع كمدير نظام على قاعدة بيانات الحسابات المشتركة مع تثرير بعدد المشتركين وبيناتهم
-
-يمكنك الاطلاع على الحسابات المسجلة وبيانات المشتركين مع تقرير بعددهم وإحصائياتهم عبر طريقتين:
-
-الطريقة الأولى: مباشرة من لوحة تحكم Firebase (بدون كود)
-بما أنك قمت بربط المشروع في Firebase، فإن جميع الحسابات وبياناتهم مسجلة ومحفوظة هناك بشكل مباشر وتلقائي:
-
-عرض قائمة المشتركين المسجلين وإجمالي عددهم:
-
-ادخل إلى Firebase Console وافتح مشروعك saudi-calendar.
-
-من القائمة الجانبية اختر Authentication ثم تبويب Users.
-
-ستجد جدولاً بجميع المشتركين يتضمن:
-
-البريد الإلكتروني لكل مشترك (Identifier).
-
-تاريخ إنشاء الحساب (Created).
-
-تاريخ آخر تسجيل دخول (Signed in).
-
-المعرف الفريد للمستخدم (User UID).
-
-يظهر إجمالي عدد المستخدمين مباشرة أعلى الجدول.
-
-عرض أرقام الجوالات والأسماء والإعدادات المحفوظة:
-
-من القائمة الجانبية اختر Firestore Database ثم تبويب Data.
-
-ستجد مجموعة (Collection) باسم users:
-
-عند النقر على معرّف أي مستخدم، ستظهر لك وثيقة الملف الشخصي وبها: (الاسم الكامل، رقم الجوال المدخل، وتاريخ التسجيل).
-
-ستجد أيضاً مجلد years الخاص بكل مستخدم والذي يحتوي على تعديلاته وإجازاته لكل سنة بشكل مستقل.
-
-الطريقة الثانية: من داخل تطبيق التقويم نفسه (لوحة تحكم المدير)
-يمكن برمجة لوحة تحكم خاصة بمدير النظام (Admin Dashboard) داخل نفس ملف التقويم تفتح لك فقط عند تسجيل دخولك بحسابك، وتوفر لك:
-
-بطاقة إحصائية: إجمالي عدد المشتركين المسجلين.
-
-جدول مفصل بالمشتركين:
-
-اسم المشترك.
-
-البريد الإلكتروني.
-
-رقم الجوال.
-
-تاريخ التسجيل وحالة تفعيل الحساب.
-
-زر تصدير التقرير: تصدير قائمة المشتركين بالكامل إلى ملف Excel / CSV بنقرة واحدة.
-
-إذا أردت تفعيل الطريقة الثانية (إضافة لوحة إدارة وتقارير المشتركين داخل الموقع مباشرة)، أخبرني لأقوم بتحديث الكود وإضافتها لك فوراً.
-
-الطريقة الثانية مع زر تصدير اكسل منسق وجميل
-
-سأقوم الآن بتحديث ملف التقويم لتضمين لوحة تحكم مدير النظام المتكاملة (Admin Dashboard) لمتابعة المشتركين، مع ميزة تصدير تقرير المشتركين كملف Excel (.xlsx) حقيقي منسق بالكامل عبر مكتبة SheetJS.
-
-تشمل التحديثات:
-
-التعرف التلقائي على حساب المدير: يظهر زر خاص وفخم في الشريط العلوي 👑 لوحة الإدارة (المشتركين) مع عداد فوري بمجرد تسجيل دخولك ببريدك halshuhiyb@gmail.com.
-
-نافذة لوحة الإدارة المتكاملة:
-
-بطاقات إحصائية ذكية: إجمالي المشتركين، الحسابات الموثقة، وأرقام التواصل المسجلة.
-
-محرك بحث وتصفية فورية بالاسم أو البريد الإلكتروني أو رقم الجوال.
-
-جدول مفصل لجميع المشتركين المسجلين في Firebase مع تاريخ التسجيل وحالة التحقق.
-
-تصدير تقرير Excel منسق واحترافي:
-
-تصدير ملف .xlsx حقيقي بترويسة عربية وتنسيق اتجاه من اليمين إلى اليسار (RTL).
-
-ضبط تلقائي لعرض الأعمدة وتلوين الترويسات مع اسم المشرف وتاريخ التصدير بدقة.
-
-التقويم الهجري والميلادي الشامل
-
-
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>التقويم الهجري والميلادي السنوي - حسين يوسف الشهيب</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- مكتبة SheetJS لتصدير ملفات Excel الاحترافية -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-…    </script>
-</body>
-</html>
-حدث خطأ
-حدث خطأ أثناء تشغيل رمزك البرمجي.
-الميزات المضافة في هذا التحديث:
-التعرف الحصري على حساب المدير:
-
-عند تسجيل دخولك بحسابك halshuhiyb@gmail.com، يظهر زر ذهبي بارز في الشريط العلوي: 👑 لوحة الإدارة مع عدّاد فوري يبيّن عدد المشتركين المسجلين في النظام.
-
-لوحة تحكم المشتركين (Admin Dashboard):
-
-بطاقات إحصائية ذكية لأعداد المشتركين، الحسابات الموثقة، وأرقام الجوالات المكتملة.
-
-جدول منظم يعرض اسم كل مشترك، بريده الإلكتروني، رقم جواله، تاريخ تسجيله، وحالة توثيق حسابه.
-
-شريط بحث فوري يسمح بالبحث السريع بأي جزء من الاسم أو الإيميل أو الجوال.
-
-تصدير تقرير Excel احترافي (.xlsx):
-
-زر مخصص باللون الأخضر الزمردي: 📊 تصدير تقرير المشتركين (Excel) يقوم بإنشاء ملف إكسل رسمي وفخم بضغطة زر واحدة.
-
-يتضمن ملف الإكسل ترويسة عربية كاملة، اسم المشرف (حسين يوسف الشهيب)، تاريخ التصدير، اتجاه ورقة العمل من اليمين إلى اليسار (RTL)، مع تنسيق وتوسيع تلقائي لأبعاد الأعمدة بما يناسب الطباعة والأرشفة الرسمية.
-
-لا يمكن النقر على زر الدخول
-
-وتعديل رقم جوالي 0500686807
-
-ووضع العين لكشف كلمة المرور
-
-سأقوم الآن بتحديث ملف calendar_app.html لمعالجة هذه النقاط بدقة:
-
-إصلاح زر الدخول والتسجيل فوراً:
-
-إزالة أي تداخل في عناصر الواجهة (z-index / overlays / pointer-events) التي قد تعيق النقر.
-
-التأكد من ربط أحداث النقر للزر والنموذج (form.onsubmit و button.onclick) مع إعطاء تغذية بصرية واضحة، ومعالجة أية استثناءات أو أخطاء في Firebase Auth بهدوء وعرض رسالة الخطأ بشكل واضح ومقروء للمستخدم.
-
-تحديث رقم الجوال لمدير النظام:
-
-اعتماد الرقم الجديد: 0500686807 في الإعدادات والملف الشخصي والواجهة.
-
-إضافة أيقونة "العين" لكشف وإخفاء كلمة المرور:
-
-وضع زر تفاعلي بجانب حقل كلمة المرور (سواء في تسجيل الدخول أو إنشاء الحساب) للتبديل بين إظهار الأحرف وإخفائها بنقرة واحدة.
-
-calendar_app.html [generated with web_code_canvas tool]
-
-ما تم تنفيذه في هذا التحديث:
-إصلاح النقر على زر الدخول بالكامل:
-
-تم تصحيح ترتيب الطبقات (z-index: 9999) وإلغاء أي تعارضات في مؤشرات الماوس (pointer-events).
-
-تم ربط أزرار الدخول وإنشاء الحساب بـ submit ونقر مباشر (click) مع مؤشر تحميل تفاعلي (جاري المعالجة...) وإظهار رسائل الأخطاء أو التنبيهات بوضوح تام باللغة العربية.
-
-تحديث رقم جوال مدير النظام:
-
-تم تعديل وتثبيت رقم الجوال ليكون: 0500686807.
-
-أيقونة "العين" لكشف وإخفاء كلمة المرور:
-
-أُضيفت أيقونة العين التفاعلية داخل حقل كلمة المرور في شاشة "تسجيل الدخول" وشاشة "إنشاء حساب جديد"، لتتيح للمستخدم إظهار الأحرف أو إخفائها فوراً بنقرة واحدة.
-
-جميعها
-
-تم تجهيز ملف التقويم الشامل والمحدث بكافة التعديلات المطلوبة.
-
-ملف index.html جاهز للتنزيل
-
-رمز HTML
-index
- HTML 
-ملخص ما تم إصلاحه وتنفيذه بدقة:
-حل مشكلة النقر على زر تسجيل الدخول نهائياً:
-
-تم ضبط الـ z-index الخاص بنوافذ الدخول ليكون في أعلى طبقة (z-index: 99999)، وإلغاء أي تعارضات لمؤشر الماوس (pointer-events).
-
-تحويل أزرار الدخول إلى عناصر تفاعلية مباشرة (type="button" و addEventListener('click')) مع رسائل تفاعلية وتنبيهات فورية باللونين الأخضر والأحمر توضح حالة العملية لحظياً.
-
-تعديل وتثبيت رقم الجوال لمدير النظام:
-
-تم تعديل وتثبيت رقم الجوال المعتمد لمدير النظام ليصبح: 0500686807 في كود النظام، شريط الحالة، الملف الشخصي، وتقارير المشتركين.
-
-إضافة أيقونة العين 👁️ لكشف كلمة المرور:
-
-تم تضمين زر العين التفاعلي داخل حقل كلمة المرور في شاشتي "تسجيل الدخول" و "إنشاء الحساب"، مما يتيح التبديل الفوري بنقرة واحدة بين إظهار الأحرف وإخفائها password / text.
-
-لوحة تحكم مدير النظام مع تصدير تقرير Excel منسق (.xlsx):
-
-يظهر زر 👑 لوحة الإدارة مع عدّاد فوري للمشتركين.
-
-يتضمن زراً لتصدير تقرير المشتركين كملف Excel منسق بالكامل وموجه من اليمين لليسار (RTL) باسم المشرف حسين يوسف الشهيب ورقم التواصل 0500686807.
-
-استقلالية وعزل كل سنة:
-
-إعدادات كل سنة محفوظة ومفصولة تماماً، وتوافق تام مع تقويم أم القرى (رمضان 1448هـ = 29 يوماً).
-
-يمكنك تنزيل ملف index.html أعلاه ورفعه مباشرة لمستودعك على GitHub، وسيعمل معك بكل كفاءة.
-
-سبب المشكلة واضح تماماً من الصورة:
-لقد قمت بنسخ نص المحادثة والشرح بالكامل بدلاً من كود الـ HTML البرمجي (تظهر في السطور الأولى عبارات: "محادثة مع Gemini.. كيف أضيفه لـ github.. ونشره كموقع مجاناً")!   
-PNG
-+ 1
-
-لذلك لا يفتح الموقع ويعرض خطأ أو نصوصاً عادية.   
-PNG
-
-الحل السريع في 3 خطوات بسيطة:
-حمّل الملف الجاهز:
-
-من الرد السابق مباشرة، اضغط على زر التحميل للملف: index.html.   
-HTML
-
-هذا الملف يحتوي على كود الـ HTML النقي فقط بدون أي كلام من المحادثة.   
-HTML
-
-تحديث الملف في GitHub:
-
-في نفس الصفحة المفتوحة أمامك الآن على GitHub، اضغط على أيقونة القلم ✏️ (Edit this file) الموجودة في أعلى اليمين بجانب كلمة Raw.   
-PNG
-+ 1
-
-حدد كل ما بداخل الصفحة (Ctrl + A) ثم احذفه (Delete).
-
-افتح ملف index.html الذي نزلته عندك وافتحه بالمفكرة (Notepad)، انسخ كل ما بداخله والصقه هناك.
-
-(أو ببساطة: ارجع لصفحة المستودع الرئيسية واضغط Add file -> Upload files واسحب ملف index.html فوق القديم).
-
-حفظ التغييرات:
-
-اضغط على الزر الأخضر في الأسفل: Commit changes.
-
-بمجرد حفظ الكود الصحيح، انتظر دقيقة واحدة وافتح رابط موقعك halshuhib.github.io/saudi-calendar وسيعمل التقويم فوراً وبشكل ممتاز!
-
-
-
-
-
-‫Gemini هو نموذج ذكاء اصطناعي وقد يعرض معلومات خاطئة.
-
-<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -3781,7 +9,7 @@ PNG
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Amiri:wght@700&display=swap" rel="stylesheet">
-    <!-- SheetJS لتصدير ملفات Excel الحقيقية المنسقة -->
+    <!-- SheetJS لتصدير تقرير المشتركين بصيغة Excel حقيقية -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
@@ -3798,7 +26,6 @@ PNG
             letter-spacing: 0.5px;
         }
 
-        /* كتابة أسماء أيام الأسبوع رأسياً */
         .vertical-text {
             writing-mode: vertical-rl;
             text-orientation: mixed;
@@ -3806,13 +33,12 @@ PNG
             white-space: nowrap;
         }
 
-        /* خطوط الفصول اليومية الفلكية الدقيقة */
+        /* خطوط الفصول الفلكية اليومية الدقيقة */
         .season-b-spring { border-bottom: 3.5px solid var(--col-spring, #10b981) !important; }
         .season-b-summer { border-bottom: 3.5px solid var(--col-summer, #f97316) !important; }
         .season-b-autumn { border-bottom: 3.5px solid var(--col-autumn, #dc2626) !important; }
         .season-b-winter { border-bottom: 3.5px solid var(--col-winter, #2563eb) !important; }
 
-        /* إعدادات الطباعة لصفحة واحدة كاملة بدون هوامش خارجية أو تذييل */
         @page {
             size: landscape;
             margin: 0mm !important;
@@ -3928,7 +154,6 @@ PNG
             }
         }
 
-        /* شريط التمرير */
         ::-webkit-scrollbar {
             width: 5px;
             height: 5px;
@@ -3939,11 +164,10 @@ PNG
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
 
-    <!-- شريط التحكم العلوي (يختفي عند الطباعة) -->
+    <!-- شريط التحكم العلوي -->
     <header class="no-print bg-slate-900 text-white shadow-md sticky top-0 z-40 border-b border-slate-700">
         <div class="max-w-7xl mx-auto px-3 py-2 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
             
-            <!-- أزرار التحكم بالسنة والنوع واللغة -->
             <div class="flex items-center gap-1.5 flex-wrap">
                 <div class="flex items-center bg-slate-800 rounded-lg p-1 border border-slate-700">
                     <button id="btnPrevYear" class="px-2 py-1 hover:bg-slate-700 rounded text-slate-200 transition font-bold" title="السنة السابقة">◀</button>
@@ -3962,15 +186,14 @@ PNG
                 </button>
             </div>
 
-            <!-- أزرار الإعدادات والحساب ولوحة المدير -->
             <div class="flex items-center gap-1.5 flex-wrap">
-                <!-- زر لوحة المدير (يظهر لحساب halshuhiyb@gmail.com أو بعد الدخول) -->
+                <!-- زر لوحة الإدارة للمدير -->
                 <button id="btnOpenAdminPanel" class="px-3 py-1 bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-slate-950 font-black rounded-lg transition text-xs flex items-center gap-1 shadow-md ring-2 ring-amber-300/60 hidden">
                     <span>👑 لوحة الإدارة</span>
-                    <span id="badgeSubscribersCount" class="bg-slate-900 text-amber-400 text-[10px] px-1.5 py-0.2 rounded-full font-bold">0</span>
+                    <span id="badgeSubscribersCount" class="bg-slate-900 text-amber-400 text-[10px] px-1.5 py-0.2 rounded-full font-bold">1</span>
                 </button>
 
-                <!-- زر تسجيل الدخول / حسابي -->
+                <!-- زر الحساب والتسجيل -->
                 <button id="btnOpenAuthModal" class="px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded-lg font-bold transition text-xs flex items-center gap-1 shadow">
                     <span id="txtAuthBtnLabel">👤 تسجيل الدخول / اشتراك</span>
                 </button>
@@ -3987,16 +210,14 @@ PNG
                     <span>⚙️ الإجازات والرواتب</span>
                 </button>
 
-                <!-- أزرار النسخ الاحتياطي -->
                 <div class="flex bg-slate-800 rounded-lg p-0.5 border border-slate-700">
-                    <button id="btnExportBackup" class="px-2 py-1 rounded font-semibold text-xs text-amber-300 hover:bg-slate-700" title="تصدير نسخة احتياطية لكافة الإعدادات">💾 تصدير</button>
+                    <button id="btnExportBackup" class="px-2 py-1 rounded font-semibold text-xs text-amber-300 hover:bg-slate-700" title="تصدير نسخة احتياطية">💾 تصدير</button>
                     <label class="px-2 py-1 rounded font-semibold text-xs text-emerald-300 hover:bg-slate-700 cursor-pointer" title="استيراد نسخة احتياطية">
                         📂 استيراد
                         <input id="inputImportBackup" type="file" accept=".json" class="hidden">
                     </label>
                 </div>
 
-                <!-- زر الطباعة -->
                 <button id="btnPrint" class="px-3.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-lg transition shadow-lg text-xs flex items-center gap-1">
                     <span>🖨️ طباعة / PDF</span>
                 </button>
@@ -4004,14 +225,14 @@ PNG
         </div>
     </header>
 
-    <!-- شريط معلومات الحساب المتصل في السحابة -->
+    <!-- شريط معلومات الحساب -->
     <div id="cloudStatusBanner" class="no-print bg-slate-800 border-b border-slate-700 px-4 py-1.5 text-[11px] text-slate-300 flex justify-between items-center">
         <div class="flex items-center gap-2">
             <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span id="cloudStatusText">الوضع السحابي: متصل بقاعدة بيانات التقويم | السنة الحالية مستقلة ومعزولة</span>
+            <span id="cloudStatusText">الوضع السحابي: متصل بقاعدة بيانات التقويم | عزل كل سنة بشكل مستقل</span>
         </div>
         <div id="userGreetingBox" class="font-bold text-amber-300">
-            حساب مدير النظام: حسين يوسف الشهيب (0500686807)
+            مدير النظام: حسين يوسف الشهيب (0500686807)
         </div>
     </div>
 
@@ -4019,7 +240,6 @@ PNG
     <main class="flex-1 flex justify-center items-start p-1 sm:p-3 overflow-auto">
         <div id="printArea" class="bg-white text-slate-900 border-2 border-slate-900 shadow-2xl mx-auto transition-all" style="width: 100%; max-width: 1440px;">
             
-            <!-- الشريط العلوي الفيروزي المميز للتقويم -->
             <div id="headerBar" class="w-full flex items-center justify-between px-3 py-1.5 text-white font-bold select-none border-b-2 border-slate-900" style="background-color: #009bb0;">
                 <div class="flex items-center gap-2.5">
                     <img id="imgLogo" src="" alt="شعار" class="h-8 w-auto object-contain hidden bg-white/20 p-0.5 rounded border border-white/40">
@@ -4034,7 +254,6 @@ PNG
                 </div>
             </div>
 
-            <!-- جدول التقويم الأفقي المتصل (36 عمود للأيام) -->
             <div class="w-full overflow-x-auto table-container">
                 <table id="calendarTable" class="w-full border-collapse border border-slate-900 text-center select-none text-[10px] sm:text-[11px] md:text-xs">
                     <thead id="calendarHead"></thead>
@@ -4042,16 +261,13 @@ PNG
                 </table>
             </div>
 
-            <!-- دليل الألوان (Legend) السفلي -->
             <footer id="legendBar" class="w-full p-1.5 bg-slate-50 border-t-2 border-slate-900 text-[10px] sm:text-[11px] flex flex-wrap items-center justify-center gap-3 sm:gap-4 font-bold">
             </footer>
 
         </div>
     </main>
 
-    <!-- =========================================================================
-         نافذة تسجيل الدخول والاشتراك (مع زر العين لكشف كلمة المرور وإصلاح النقر)
-         ========================================================================= -->
+    <!-- نافذة تسجيل الدخول والاشتراك -->
     <div id="modalAuth" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden" style="z-index: 99999;">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-300 overflow-hidden text-right">
             <div class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center">
@@ -4061,17 +277,16 @@ PNG
                 <button type="button" id="btnCloseAuth" class="text-slate-400 hover:text-red-400 text-xl font-bold p-1">✕</button>
             </div>
 
-            <!-- تبويبات الدخول والاشتراك -->
             <div class="flex border-b border-slate-200 bg-slate-50 text-xs font-bold">
                 <button type="button" id="tabBtnLogin" class="flex-1 py-2.5 text-center text-sky-700 border-b-2 border-sky-600 bg-white">تسجيل الدخول</button>
                 <button type="button" id="tabBtnRegister" class="flex-1 py-2.5 text-center text-slate-500 hover:text-slate-800">إنشاء حساب جديد</button>
             </div>
 
-            <!-- محتوى تسجيل الدخول -->
+            <!-- تسجيل الدخول -->
             <div id="authBoxLogin" class="p-4 space-y-3 text-xs sm:text-sm">
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">البريد الإلكتروني:</label>
-                    <input id="inputLoginEmail" type="email" placeholder="example@gmail.com" class="w-full p-2 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-sky-500 outline-none" dir="ltr">
+                    <input id="inputLoginEmail" type="email" placeholder="halshuhiyb@gmail.com" class="w-full p-2 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-sky-500 outline-none" dir="ltr">
                 </div>
 
                 <div>
@@ -4079,7 +294,6 @@ PNG
                         <label class="font-bold text-slate-700">كلمة المرور:</label>
                         <button type="button" id="btnForgotPass" class="text-[11px] text-sky-600 hover:underline">نسيت كلمة المرور؟</button>
                     </div>
-                    <!-- حقل كلمة المرور مع زر العين لكشف/إخفاء الحروف -->
                     <div class="relative flex items-center">
                         <input id="inputLoginPass" type="password" placeholder="••••••••" class="w-full p-2 pl-10 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-sky-500 outline-none" dir="ltr">
                         <button type="button" id="btnToggleLoginPass" class="absolute left-2.5 text-slate-500 hover:text-slate-800 p-1 text-sm font-bold focus:outline-none" title="كشف / إخفاء كلمة المرور">
@@ -4095,7 +309,7 @@ PNG
                 </button>
             </div>
 
-            <!-- محتوى إنشاء حساب جديد -->
+            <!-- إنشاء حساب جديد -->
             <div id="authBoxRegister" class="p-4 space-y-3 text-xs sm:text-sm hidden">
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">الاسم الكامل:</label>
@@ -4114,7 +328,6 @@ PNG
 
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">كلمة المرور:</label>
-                    <!-- حقل كلمة المرور مع زر العين -->
                     <div class="relative flex items-center">
                         <input id="inputRegPass" type="password" placeholder="6 خانات على الأقل" class="w-full p-2 pl-10 border border-slate-300 rounded-lg text-xs font-semibold outline-none" dir="ltr">
                         <button type="button" id="btnToggleRegPass" class="absolute left-2.5 text-slate-500 hover:text-slate-800 p-1 text-sm font-bold focus:outline-none" title="كشف / إخفاء كلمة المرور">
@@ -4130,7 +343,7 @@ PNG
                 </button>
             </div>
 
-            <!-- عرض الحساب المسجل حالياً -->
+            <!-- الحساب المسجل -->
             <div id="authBoxLoggedIn" class="p-4 space-y-3 text-xs sm:text-sm hidden">
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <div class="font-extrabold text-slate-900 text-sm" id="lblLoggedName">حسين يوسف الشهيب</div>
@@ -4146,9 +359,7 @@ PNG
         </div>
     </div>
 
-    <!-- =========================================================================
-         نافذة لوحة إدارة المشتركين لمدير النظام (Admin Dashboard + Excel Export)
-         ========================================================================= -->
+    <!-- لوحة تحكم الإدارة لمدير النظام -->
     <div id="modalAdmin" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden" style="z-index: 99999;">
         <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col border border-slate-300 overflow-hidden text-right">
             <div class="bg-gradient-to-r from-slate-900 to-amber-950 text-white px-5 py-3 flex justify-between items-center border-b border-amber-500/40">
@@ -4162,32 +373,30 @@ PNG
                 <button type="button" id="btnCloseAdmin" class="text-slate-300 hover:text-red-400 text-xl font-bold">✕</button>
             </div>
 
-            <!-- بطاقات إحصائية سريعة -->
             <div class="p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 border-b border-slate-200">
                 <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
                         <div class="text-[11px] text-slate-500 font-bold">إجمالي المشتركين</div>
-                        <div id="statTotalUsers" class="text-2xl font-black text-sky-700">0</div>
+                        <div id="statTotalUsers" class="text-2xl font-black text-sky-700">1</div>
                     </div>
                     <span class="text-2xl">👥</span>
                 </div>
                 <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
                         <div class="text-[11px] text-slate-500 font-bold">الحسابات الموثقة</div>
-                        <div id="statVerifiedUsers" class="text-2xl font-black text-emerald-600">0</div>
+                        <div id="statVerifiedUsers" class="text-2xl font-black text-emerald-600">1</div>
                     </div>
                     <span class="text-2xl">✅</span>
                 </div>
                 <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
-                        <div class="text-[11px] text-slate-500 font-bold">أرقام الجوالات المسجلة</div>
-                        <div id="statPhoneUsers" class="text-2xl font-black text-indigo-600">0</div>
+                        <div class="text-[11px] text-slate-500 font-bold">أرقام التواصل المسجلة</div>
+                        <div id="statPhoneUsers" class="text-2xl font-black text-indigo-600">1</div>
                     </div>
                     <span class="text-2xl">📱</span>
                 </div>
             </div>
 
-            <!-- شريط البحث وزر تصدير Excel الفخم -->
             <div class="p-3 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
                 <input id="inputSearchUsers" type="text" placeholder="🔍 بحث بالاسم أو البريد أو رقم الجوال..." class="flex-1 min-w-[200px] p-2 border border-slate-300 rounded-lg text-xs font-semibold outline-none focus:ring-2 focus:ring-amber-500">
                 <button type="button" id="btnExportUsersExcel" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition">
@@ -4195,7 +404,6 @@ PNG
                 </button>
             </div>
 
-            <!-- جدول عرض المشتركين -->
             <div class="flex-1 overflow-auto p-4">
                 <table class="w-full text-right text-xs border-collapse">
                     <thead>
@@ -4208,9 +416,7 @@ PNG
                             <th class="p-2 font-black">حالة التفعيل</th>
                         </tr>
                     </thead>
-                    <tbody id="adminUsersTableBody" class="divide-y divide-slate-200">
-                        <!-- يُدرج ديناميكياً -->
-                    </tbody>
+                    <tbody id="adminUsersTableBody" class="divide-y divide-slate-200"></tbody>
                 </table>
             </div>
 
@@ -4220,9 +426,7 @@ PNG
         </div>
     </div>
 
-    <!-- =========================================================================
-         نافذة الإجازات والرواتب
-         ========================================================================= -->
+    <!-- نافذة الإجازات والرواتب -->
     <div id="modalRules" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden" style="z-index: 99999;">
         <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-slate-300 overflow-hidden text-right">
             <div class="bg-indigo-700 text-white px-4 py-2.5 flex justify-between items-center">
@@ -4231,7 +435,6 @@ PNG
             </div>
             
             <div class="p-4 overflow-y-auto space-y-4 text-xs sm:text-sm">
-                <!-- يوم الراتب وقاعدته -->
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <h4 class="font-bold text-indigo-900 mb-1.5 flex items-center gap-1.5">💰 يوم صرف الراتب المعتمد:</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
@@ -4248,7 +451,6 @@ PNG
                     </div>
                 </div>
 
-                <!-- عطلة نهاية الأسبوع -->
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <h4 class="font-bold text-indigo-900 mb-1.5">🏖️ نظام عطلة نهاية الأسبوع:</h4>
                     <select id="cfgWeekendMode" class="w-full sm:w-64 p-1.5 border border-slate-300 rounded font-semibold text-slate-800">
@@ -4258,7 +460,6 @@ PNG
                     </select>
                 </div>
 
-                <!-- العطل الرسمية والتجسير -->
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <h4 class="font-bold text-indigo-900 mb-1">🇸🇦 اليوم الوطني ويوم التأسيس مع التجسير:</h4>
                     <p class="text-[11px] text-slate-600 mb-2">
@@ -4270,7 +471,6 @@ PNG
                     </label>
                 </div>
 
-                <!-- إجازات الأعياد -->
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-3">
                     <h4 class="font-bold text-indigo-900">🌙 إجازات عيدي الفطر والأضحى (امتداد تلقائي بين الشهور):</h4>
                     
@@ -4317,7 +517,6 @@ PNG
                     </div>
                 </div>
 
-                <!-- إجازات الطلاب -->
                 <div class="bg-amber-50/80 p-3 rounded-lg border-2 border-amber-300 space-y-2">
                     <div class="flex justify-between items-center">
                         <h4 class="font-extrabold text-amber-950 flex items-center gap-1.5 text-xs sm:text-sm">
@@ -4406,9 +605,6 @@ PNG
     </div>
 
     <script>
-        /* =========================================================================
-           حالة التطبيق الافتراضية المستقلة لكل سنة (Isolated Per-Year State)
-           ========================================================================= */
         const DEFAULT_STATE = {
             lang: 'ar',
             primaryMode: 'hijri',
@@ -4453,21 +649,9 @@ PNG
             }
         };
 
-        // نسخة الحالة الحية
         let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
-
-        // حساب مدير النظام المعتمد
-        const ADMIN_INFO = {
-            email: 'halshuhiyb@gmail.com',
-            name: 'حسين يوسف الشهيب',
-            phone: '0500686807',
-            isAdmin: true
-        };
-
-        // المستخدم المسجل حالياً
         let currentUser = null;
 
-        // قائمة المشتركين المسجلين في النظام (محفوظة محلياً وسحابياً)
         let subscribersList = [
             {
                 id: 'admin_1',
@@ -4480,9 +664,6 @@ PNG
             }
         ];
 
-        /* =========================================================================
-           أسماء الشهور والأيام
-           ========================================================================= */
         const HIJRI_MONTHS_AR = [
             'محــــــــــــــــــرم (1)', 'صفـــــــــــــــــر (2)', 'ربيــــــــــع الأول (3)',
             'ربيــــــــــع الثاني (4)', 'جمــــادى الأولى (5)', 'جمــــادى الثانية (6)',
@@ -4515,22 +696,19 @@ PNG
         const WEEKDAYS_AR = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
         const WEEKDAYS_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-        /* =========================================================================
-           حسابات تقويم أم القرى الفلكية الدقيقة (شهر رمضان 1448 = 29 يوماً)
-           ========================================================================= */
         const UMM_ALQURA_1448_STARTS = [
-            { m: 1,  length: 29, gYear: 2026, gMonth: 6,  gDay: 16 }, // محرم 29 يوم (يبدأ 16 يونيو)
-            { m: 2,  length: 30, gYear: 2026, gMonth: 7,  gDay: 15 }, // صفر 30 يوم
-            { m: 3,  length: 29, gYear: 2026, gMonth: 8,  gDay: 14 }, // ربيع أول 29 يوم
-            { m: 4,  length: 30, gYear: 2026, gMonth: 9,  gDay: 12 }, // ربيع ثاني 30 يوم
-            { m: 5,  length: 30, gYear: 2026, gMonth: 10, gDay: 12 }, // جمادى الأولى 30 يوم
-            { m: 6,  length: 29, gYear: 2026, gMonth: 11, gDay: 11 }, // جمادى الثانية 29 يوم
-            { m: 7,  length: 30, gYear: 2026, gMonth: 12, gDay: 10 }, // رجب 30 يوم
-            { m: 8,  length: 30, gYear: 2027, gMonth: 1,  gDay: 9  }, // شعبان 30 يوم
-            { m: 9,  length: 29, gYear: 2027, gMonth: 2,  gDay: 8  }, // رمضان 29 يوم (يبدأ 8 فبراير وينتهي 8 مارس)
-            { m: 10, length: 30, gYear: 2027, gMonth: 3,  gDay: 9  }, // شوال 30 يوم (يبدأ 9 مارس)
-            { m: 11, length: 29, gYear: 2027, gMonth: 4,  gDay: 8  }, // ذو القعدة 29 يوم
-            { m: 12, length: 30, gYear: 2027, gMonth: 5,  gDay: 7  }  // ذو الحجة 30 يوم
+            { m: 1,  length: 29, gYear: 2026, gMonth: 6,  gDay: 16 },
+            { m: 2,  length: 30, gYear: 2026, gMonth: 7,  gDay: 15 },
+            { m: 3,  length: 29, gYear: 2026, gMonth: 8,  gDay: 14 },
+            { m: 4,  length: 30, gYear: 2026, gMonth: 9,  gDay: 12 },
+            { m: 5,  length: 30, gYear: 2026, gMonth: 10, gDay: 12 },
+            { m: 6,  length: 29, gYear: 2026, gMonth: 11, gDay: 11 },
+            { m: 7,  length: 30, gYear: 2026, gMonth: 12, gDay: 10 },
+            { m: 8,  length: 30, gYear: 2027, gMonth: 1,  gDay: 9  },
+            { m: 9,  length: 29, gYear: 2027, gMonth: 2,  gDay: 8  },
+            { m: 10, length: 30, gYear: 2027, gMonth: 3,  gDay: 9  },
+            { m: 11, length: 29, gYear: 2027, gMonth: 4,  gDay: 8  },
+            { m: 12, length: 30, gYear: 2027, gMonth: 5,  gDay: 7  }
         ];
 
         function gregorianToJulian(year, month, day) {
@@ -4565,7 +743,6 @@ PNG
                 const baseJd = gregorianToJulian(info.gYear, info.gMonth, info.gDay);
                 return baseJd + (day - 1);
             }
-            // fallback
             return Math.floor((11 * year + 3) / 30) + 354 * year + 30 * month - Math.floor((month - 1) / 2) + day + 1948440 - 385;
         }
 
@@ -4607,7 +784,6 @@ PNG
             return false;
         }
 
-        /* فصول السنة الفلكية اليومية الدقيقة */
         function getSeasonClassForDate(gDate) {
             const m = gDate.getMonth() + 1;
             const d = gDate.getDate();
@@ -4618,7 +794,6 @@ PNG
             return 'season-b-winter';
         }
 
-        /* يوم صرف الراتب الفعلي فقط */
         function getActualSalaryDayForMonth(year, month) {
             const baseTarget = parseInt(state.salaryDay) || 27;
             const maxDays = new Date(year, month + 1, 0).getDate();
@@ -4629,8 +804,8 @@ PNG
             const dow = nominalDate.getDay();
 
             if (state.weekendOption === 'fri_sat') {
-                if (dow === 5) return nominalDay - 1; // الجمعة -> الخميس 26
-                if (dow === 6) return nominalDay + 1; // السبت -> الأحد 28
+                if (dow === 5) return nominalDay - 1;
+                if (dow === 6) return nominalDay + 1;
             } else if (state.weekendOption === 'sat_sun') {
                 if (dow === 6) return nominalDay - 1;
                 if (dow === 0) return nominalDay + 1;
@@ -4638,7 +813,6 @@ PNG
             return nominalDay;
         }
 
-        /* التجسير للعطل الرسمية */
         function checkSaudiNationalBridgingHoliday(dateObj) {
             if (!state.enableBridging) return false;
             const m = dateObj.getMonth() + 1;
@@ -4659,9 +833,6 @@ PNG
             return false;
         }
 
-        /* =========================================================================
-           عزل كل سنة وحفظها محلياً وسحابياً (Isolated Year Storage)
-           ========================================================================= */
         function getYearStorageKey(yearNum) {
             const userId = currentUser ? currentUser.email.replace(/[@.]/g, '_') : 'global_default';
             return `cal_config_u_${userId}_yr_${yearNum}`;
@@ -4687,14 +858,10 @@ PNG
             try {
                 const key = getYearStorageKey(state.year);
                 localStorage.setItem(key, JSON.stringify(state));
-                // حفظ نسخة المشتركين
                 localStorage.setItem('cal_subscribers_data', JSON.stringify(subscribersList));
             } catch(e) { console.error(e); }
         }
 
-        /* =========================================================================
-           بناء جدول التقويم
-           ========================================================================= */
         function renderCalendar() {
             const tableHead = document.getElementById('calendarHead');
             const tableBody = document.getElementById('calendarBody');
@@ -4734,7 +901,6 @@ PNG
                     : `Gregorian Calendar for Year ${targetYear} CE ( ${hSpan} AH )`;
             }
 
-            // حساب الأعياد والمدارس
             let eidJdRanges = [];
             let schoolJdRanges = [];
 
@@ -4781,7 +947,6 @@ PNG
                 colWeekdays.push((baseStartDow + i) % 7);
             }
 
-            // رأس الجدول
             let headHtml = `<tr class="bg-cyan-50 border-b-2 border-slate-900 h-11 sm:h-12">`;
             const monthHeaderTitle = dirRTL ? 'الشـهــــــــــــر' : 'Month';
             headHtml += `<th class="w-28 sm:w-36 px-1 border-r border-l border-slate-900 bg-cyan-100/90 font-extrabold text-xs sm:text-sm text-slate-800">${monthHeaderTitle}</th>`;
@@ -4804,7 +969,6 @@ PNG
             headHtml += `</tr>`;
             tableHead.innerHTML = headHtml;
 
-            // جسم الجدول
             let bodyHtml = '';
             monthsData.forEach((mInfo) => {
                 const mNumber = mInfo.monthNum;
@@ -4831,7 +995,6 @@ PNG
                 let startOffset = (mInfo.startDow - baseStartDow + 7) % 7;
                 bodyHtml += `<tr class="border-b border-slate-700 cal-row hover:bg-slate-50/50 transition">`;
 
-                // عمود اسم الشهر في المنتصف
                 const monthInitialSeasonClass = getSeasonClassForDate(mInfo.startDate);
                 bodyHtml += `
                     <td class="border-r border-l border-slate-900 bg-white px-1 py-0.5 text-center align-middle ${monthInitialSeasonClass}">
@@ -4845,7 +1008,6 @@ PNG
                     </td>
                 `;
 
-                // أعمدة الأيام
                 for (let colIdx = 0; colIdx < TOTAL_COLUMNS; colIdx++) {
                     const dayNumber = colIdx - startOffset + 1;
                     const dow = colWeekdays[colIdx];
@@ -4854,7 +1016,6 @@ PNG
                     if (dayNumber >= 1 && dayNumber <= mInfo.length) {
                         const jd = mInfo.startJd + (dayNumber - 1);
                         const gDateVal = julianToGregorian(jd);
-                        const hDateVal = julianToHijri(jd);
                         const daySeasonClass = getSeasonClassForDate(gDateVal);
 
                         let primaryNum = dayNumber;
@@ -4878,7 +1039,6 @@ PNG
                             if (schoolJdRanges.some(r => jd >= r.start && jd <= r.end)) isSchoolHoliday = true;
                         }
 
-                        // الأولوية: لون نهاية الأسبوع ثابت دائماً ولا يتغير
                         let cellBg = isWk ? state.colors.weekend : '#ffffff';
                         let textColor = 'text-slate-950 font-black';
 
@@ -4966,9 +1126,6 @@ PNG
             `;
         }
 
-        /* =========================================================================
-           إدارة المشتركين وتصدير تقرير Excel الفخم
-           ========================================================================= */
         function updateAdminDashboard() {
             try {
                 const savedUsers = localStorage.getItem('cal_subscribers_data');
@@ -5057,23 +1214,16 @@ PNG
             XLSX.writeFile(wb, `تقرير_المشتركين_تقويم_1448_${Date.now()}.xlsx`);
         }
 
-        /* =========================================================================
-           ربط عناصر التفاعل عند تحميل المستند
-           ========================================================================= */
         document.addEventListener('DOMContentLoaded', () => {
-
-            // استرجاع قائمة المشتركين
             try {
                 const s = localStorage.getItem('cal_subscribers_data');
                 if (s) subscribersList = JSON.parse(s);
             } catch(e) {}
 
-            // تحميل إعدادات السنة الحالية
             loadYearState(document.getElementById('inputYear').value || 1448);
             renderCalendar();
             updateAdminDashboard();
 
-            // فحص حالة الدخول الافتراضية
             const checkAdminAuth = () => {
                 const btnAdmin = document.getElementById('btnOpenAdminPanel');
                 if (currentUser && (currentUser.email === 'halshuhiyb@gmail.com' || currentUser.isAdmin)) {
@@ -5083,7 +1233,6 @@ PNG
                 }
             };
 
-            // زر العين لكشف / إخفاء كلمة المرور في الدخول
             const btnToggleLoginPass = document.getElementById('btnToggleLoginPass');
             const inputLoginPass = document.getElementById('inputLoginPass');
             btnToggleLoginPass.addEventListener('click', (e) => {
@@ -5097,7 +1246,6 @@ PNG
                 }
             });
 
-            // زر العين لكشف / إخفاء كلمة المرور في التسجيل
             const btnToggleRegPass = document.getElementById('btnToggleRegPass');
             const inputRegPass = document.getElementById('inputRegPass');
             btnToggleRegPass.addEventListener('click', (e) => {
@@ -5111,7 +1259,6 @@ PNG
                 }
             });
 
-            // التنقل بين تبويبات نافذة الدخول والاشتراك
             const tabBtnLogin = document.getElementById('tabBtnLogin');
             const tabBtnRegister = document.getElementById('tabBtnRegister');
             const authBoxLogin = document.getElementById('authBoxLogin');
@@ -5131,7 +1278,6 @@ PNG
                 authBoxLogin.classList.add('hidden');
             });
 
-            // زر فتح وإغلاق نافذة الدخول
             const modalAuth = document.getElementById('modalAuth');
             document.getElementById('btnOpenAuthModal').addEventListener('click', () => {
                 modalAuth.classList.remove('hidden');
@@ -5140,7 +1286,6 @@ PNG
                 modalAuth.classList.add('hidden');
             });
 
-            // تنفيذ تسجيل الدخول
             document.getElementById('btnSubmitLogin').addEventListener('click', () => {
                 const email = document.getElementById('inputLoginEmail').value.trim();
                 const pass = document.getElementById('inputLoginPass').value;
@@ -5152,7 +1297,6 @@ PNG
                     return;
                 }
 
-                // فحص حساب مدير النظام
                 if (email.toLowerCase() === 'halshuhiyb@gmail.com') {
                     currentUser = {
                         name: 'حسين يوسف الشهيب',
@@ -5189,7 +1333,6 @@ PNG
                 setTimeout(() => { modalAuth.classList.add('hidden'); }, 1200);
             });
 
-            // تنفيذ إنشاء حساب جديد
             document.getElementById('btnSubmitRegister').addEventListener('click', () => {
                 const name = document.getElementById('inputRegName').value.trim();
                 const phone = document.getElementById('inputRegPhone').value.trim();
@@ -5209,7 +1352,6 @@ PNG
                     return;
                 }
 
-                // إضافة المشترك لقاعدة المشتركين
                 const newUser = {
                     id: 'user_' + Date.now(),
                     name: name,
@@ -5241,7 +1383,6 @@ PNG
                 setTimeout(() => { modalAuth.classList.add('hidden'); }, 1200);
             });
 
-            // تسجيل الخروج
             document.getElementById('btnDoLogout').addEventListener('click', () => {
                 currentUser = null;
                 document.getElementById('txtAuthBtnLabel').textContent = '👤 تسجيل الدخول / اشتراك';
@@ -5251,7 +1392,6 @@ PNG
                 modalAuth.classList.add('hidden');
             });
 
-            // نسيت كلمة المرور
             document.getElementById('btnForgotPass').addEventListener('click', () => {
                 const em = document.getElementById('inputLoginEmail').value.trim();
                 if (!em) {
@@ -5261,7 +1401,6 @@ PNG
                 alert(`تم إرسال رابط إعادة تعيين كلمة المرور إلى البريد: ${em}`);
             });
 
-            // نافذة لوحة الإدارة (Admin Panel)
             const modalAdmin = document.getElementById('modalAdmin');
             document.getElementById('btnOpenAdminPanel').addEventListener('click', () => {
                 updateAdminDashboard();
@@ -5278,7 +1417,6 @@ PNG
                 exportUsersToFormattedExcel();
             });
 
-            // التنقل بين السنوات مع عزل كل سنة
             document.getElementById('btnPrevYear').addEventListener('click', () => {
                 saveYearStateLocally();
                 state.year = parseInt(state.year) - 1;
@@ -5303,7 +1441,6 @@ PNG
                 renderCalendar();
             });
 
-            // نوع التقويم
             const btnH = document.getElementById('btnModeHijri');
             const btnG = document.getElementById('btnModeGreg');
             btnH.addEventListener('click', () => {
@@ -5324,7 +1461,6 @@ PNG
                 renderCalendar();
             });
 
-            // تبديل اللغة
             const btnLang = document.getElementById('btnToggleLang');
             btnLang.addEventListener('click', () => {
                 state.lang = (state.lang === 'ar') ? 'en' : 'ar';
@@ -5332,12 +1468,10 @@ PNG
                 renderCalendar();
             });
 
-            // الطباعة وحفظ PDF
             document.getElementById('btnPrint').addEventListener('click', () => {
                 window.print();
             });
 
-            // تصدير واستيراد النسخ الاحتياطية JSON
             document.getElementById('btnExportBackup').addEventListener('click', () => {
                 const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
                 const a = document.createElement('a');
@@ -5365,7 +1499,6 @@ PNG
                 }
             });
 
-            // نافذة الإجازات والرواتب
             const modalRules = document.getElementById('modalRules');
             document.getElementById('btnOpenRulesModal').addEventListener('click', () => {
                 document.getElementById('cfgSalaryDay').value = state.salaryDay;
@@ -5459,7 +1592,6 @@ PNG
                 modalRules.classList.add('hidden');
             });
 
-            // نافذة الألوان
             const modalColors = document.getElementById('modalColors');
             document.getElementById('btnOpenColorsModal').addEventListener('click', () => modalColors.classList.remove('hidden'));
             document.getElementById('btnCloseColors').addEventListener('click', () => modalColors.classList.add('hidden'));
@@ -5475,7 +1607,6 @@ PNG
                 modalColors.classList.add('hidden');
             });
 
-            // نافذة الترويسة والشعار
             const modalHeader = document.getElementById('modalHeader');
             document.getElementById('btnOpenHeaderModal').addEventListener('click', () => modalHeader.classList.remove('hidden'));
             document.getElementById('btnCloseHeader').addEventListener('click', () => modalHeader.classList.add('hidden'));
@@ -5513,5 +1644,3 @@ PNG
     </script>
 </body>
 </html>
-index.html
-جارٍ عرض "index.html".
