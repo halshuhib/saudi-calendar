@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>التقويم الهجري والميلادي السنوي - الإصدار 2.7 (1448 هـ)</title>
+    <title>التقويم الهجري والميلادي السنوي - الإصدار 2.8 (1448 هـ)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -198,8 +198,8 @@
                     🌐 English (LTR)
                 </button>
 
-                <span class="bg-indigo-950 text-indigo-300 border border-indigo-700/60 px-2 py-0.5 rounded text-[11px] font-bold" title="رقم الإصدار والتحديث الحالي">
-                    الإصدار v2.7
+                <span class="bg-indigo-950 text-indigo-300 border border-indigo-700/60 px-2 py-0.5 rounded text-[11px] font-bold" title="رقم الإصدار والتحديث النهائي">
+                    الإصدار v2.8
                 </span>
             </div>
 
@@ -246,11 +246,11 @@
     <div id="cloudStatusBanner" class="no-print bg-slate-800 border-b border-slate-700 px-4 py-1.5 text-[11px] text-slate-300 flex justify-between items-center">
         <div class="flex items-center gap-2">
             <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span id="cloudStatusText">الوضع السحابي: متصل بقاعدة بيانات التقويم | السنة الحالية مستقلة ومعزولة</span>
-            <span class="text-indigo-300 font-bold bg-indigo-900/60 px-1.5 py-0.2 rounded border border-indigo-700/50">v2.7</span>
+            <span id="cloudStatusText">الوضع السحابي: متصل بقاعدة بيانات التقويم | الترويسة والإعدادات معتمدة من مدير النظام</span>
+            <span class="text-indigo-300 font-bold bg-indigo-900/60 px-1.5 py-0.2 rounded border border-indigo-700/50">v2.8</span>
         </div>
         <div id="userGreetingBox" class="font-bold text-amber-300">
-            الترويسة الافتراضية: حسين يوسف الشهيب (إمارة المنطقة الشرقية)
+            الترويسة المعتمدة للنظام: حسين يوسف الشهيب (إمارة المنطقة الشرقية)
         </div>
     </div>
 
@@ -295,13 +295,11 @@
                 <button type="button" id="btnCloseAuth" class="text-slate-400 hover:text-red-400 text-xl font-bold p-1">✕</button>
             </div>
 
-            <!-- تبويبات الدخول والاشتراك الذاتي -->
             <div id="authTabsContainer" class="flex border-b border-slate-200 bg-slate-50 text-xs font-bold">
                 <button type="button" id="tabBtnLogin" class="flex-1 py-2.5 text-center text-sky-700 border-b-2 border-sky-600 bg-white">تسجيل الدخول</button>
                 <button type="button" id="tabBtnRegister" class="flex-1 py-2.5 text-center text-slate-500 hover:text-slate-800">إنشاء حساب جديد</button>
             </div>
 
-            <!-- تسجيل الدخول -->
             <div id="authBoxLogin" class="p-4 space-y-3 text-xs sm:text-sm">
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">البريد الإلكتروني / اسم المستخدم:</label>
@@ -328,7 +326,6 @@
                 </button>
             </div>
 
-            <!-- إنشاء حساب جديد (التسجيل الذاتي) -->
             <div id="authBoxRegister" class="p-4 space-y-3 text-xs sm:text-sm hidden">
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">الاسم الكامل:</label>
@@ -362,7 +359,6 @@
                 </button>
             </div>
 
-            <!-- تفاصيل الحساب الحالي بعد تسجيل الدخول -->
             <div id="authBoxLoggedIn" class="p-4 space-y-3 text-xs sm:text-sm hidden">
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <div class="font-extrabold text-slate-900 text-sm" id="lblLoggedName">حسين يوسف الشهيب</div>
@@ -386,7 +382,7 @@
                     <span class="text-xl">👑</span>
                     <div>
                         <h3 class="font-black text-sm sm:text-base text-amber-400">لوحة تحكم مدير النظام - إدارة الحسابات والمشتركين</h3>
-                        <p class="text-[11px] text-slate-300">المدير: حسين يوسف الشهيب (0500686807) | الإصدار v2.7</p>
+                        <p class="text-[11px] text-slate-300">المدير: حسين يوسف الشهيب (0500686807) | الإصدار v2.8</p>
                     </div>
                 </div>
                 <button type="button" id="btnCloseAdmin" class="text-slate-300 hover:text-red-400 text-xl font-bold">✕</button>
@@ -930,15 +926,21 @@
             return `cal_config_u_${getUserStorageId()}_yr_${yearNum}`;
         }
 
-        // استرجاع ترويسة المستخدم الحالية (أو ترويسة مدير النظام الافتراضية)
+        // استرجاع ترويسة المستخدم الحالية أو ترويسة مدير النظام المعتمدة للنظام بأكمله
         function getUserHeaderConfig() {
             try {
                 const uId = getUserStorageId();
-                const savedUserHeader = localStorage.getItem(`cal_header_user_${uId}`);
-                if (savedUserHeader) {
-                    return JSON.parse(savedUserHeader);
+                if (currentUser && !currentUser.isAdmin) {
+                    const userCustomHeader = localStorage.getItem(`cal_header_user_${uId}`);
+                    if (userCustomHeader) return JSON.parse(userCustomHeader);
+                }
+
+                const masterHeader = localStorage.getItem('cal_system_master_header');
+                if (masterHeader) {
+                    return JSON.parse(masterHeader);
                 }
             } catch(e) {}
+
             return {
                 headerNames: SYSTEM_DEFAULT_HEADER.headerNames,
                 headerOrg: SYSTEM_DEFAULT_HEADER.headerOrg,
@@ -948,15 +950,19 @@
 
         function loadYearState(yearNum) {
             try {
-                const key = getYearStorageKey(yearNum);
-                const saved = localStorage.getItem(key);
-                const userHeader = getUserHeaderConfig();
+                const userKey = getUserStorageId();
+                const userYearData = localStorage.getItem(`cal_config_u_${userKey}_yr_${yearNum}`);
+                const masterYearData = localStorage.getItem(`cal_system_master_yr_${yearNum}`);
+                const headerData = getUserHeaderConfig();
 
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    state = Object.assign({}, DEFAULT_STATE, parsed, userHeader);
+                if (currentUser && !currentUser.isAdmin && userYearData) {
+                    state = Object.assign({}, DEFAULT_STATE, JSON.parse(userYearData), headerData);
+                } else if (masterYearData) {
+                    state = Object.assign({}, DEFAULT_STATE, JSON.parse(masterYearData), headerData);
+                } else if (userYearData) {
+                    state = Object.assign({}, DEFAULT_STATE, JSON.parse(userYearData), headerData);
                 } else {
-                    state = Object.assign({}, JSON.parse(JSON.stringify(DEFAULT_STATE)), userHeader);
+                    state = Object.assign({}, JSON.parse(JSON.stringify(DEFAULT_STATE)), headerData);
                 }
             } catch(e) {
                 state = JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -966,8 +972,20 @@
 
         function saveYearStateLocally() {
             try {
-                const key = getYearStorageKey(state.year);
-                localStorage.setItem(key, JSON.stringify(state));
+                const isAdmin = currentUser && (currentUser.email.toLowerCase() === 'halshuhiyb@gmail.com' || currentUser.isAdmin);
+                const userKey = getUserStorageId();
+                
+                localStorage.setItem(`cal_config_u_${userKey}_yr_${state.year}`, JSON.stringify(state));
+
+                if (isAdmin) {
+                    localStorage.setItem(`cal_system_master_yr_${state.year}`, JSON.stringify(state));
+                    localStorage.setItem(`cal_system_master_header`, JSON.stringify({
+                        headerNames: state.headerNames,
+                        headerOrg: state.headerOrg,
+                        logoData: state.logoData
+                    }));
+                }
+
                 localStorage.setItem('cal_subscribers_data', JSON.stringify(subscribersList));
             } catch(e) {}
         }
@@ -990,7 +1008,6 @@
             document.getElementById('txtHeaderNames').textContent = state.headerNames || SYSTEM_DEFAULT_HEADER.headerNames;
             document.getElementById('txtHeaderOrg').textContent = state.headerOrg || SYSTEM_DEFAULT_HEADER.headerOrg;
 
-            // تحديث الشعار تلقائياً وبشكل دائم
             const imgLogo = document.getElementById('imgLogo');
             if (state.logoData && state.logoData.trim().length > 0) {
                 imgLogo.src = state.logoData;
@@ -1457,7 +1474,7 @@
             document.getElementById('authTabsContainer').classList.remove('hidden');
             document.getElementById('authBoxLogin').classList.remove('hidden');
             document.getElementById('btnOpenAdminPanel').classList.add('hidden');
-            document.getElementById('userGreetingBox').textContent = 'الترويسة الافتراضية: حسين يوسف الشهيب (إمارة المنطقة الشرقية)';
+            document.getElementById('userGreetingBox').textContent = 'الترويسة المعتمدة للنظام: حسين يوسف الشهيب (إمارة المنطقة الشرقية)';
         }
 
         /* =========================================================================
@@ -1966,17 +1983,27 @@
                 document.getElementById('btnRemoveLogo').classList.add('hidden');
             });
 
-            // حفظ الترويسة والشعار بحساب المستخدم الحالي فقط وتثبيتها لديه
+            // حفظ الترويسة والشعار بحساب المستخدم الحالي فقط، أو تعميمها كإعداد نظام إذا كان المعدل مدير النظام
             document.getElementById('btnSaveHeader').addEventListener('click', () => {
                 state.headerNames = document.getElementById('inputHeaderNames').value.trim() || SYSTEM_DEFAULT_HEADER.headerNames;
                 state.headerOrg = document.getElementById('inputHeaderOrg').value.trim() || SYSTEM_DEFAULT_HEADER.headerOrg;
 
                 const uId = getUserStorageId();
-                localStorage.setItem(`cal_header_user_${uId}`, JSON.stringify({
+                const isAdmin = currentUser && (currentUser.email.toLowerCase() === 'halshuhiyb@gmail.com' || currentUser.isAdmin);
+
+                const headerPayload = {
                     headerNames: state.headerNames,
                     headerOrg: state.headerOrg,
                     logoData: state.logoData
-                }));
+                };
+
+                // إذا كان المدير يحفظ: تُعتمد فوراً كترويسة عامة للنظام ولكل الزوار
+                if (isAdmin) {
+                    localStorage.setItem('cal_system_master_header', JSON.stringify(headerPayload));
+                } else {
+                    // إذا كان مشتركاً عادياً: تُحفظ بحسابه فقط
+                    localStorage.setItem(`cal_header_user_${uId}`, JSON.stringify(headerPayload));
+                }
 
                 saveYearStateLocally();
                 renderCalendar();
