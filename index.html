@@ -6,6 +6,8 @@
     <title>التقويم الهجري والميلادي السنوي - حسين يوسف الشهيب</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- مكتبة SheetJS لتصدير ملفات Excel الاحترافية -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Amiri:wght@700&display=swap" rel="stylesheet">
@@ -198,6 +200,11 @@
                     <button id="btnOpenProfileModal" class="px-2 py-0.5 bg-slate-700 hover:bg-slate-600 text-cyan-300 rounded font-bold text-xs transition hidden" title="الملف الشخصي ورقم الجوال">
                         👤 حسابي
                     </button>
+                    <!-- زر لوحة الإدارة خاص بالمدير فقط -->
+                    <button id="btnOpenAdminDashboard" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-extrabold text-xs transition shadow-md hidden flex items-center gap-1.5 ring-2 ring-amber-400/50" title="لوحة إدارة المشتركين والتقارير">
+                        <span>👑 لوحة الإدارة</span>
+                        <span id="badgeSubscribersCount" class="bg-amber-900/80 px-1.5 py-0.2 rounded-full text-[10px] text-amber-200 font-black">0</span>
+                    </button>
                     <button id="btnOpenAuthModal" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold text-xs transition">
                         🔑 دخول المدير / المستخدمين
                     </button>
@@ -280,59 +287,158 @@
         </div>
     </main>
 
+    <!-- نافذة لوحة تحكم مدير النظام وتقارير المشتركين -->
+    <div id="modalAdminDashboard" class="no-print fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[92vh] flex flex-col border border-slate-300 overflow-hidden text-right">
+            
+            <!-- رأس نافذة الإدارة -->
+            <div class="bg-gradient-to-r from-amber-700 via-amber-800 to-slate-900 text-white px-5 py-3.5 flex justify-between items-center shadow-md">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-xl">👑</span>
+                    <div>
+                        <h3 class="font-extrabold text-sm sm:text-base tracking-wide flex items-center gap-2">
+                            <span>لوحة تحكم مدير النظام - قاعدة المشتركين</span>
+                            <span class="bg-amber-500/30 text-amber-200 border border-amber-400/40 text-[11px] px-2 py-0.5 rounded-full font-bold">إدارة مركزية</span>
+                        </h3>
+                        <p class="text-[11px] text-amber-100/80 mt-0.5">متابعة حسابات المشتركين وتصدير التقارير المعتمدة لملفات Excel</p>
+                    </div>
+                </div>
+                <button id="btnCloseAdminDashboard" class="text-white hover:text-amber-200 text-xl font-bold transition px-2 py-0.5 rounded-lg hover:bg-white/10">✕</button>
+            </div>
+
+            <!-- محتوى لوحة الإدارة -->
+            <div class="p-4 sm:p-5 overflow-y-auto space-y-4 text-xs sm:text-sm bg-slate-50 flex-1">
+                
+                <!-- بطاقات المؤشرات والإحصائيات السريعة (KPIs) -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div class="text-[11px] font-bold text-slate-500">إجمالي المشتركين</div>
+                        <div class="text-2xl font-black text-slate-900 mt-1" id="statTotalUsers">0</div>
+                        <div class="text-[10px] text-emerald-600 font-bold mt-1 flex items-center gap-1">● حسابات مسجلة بالسحابة</div>
+                    </div>
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div class="text-[11px] font-bold text-slate-500">الحسابات الموثقة</div>
+                        <div class="text-2xl font-black text-emerald-600 mt-1" id="statVerifiedUsers">0</div>
+                        <div class="text-[10px] text-slate-400 font-semibold mt-1">تأكيد البريد الإلكتروني</div>
+                    </div>
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div class="text-[11px] font-bold text-slate-500">أرقام الجوالات المسجلة</div>
+                        <div class="text-2xl font-black text-blue-600 mt-1" id="statPhoneUsers">0</div>
+                        <div class="text-[10px] text-slate-400 font-semibold mt-1">بيانات تواصل مكتملة</div>
+                    </div>
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div class="text-[11px] font-bold text-slate-500">آخر انضمام</div>
+                        <div class="text-xs font-black text-amber-700 mt-2 truncate" id="statLatestSignup">-</div>
+                        <div class="text-[10px] text-slate-400 font-semibold mt-1">أحدث مشترك بالقاعدة</div>
+                    </div>
+                </div>
+
+                <!-- شريط الإجراءات: بحث فوري وتصدير إكسل -->
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-2.5">
+                    <div class="flex-1 min-w-[240px] relative">
+                        <span class="absolute inset-y-0 right-3 flex items-center text-slate-400">🔍</span>
+                        <input id="inputSearchUsers" type="text" placeholder="بحث بالاسم، البريد الإلكتروني، أو رقم الجوال..." class="w-full pr-9 pl-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition">
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button id="btnRefreshUsers" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-bold text-xs transition flex items-center gap-1.5" title="تحديث القائمة الآن">
+                            <span>🔄 تحديث</span>
+                        </button>
+                        <!-- زر تصدير Excel الاحترافي -->
+                        <button id="btnExportUsersExcel" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-black text-xs transition shadow-md flex items-center gap-1.5 ring-2 ring-emerald-400/40">
+                            <span>📊 تصدير تقرير المشتركين (Excel)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- جدول المشتركين المفصل -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto max-h-[46vh]">
+                        <table class="w-full text-right border-collapse text-xs">
+                            <thead class="bg-slate-100 border-b border-slate-200 sticky top-0 z-10 text-slate-700 font-black">
+                                <tr>
+                                    <th class="p-2.5 w-12 text-center">#</th>
+                                    <th class="p-2.5">الاسم الكامل</th>
+                                    <th class="p-2.5">البريد الإلكتروني</th>
+                                    <th class="p-2.5">رقم الجوال</th>
+                                    <th class="p-2.5 text-center">حالة التوثيق</th>
+                                    <th class="p-2.5">تاريخ التسجيل</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableUsersBody" class="divide-y divide-slate-100 font-semibold text-slate-800">
+                                <tr>
+                                    <td colspan="6" class="p-6 text-center text-slate-400 font-bold">
+                                        جاري جلب بيانات المشتركين من السحابة...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="bg-slate-50 px-4 py-2 border-t border-slate-200 text-[11px] text-slate-500 flex justify-between items-center font-bold">
+                        <div>العدد المعروض: <span id="txtDisplayedCount" class="text-slate-900 font-black">0</span> مشترك</div>
+                        <div class="text-[10px] text-slate-400">قاعدة بيانات Firebase Firestore المعتمدة</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- أسفل النافذة -->
+            <div class="bg-slate-100 px-5 py-2.5 border-t border-slate-200 flex justify-between items-center">
+                <div class="text-xs text-slate-600 font-bold flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>المشرف المسجل: <strong class="text-slate-900">حسين يوسف الشهيب</strong> (halshuhiyb@gmail.com)</span>
+                </div>
+                <button id="btnCloseAdminBottom" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold text-xs transition">
+                    إغلاق
+                </button>
+            </div>
+
+        </div>
+    </div>
+
     <!-- نافذة تسجيل الدخول للمدير والمستخدمين -->
     <div id="modalAuth" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-300 overflow-hidden text-right">
             <div class="bg-blue-800 text-white px-4 py-3 flex justify-between items-center">
                 <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">
-                    <span>🔐 تسجيل دخول مدير النظام والمستخدمين</span>
+                    <span id="txtAuthModalTitle">🔐 تسجيل الدخول</span>
                 </h3>
                 <button id="btnCloseAuth" class="text-white hover:text-red-200 text-lg font-bold">✕</button>
             </div>
 
             <div class="p-4 space-y-3.5 text-xs sm:text-sm">
-                <!-- زر الدخول السريع المعتمد لمدير النظام -->
-                <div class="bg-amber-50 p-3 rounded-lg border border-amber-300 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <div class="font-bold text-amber-950 text-xs sm:text-sm">👑 حساب مدير النظام:</div>
-                            <div class="text-[11px] text-amber-900 font-bold">حسين يوسف الشهيب (halshuhiyb)</div>
-                        </div>
-                        <button id="btnQuickFillAdmin" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded font-bold text-xs transition shadow-sm">
-                            تعبئة بياناتي
-                        </button>
-                    </div>
-                </div>
-
                 <div class="flex border-b pb-2 gap-2 text-center">
-                    <button id="tabLogin" class="flex-1 py-1.5 font-bold rounded-lg bg-blue-50 text-blue-800 border border-blue-200">تسجيل الدخول</button>
-                    <button id="tabRegister" class="flex-1 py-1.5 font-semibold text-slate-600 hover:bg-slate-50 rounded-lg">إنشاء حساب جديد</button>
+                    <button id="tabLogin" class="flex-1 py-1.5 font-bold rounded-lg bg-blue-50 text-blue-800 border border-blue-200 transition">تسجيل الدخول</button>
+                    <button id="tabRegister" class="flex-1 py-1.5 font-semibold text-slate-600 hover:bg-slate-50 rounded-lg transition">إنشاء حساب جديد</button>
                 </div>
 
                 <div id="authNotice" class="hidden p-2 rounded text-xs font-semibold"></div>
 
                 <div id="authFieldDisplayName" class="hidden space-y-1">
                     <label class="block font-semibold text-slate-700">الاسم الكامل: <span class="text-red-500">*</span></label>
-                    <input id="inputAuthDisplayName" type="text" class="w-full p-2 border rounded font-bold text-xs" placeholder="مثلاً: حسين يوسف الشهيب">
+                    <input id="inputAuthDisplayName" type="text" class="w-full p-2 border rounded font-bold text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="الاسم واللقب">
                 </div>
 
                 <div id="authFieldPhone" class="hidden space-y-1">
                     <label class="block font-semibold text-slate-700">رقم الجوال: <span class="text-red-500">* (إلزامي للتوثيق والتواصل)</span></label>
-                    <input id="inputAuthPhone" type="tel" dir="ltr" class="w-full p-2 border rounded font-bold text-xs text-left" placeholder="0500686806">
+                    <input id="inputAuthPhone" type="tel" dir="ltr" class="w-full p-2 border rounded font-bold text-xs text-left focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="05xxxxxxxx">
                 </div>
 
                 <div class="space-y-1">
-                    <label class="block font-semibold text-slate-700">البريد الإلكتروني / اسم المستخدم: <span class="text-red-500">*</span></label>
-                    <input id="inputAuthEmail" type="text" dir="ltr" class="w-full p-2 border rounded font-semibold text-xs text-left" placeholder="halshuhiyb@gmail.com أو halshuhiyb">
+                    <label class="block font-semibold text-slate-700">البريد الإلكتروني: <span class="text-red-500">*</span></label>
+                    <input id="inputAuthEmail" type="email" dir="ltr" class="w-full p-2 border rounded font-semibold text-xs text-left focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="example@domain.com">
                 </div>
 
                 <div class="space-y-1">
-                    <label class="block font-semibold text-slate-700">كلمة المرور: <span class="text-red-500">*</span></label>
-                    <input id="inputAuthPassword" type="password" dir="ltr" class="w-full p-2 border rounded font-semibold text-xs text-left" placeholder="كلمة المرور">
+                    <div class="flex justify-between items-center">
+                        <label class="font-semibold text-slate-700">كلمة المرور: <span class="text-red-500">*</span></label>
+                        <button type="button" id="btnForgotPassword" class="text-blue-600 hover:underline text-[11px] font-semibold">نسيت كلمة المرور؟</button>
+                    </div>
+                    <input id="inputAuthPassword" type="password" dir="ltr" class="w-full p-2 border rounded font-semibold text-xs text-left focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="••••••••">
                 </div>
 
                 <div id="verificationInfoBox" class="hidden text-[11px] text-blue-900 bg-blue-50 p-2.5 rounded border border-blue-200 leading-relaxed">
-                    📧 <strong>التحقق من البريد:</strong> سيصلك رابط تأكيد على بريدك الإلكتروني فور إنشاء الحساب للتأكد من ملكيتك له وتفعيل الحفظ السحابي الآمن.
+                    📧 <strong>التحقق من البريد:</strong> سيصلك رابط تأكيد وتفعيل على بريدك الإلكتروني فور إنشاء الحساب لتمكين الحفظ السحابي الآمن.
                 </div>
 
                 <div class="flex flex-col gap-2 pt-2">
@@ -624,6 +730,7 @@
             getAuth, 
             signInWithEmailAndPassword, 
             createUserWithEmailAndPassword, 
+            sendPasswordResetEmail,
             sendEmailVerification, 
             signOut, 
             onAuthStateChanged 
@@ -632,35 +739,33 @@
             getFirestore, 
             doc, 
             getDoc, 
-            setDoc 
+            setDoc,
+            collection,
+            getDocs
         } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         // بيانات مشروع Firebase المعتمدة
-        const firebaseConfig = {
-            apiKey: "AIzaSyCYxws-WQHEh3X6xZTZ74BTpWjDM3zMiaY",
-            authDomain: "saudi-calendar-d3299.firebaseapp.com",
-            projectId: "saudi-calendar-d3299",
-            storageBucket: "saudi-calendar-d3299.firebasestorage.app",
-            messagingSenderId: "499774785279",
-            appId: "1:499774785279:web:a9b4f05c984e49419a6eca",
-            measurementId: "G-K7JCRM639H"
-        };
-
         // حساب مدير النظام الأساسي
         window.ADMIN_ACCOUNT = {
             username: 'halshuhiyb',
             email: 'halshuhiyb@gmail.com',
-            phone: '0500686806',
-            displayName: 'حسين يوسف الشهيب',
-            passwordHint: 'Hh@537573'
+            displayName: 'حسين يوسف الشهيب'
+        };
+
+        let app, auth, db;
+        let currentUser = null;
+        let cachedSubscribersList = [];
+        let userProfileData = {
+            displayName: window.ADMIN_ACCOUNT.displayName,
+            email: window.ADMIN_ACCOUNT.email
         };
 
         let app, auth, db;
         let currentUser = null;
         let userProfileData = {
-            displayName: window.ADMIN_ACCOUNT.displayName,
-            phone: window.ADMIN_ACCOUNT.phone,
-            email: window.ADMIN_ACCOUNT.email
+            displayName: '',
+            phone: '',
+            email: ''
         };
 
         try {
@@ -691,6 +796,16 @@
                     btnLogout.classList.remove('hidden');
                     btnProfile.classList.remove('hidden');
 
+                    // فحص صلاحيات مدير النظام
+                    const isAdmin = (user.email && user.email.toLowerCase() === window.ADMIN_ACCOUNT.email.toLowerCase());
+                    const btnAdminDashboard = document.getElementById('btnOpenAdminDashboard');
+                    if (isAdmin) {
+                        btnAdminDashboard.classList.remove('hidden');
+                        loadAllSubscribersData();
+                    } else {
+                        btnAdminDashboard.classList.add('hidden');
+                    }
+
                     // مزامنة السنة الحالية من السحابة للمستخدم المسجل
                     await window.loadYearSettingsFromCloud(window.state.year);
                 } else {
@@ -699,9 +814,198 @@
                     btnAuth.classList.remove('hidden');
                     btnLogout.classList.add('hidden');
                     btnProfile.classList.add('hidden');
+                    document.getElementById('btnOpenAdminDashboard').classList.add('hidden');
                 }
             });
         }
+
+        // جلب قائمة المشتركين كاملة لمدير النظام
+        async function loadAllSubscribersData() {
+            if (!db) return;
+            const tableBody = document.getElementById('tableUsersBody');
+            try {
+                // جلب وثائق المستخدمين العامة والملفات الشخصية
+                const usersSnap = await getDocs(collection(db, 'users'));
+                const subscribers = [];
+
+                for (const userDoc of usersSnap.docs) {
+                    const uid = userDoc.id;
+                    let profileInfo = {
+                        uid: uid,
+                        displayName: 'مشترك',
+                        email: '-',
+                        phone: '-',
+                        createdAt: '-',
+                        emailVerified: false
+                    };
+
+                    try {
+                        const profRef = doc(db, 'users', uid, 'profile', 'info');
+                        const profSnap = await getDoc(profRef);
+                        if (profSnap.exists()) {
+                            const pData = profSnap.data();
+                            profileInfo.displayName = pData.displayName || profileInfo.displayName;
+                            profileInfo.email = pData.email || profileInfo.email;
+                            profileInfo.phone = pData.phone || profileInfo.phone;
+                            profileInfo.createdAt = pData.createdAt ? new Date(pData.createdAt).toLocaleDateString('ar-SA') : '-';
+                            profileInfo.emailVerified = !!pData.emailVerified;
+                        }
+                    } catch(e) {}
+
+                    subscribers.push(profileInfo);
+                }
+
+                // إضافة حساب المدير المعتمد إذا لم يكن مكرراً
+                const hasAdmin = subscribers.some(s => s.email && s.email.toLowerCase() === window.ADMIN_ACCOUNT.email.toLowerCase());
+                if (!hasAdmin && currentUser) {
+                    subscribers.unshift({
+                        uid: currentUser.uid,
+                        displayName: userProfileData.displayName || window.ADMIN_ACCOUNT.displayName,
+                        email: window.ADMIN_ACCOUNT.email,
+                        phone: userProfileData.phone || '0500686807',
+                        createdAt: new Date().toLocaleDateString('ar-SA'),
+                        emailVerified: currentUser.emailVerified || true
+                    });
+                }
+
+                cachedSubscribersList = subscribers;
+                updateAdminDashboardStats(subscribers);
+                renderSubscribersTable(subscribers);
+            } catch (err) {
+                console.error("Error loading subscribers:", err);
+                if (tableBody) {
+                    tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-500 font-bold">تعذر تحميل قائمة المشتركين: تأكد من الصلاحيات والاتصال بالسحابة.</td></tr>`;
+                }
+            }
+        }
+
+        // تحديث إحصائيات لوحة التحكم
+        function updateAdminDashboardStats(list) {
+            const total = list.length;
+            const verified = list.filter(u => u.emailVerified || (u.email && u.email.toLowerCase() === window.ADMIN_ACCOUNT.email.toLowerCase())).length;
+            const hasPhone = list.filter(u => u.phone && u.phone !== '-').length;
+            const badgeCount = document.getElementById('badgeSubscribersCount');
+            if (badgeCount) badgeCount.textContent = total;
+
+            document.getElementById('statTotalUsers').textContent = total;
+            document.getElementById('statVerifiedUsers').textContent = verified;
+            document.getElementById('statPhoneUsers').textContent = hasPhone;
+            document.getElementById('statLatestSignup').textContent = list[0] ? list[0].displayName : '-';
+            document.getElementById('txtDisplayedCount').textContent = total;
+        }
+
+        // رسم جدول المشتركين
+        function renderSubscribersTable(list) {
+            const tableBody = document.getElementById('tableUsersBody');
+            if (!tableBody) return;
+            tableBody.innerHTML = '';
+
+            if (list.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 font-bold">لا يوجد مشتركون مسجلون حالياً.</td></tr>`;
+                return;
+            }
+
+            list.forEach((sub, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-amber-50/40 transition';
+                const isAdmin = (sub.email && sub.email.toLowerCase() === window.ADMIN_ACCOUNT.email.toLowerCase());
+                
+                tr.innerHTML = `
+                    <td class="p-2.5 text-center font-bold text-slate-400">${idx + 1}</td>
+                    <td class="p-2.5 font-bold text-slate-900 flex items-center gap-1.5">
+                        ${isAdmin ? '<span class="text-amber-500" title="مدير النظام">👑</span>' : '<span class="text-slate-400">👤</span>'}
+                        <span>${sub.displayName || '-'}</span>
+                    </td>
+                    <td class="p-2.5 font-mono text-xs text-slate-700" dir="ltr">${sub.email || '-'}</td>
+                    <td class="p-2.5 font-mono font-bold text-slate-800" dir="ltr">${sub.phone || '-'}</td>
+                    <td class="p-2.5 text-center">
+                        ${isAdmin || sub.emailVerified 
+                            ? '<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] px-2 py-0.5 rounded-full font-bold">موثق ✓</span>' 
+                            : '<span class="bg-amber-100 text-amber-800 border border-amber-300 text-[10px] px-2 py-0.5 rounded-full font-bold">غير مؤكد</span>'}
+                    </td>
+                    <td class="p-2.5 text-slate-600 text-xs">${sub.createdAt || '-'}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            document.getElementById('txtDisplayedCount').textContent = list.length;
+        }
+
+        // تصدير ملف Excel احترافي للمشتركين عبر SheetJS
+        function exportSubscribersToExcel() {
+            if (!window.XLSX) {
+                alert('جاري تحميل محرك التصدير، يرجى المحاولة بعد لحظات.');
+                return;
+            }
+
+            const dataToExport = cachedSubscribersList.map((item, index) => ({
+                "م": index + 1,
+                "اسم المشترك": item.displayName || "مشترك",
+                "البريد الإلكتروني": item.email || "-",
+                "رقم الجوال": item.phone || "-",
+                "حالة التوثيق": (item.emailVerified || (item.email && item.email.toLowerCase() === window.ADMIN_ACCOUNT.email.toLowerCase())) ? "موثق" : "غير مؤكد",
+                "تاريخ التسجيل": item.createdAt || "-"
+            }));
+
+            // إنشاء ورقة العمل والمصنف
+            const wb = XLSX.utils.book_new();
+            
+            // إضافة الترويسة الفخمة في البداية
+            const headerRows = [
+                ["تقرير المشتركين في نظام التقويم الهجري والميلادي الشامل"],
+                [`المشرف العام: حسين يوسف الشهيب - إمارة المنطقة الشرقية`],
+                [`تاريخ استخراج التقرير: ${new Date().toLocaleDateString('ar-SA')} م`],
+                [] // سطر فارغ
+            ];
+
+            const ws = XLSX.utils.aoa_to_sheet(headerRows);
+            XLSX.utils.sheet_add_json(ws, dataToExport, { origin: "A5" });
+
+            // ضبط اتجاه الورقة من اليمين إلى اليسار (RTL)
+            if (!ws['!views']) ws['!views'] = [];
+            ws['!views'].push({ rightToLeft: true });
+
+            // ضبط أبعاد وعرض الأعمدة تلقائياً
+            ws['!cols'] = [
+                { wch: 6 },  // م
+                { wch: 28 }, // اسم المشترك
+                { wch: 32 }, // البريد الإلكتروني
+                { wch: 18 }, // رقم الجوال
+                { wch: 15 }, // حالة التوثيق
+                { wch: 18 }  // تاريخ التسجيل
+            ];
+
+            // إضافة المصنف وحفظ الملف
+            XLSX.utils.book_append_sheet(wb, ws, "قائمة المشتركين");
+            const filename = `تقرير_المشتركين_التقويم_الهجري_${new Date().toISOString().slice(0, 10)}.xlsx`;
+            XLSX.writeFile(wb, filename);
+        }
+
+        // أحداث نافذة المدير والتصدير
+        const modalAdmin = document.getElementById('modalAdminDashboard');
+        document.getElementById('btnOpenAdminDashboard').addEventListener('click', () => {
+            modalAdmin.classList.remove('hidden');
+            loadAllSubscribersData();
+        });
+        document.getElementById('btnCloseAdminDashboard').addEventListener('click', () => modalAdmin.classList.add('hidden'));
+        document.getElementById('btnCloseAdminBottom').addEventListener('click', () => modalAdmin.classList.add('hidden'));
+        document.getElementById('btnRefreshUsers').addEventListener('click', () => loadAllSubscribersData());
+        document.getElementById('btnExportUsersExcel').addEventListener('click', () => exportSubscribersToExcel());
+
+        // تصفية وبحث فوري في جدول المشتركين
+        document.getElementById('inputSearchUsers').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            if (!query) {
+                renderSubscribersTable(cachedSubscribersList);
+                return;
+            }
+            const filtered = cachedSubscribersList.filter(u => 
+                (u.displayName && u.displayName.toLowerCase().includes(query)) ||
+                (u.email && u.email.toLowerCase().includes(query)) ||
+                (u.phone && u.phone.includes(query))
+            );
+            renderSubscribersTable(filtered);
+        });
 
         // حفظ إعدادات كل سنة بشكل مستقل تماماً في Cloud Firestore
         window.saveYearSettingsToCloud = async function(year) {
@@ -735,9 +1039,6 @@
                     const docRef = doc(db, 'users', currentUser.uid, 'years', `year_${yr}`);
                     await setDoc(docRef, yearPayload, { merge: true });
                 }
-                // حفظ نسخة كمرجع عام لسنة التقويم
-                const publicRef = doc(db, 'public_years', `year_${yr}`);
-                await setDoc(publicRef, yearPayload, { merge: true });
                 console.log(`Cloud: Isolated year ${yr} saved successfully.`);
             } catch (err) {
                 console.error(`Cloud save error for year ${yr}:`, err);
@@ -753,10 +1054,6 @@
                 if (currentUser) {
                     const userDocRef = doc(db, 'users', currentUser.uid, 'years', `year_${yr}`);
                     snap = await getDoc(userDocRef);
-                }
-                if (!snap || !snap.exists()) {
-                    const publicRef = doc(db, 'public_years', `year_${yr}`);
-                    snap = await getDoc(publicRef);
                 }
                 if (snap && snap.exists()) {
                     const data = snap.data();
@@ -793,24 +1090,17 @@
             }
         }
 
-        // التعبئة التلقائية لبيانات المدير
-        document.getElementById('btnQuickFillAdmin').addEventListener('click', () => {
-            document.getElementById('inputAuthEmail').value = window.ADMIN_ACCOUNT.email;
-            document.getElementById('inputAuthPassword').value = window.ADMIN_ACCOUNT.passwordHint;
-            document.getElementById('inputAuthDisplayName').value = window.ADMIN_ACCOUNT.displayName;
-            document.getElementById('inputAuthPhone').value = window.ADMIN_ACCOUNT.phone;
-            showAuthNotice('تم تعبئة بيانات مدير النظام (حسين يوسف الشهيب) جاهزة للدخول.', 'green');
-        });
-
-        // إدارة المصادقة (تسجيل / اشتراك)
+        // إدارة المصادقة (تسجيل / اشتراك / استعادة كلمة المرور)
         let isRegisterMode = false;
         const modalAuth = document.getElementById('modalAuth');
         const tabLogin = document.getElementById('tabLogin');
         const tabRegister = document.getElementById('tabRegister');
+        const txtAuthModalTitle = document.getElementById('txtAuthModalTitle');
         const authFieldDisplayName = document.getElementById('authFieldDisplayName');
         const authFieldPhone = document.getElementById('authFieldPhone');
         const verificationInfoBox = document.getElementById('verificationInfoBox');
         const btnSubmitAuth = document.getElementById('btnSubmitAuth');
+        const btnForgotPassword = document.getElementById('btnForgotPassword');
         const authNotice = document.getElementById('authNotice');
 
         document.getElementById('btnOpenAuthModal').addEventListener('click', () => {
@@ -821,35 +1111,50 @@
 
         tabLogin.addEventListener('click', () => {
             isRegisterMode = false;
-            tabLogin.className = 'flex-1 py-1.5 font-bold rounded-lg bg-blue-50 text-blue-800 border border-blue-200';
-            tabRegister.className = 'flex-1 py-1.5 font-semibold text-slate-600 hover:bg-slate-50 rounded-lg';
+            tabLogin.className = 'flex-1 py-1.5 font-bold rounded-lg bg-blue-50 text-blue-800 border border-blue-200 transition';
+            tabRegister.className = 'flex-1 py-1.5 font-semibold text-slate-600 hover:bg-slate-50 rounded-lg transition';
+            txtAuthModalTitle.textContent = '🔐 تسجيل الدخول';
             authFieldDisplayName.classList.add('hidden');
             authFieldPhone.classList.add('hidden');
             verificationInfoBox.classList.add('hidden');
+            btnForgotPassword.classList.remove('hidden');
             btnSubmitAuth.textContent = 'تسجيل الدخول';
             authNotice.classList.add('hidden');
         });
 
         tabRegister.addEventListener('click', () => {
             isRegisterMode = true;
-            tabRegister.className = 'flex-1 py-1.5 font-bold rounded-lg bg-blue-50 text-blue-800 border border-blue-200';
-            tabLogin.className = 'flex-1 py-1.5 font-semibold text-slate-600 hover:bg-slate-50 rounded-lg';
+            tabRegister.className = 'flex-1 py-1.5 font-bold rounded-lg bg-blue-50 text-blue-800 border border-blue-200 transition';
+            tabLogin.className = 'flex-1 py-1.5 font-semibold text-slate-600 hover:bg-slate-50 rounded-lg transition';
+            txtAuthModalTitle.textContent = '📝 إنشاء حساب جديد';
             authFieldDisplayName.classList.remove('hidden');
             authFieldPhone.classList.remove('hidden');
             verificationInfoBox.classList.remove('hidden');
+            btnForgotPassword.classList.add('hidden');
             btnSubmitAuth.textContent = 'إنشاء الحساب وتأكيد البريد';
             authNotice.classList.add('hidden');
         });
 
+        // استعادة كلمة المرور المنسية
+        btnForgotPassword.addEventListener('click', async () => {
+            const email = document.getElementById('inputAuthEmail').value.trim();
+            if (!email) {
+                showAuthNotice('يرجى كتابة بريدك الإلكتروني أولاً في حقل البريد لإرسال رابط الاستعادة.', 'amber');
+                return;
+            }
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showAuthNotice('تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني بنجاح.', 'green');
+            } catch (err) {
+                showAuthNotice('تعذر إرسال الرابط: تأكد من صحة البريد الإلكتروني المدخل.', 'red');
+            }
+        });
+
         btnSubmitAuth.addEventListener('click', async () => {
-            let email = document.getElementById('inputAuthEmail').value.trim();
+            const email = document.getElementById('inputAuthEmail').value.trim();
             const password = document.getElementById('inputAuthPassword').value;
             const displayName = document.getElementById('inputAuthDisplayName').value.trim();
             const phone = document.getElementById('inputAuthPhone').value.trim();
-
-            if (email.toLowerCase() === window.ADMIN_ACCOUNT.username.toLowerCase()) {
-                email = window.ADMIN_ACCOUNT.email;
-            }
 
             if (!email || !password) {
                 showAuthNotice('يرجى إدخال البريد الإلكتروني وكلمة المرور.', 'red');
@@ -870,7 +1175,7 @@
                     const cred = await createUserWithEmailAndPassword(auth, email, password);
                     try { await sendEmailVerification(cred.user); } catch(e){}
                     userProfileData = {
-                        displayName: displayName || window.ADMIN_ACCOUNT.displayName,
+                        displayName: displayName || email.split('@')[0],
                         phone: phone,
                         email: email,
                         createdAt: new Date().toISOString()
@@ -907,9 +1212,9 @@
         // نافذة الملف الشخصي
         const modalProfile = document.getElementById('modalProfile');
         document.getElementById('btnOpenProfileModal').addEventListener('click', () => {
-            document.getElementById('profDisplayName').value = userProfileData.displayName || window.ADMIN_ACCOUNT.displayName;
-            document.getElementById('profEmail').value = userProfileData.email || window.ADMIN_ACCOUNT.email;
-            document.getElementById('profPhone').value = userProfileData.phone || window.ADMIN_ACCOUNT.phone;
+            document.getElementById('profDisplayName').value = userProfileData.displayName || '';
+            document.getElementById('profEmail').value = userProfileData.email || '';
+            document.getElementById('profPhone').value = userProfileData.phone || '';
             modalProfile.classList.remove('hidden');
         });
         document.getElementById('btnCloseProfile').addEventListener('click', () => modalProfile.classList.add('hidden'));
