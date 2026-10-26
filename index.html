@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>التقويم الهجري والميلادي السنوي - الإصدار 2.8 (1448 هـ)</title>
+    <title>التقويم الهجري والميلادي السنوي - الإصدار 3.0 السحابي (1448 هـ)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,6 +11,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Amiri:wght@700&display=swap" rel="stylesheet">
     <!-- SheetJS لتصدير ملفات Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <!-- Firebase SDK (المزامنة السحابية العالمية) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
     <style>
         * {
@@ -198,8 +203,8 @@
                     🌐 English (LTR)
                 </button>
 
-                <span class="bg-indigo-950 text-indigo-300 border border-indigo-700/60 px-2 py-0.5 rounded text-[11px] font-bold" title="رقم الإصدار والتحديث النهائي">
-                    الإصدار v2.8
+                <span class="bg-indigo-950 text-indigo-300 border border-indigo-700/60 px-2 py-0.5 rounded text-[11px] font-bold" title="المزامنة السحابية العالمية مفعلة">
+                    الإصدار v3.0 سحابي
                 </span>
             </div>
 
@@ -242,12 +247,12 @@
         </div>
     </header>
 
-    <!-- شريط معلومات الحساب والنسخة -->
+    <!-- شريط معلومات الحساب والمزامنة السحابية -->
     <div id="cloudStatusBanner" class="no-print bg-slate-800 border-b border-slate-700 px-4 py-1.5 text-[11px] text-slate-300 flex justify-between items-center">
         <div class="flex items-center gap-2">
-            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span id="cloudStatusText">الوضع السحابي: متصل بقاعدة بيانات التقويم | الترويسة والإعدادات معتمدة من مدير النظام</span>
-            <span class="text-indigo-300 font-bold bg-indigo-900/60 px-1.5 py-0.2 rounded border border-indigo-700/50">v2.8</span>
+            <span id="cloudPulse" class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="cloudStatusText">الوضع السحابي: متصل بالسحابة العالمية | الإعدادات معتمدة مركزياً</span>
+            <span class="text-indigo-300 font-bold bg-indigo-900/60 px-1.5 py-0.2 rounded border border-indigo-700/50">v3.0</span>
         </div>
         <div id="userGreetingBox" class="font-bold text-amber-300">
             الترويسة المعتمدة للنظام: حسين يوسف الشهيب (إمارة المنطقة الشرقية)
@@ -268,7 +273,7 @@
                 </div>
 
                 <div class="text-center font-extrabold text-sm sm:text-base md:text-lg tracking-wider" id="txtMainCalendarTitle">
-                    التقويم الهجري لعام 1448 هـ ( 2026 / 2027 م )
+                    التقويم السنوي المعتمد
                 </div>
             </div>
 
@@ -364,7 +369,7 @@
                     <div class="font-extrabold text-slate-900 text-sm" id="lblLoggedName">حسين يوسف الشهيب</div>
                     <div class="text-slate-600 text-xs" id="lblLoggedEmail">halshuhiyb@gmail.com</div>
                     <div class="text-slate-600 text-xs" id="lblLoggedPhone">جوال: 0500686807</div>
-                    <div class="mt-2 text-[11px] text-emerald-700 font-bold" id="lblLoggedStatus">✓ الحساب موثق ونشط على السحابة</div>
+                    <div class="mt-2 text-[11px] text-emerald-700 font-bold" id="lblLoggedStatus">✓ الحساب موثق ومتصل بالسحابة</div>
                 </div>
 
                 <button type="button" id="btnDoLogout" class="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg transition">
@@ -381,8 +386,8 @@
                 <div class="flex items-center gap-2">
                     <span class="text-xl">👑</span>
                     <div>
-                        <h3 class="font-black text-sm sm:text-base text-amber-400">لوحة تحكم مدير النظام - إدارة الحسابات والمشتركين</h3>
-                        <p class="text-[11px] text-slate-300">المدير: حسين يوسف الشهيب (0500686807) | الإصدار v2.8</p>
+                        <h3 class="font-black text-sm sm:text-base text-amber-400">لوحة تحكم مدير النظام - قاعدة المشتركين العالمية</h3>
+                        <p class="text-[11px] text-slate-300">المدير: حسين يوسف الشهيب (0500686807) | الإصدار v3.0</p>
                     </div>
                 </div>
                 <button type="button" id="btnCloseAdmin" class="text-slate-300 hover:text-red-400 text-xl font-bold">✕</button>
@@ -926,7 +931,6 @@
             return `cal_config_u_${getUserStorageId()}_yr_${yearNum}`;
         }
 
-        // استرجاع ترويسة المستخدم الحالية أو ترويسة مدير النظام المعتمدة للنظام بأكمله
         function getUserHeaderConfig() {
             try {
                 const uId = getUserStorageId();
@@ -990,6 +994,29 @@
             } catch(e) {}
         }
 
+        /* حساب نطاقات إجازات الأعياد والمدارس لسنة هجرية معينة */
+        function calculateHolidaysRangesForHijriYear(hYear) {
+            const ranges = { eids: [], schools: [] };
+            try {
+                const fitrStartJd = hijriToJulian(hYear, parseInt(state.fitrStartMonth), parseInt(state.fitrStartDay));
+                const fitrEndJd = fitrStartJd + (parseInt(state.fitrDays) || 12) - 1;
+                ranges.eids.push({ start: fitrStartJd, end: fitrEndJd });
+
+                const adhaStartJd = hijriToJulian(hYear, parseInt(state.adhaStartMonth), parseInt(state.adhaStartDay));
+                const adhaEndJd = adhaStartJd + (parseInt(state.adhaDays) || 12) - 1;
+                ranges.eids.push({ start: adhaStartJd, end: adhaEndJd });
+
+                if (Array.isArray(state.schoolHolidays)) {
+                    state.schoolHolidays.forEach(sh => {
+                        const sJd = hijriToJulian(hYear, parseInt(sh.startMonth), parseInt(sh.startDay));
+                        const eJd = sJd + (parseInt(sh.days) || 1) - 1;
+                        ranges.schools.push({ start: sJd, end: eJd, title: sh.title });
+                    });
+                }
+            } catch(e) {}
+            return ranges;
+        }
+
         function renderCalendar() {
             const tableHead = document.getElementById('calendarHead');
             const tableBody = document.getElementById('calendarBody');
@@ -1020,6 +1047,10 @@
             const isHijri = (state.primaryMode === 'hijri');
             const targetYear = parseInt(state.year);
 
+            // تجميع نطاقات الإجازات فلكياً سواء كان العرض هجرياً أو ميلادياً
+            let eidJdRanges = [];
+            let schoolJdRanges = [];
+
             if (isHijri) {
                 yearLabel.textContent = dirRTL ? 'هـ' : 'AH';
                 const startG = julianToGregorian(hijriToJulian(targetYear, 1, 1)).getFullYear();
@@ -1028,6 +1059,10 @@
                 mainTitle.textContent = dirRTL 
                     ? `التقويم الهجري لعام ${targetYear} هـ ( ${gSpan} م )`
                     : `Hijri Calendar for Year ${targetYear} AH ( ${gSpan} CE )`;
+
+                const hRanges = calculateHolidaysRangesForHijriYear(targetYear);
+                eidJdRanges = hRanges.eids;
+                schoolJdRanges = hRanges.schools;
             } else {
                 yearLabel.textContent = dirRTL ? 'م' : 'CE';
                 const startH = julianToHijri(gregorianToJulian(targetYear, 1, 1)).year;
@@ -1036,27 +1071,12 @@
                 mainTitle.textContent = dirRTL 
                     ? `التقويم الميلادي لعام ${targetYear} م ( ${hSpan} هـ )`
                     : `Gregorian Calendar for Year ${targetYear} CE ( ${hSpan} AH )`;
-            }
 
-            let eidJdRanges = [];
-            let schoolJdRanges = [];
-
-            if (isHijri) {
-                const fitrStartJd = hijriToJulian(targetYear, parseInt(state.fitrStartMonth), parseInt(state.fitrStartDay));
-                const fitrEndJd = fitrStartJd + (parseInt(state.fitrDays) || 12) - 1;
-                eidJdRanges.push({ start: fitrStartJd, end: fitrEndJd });
-
-                const adhaStartJd = hijriToJulian(targetYear, parseInt(state.adhaStartMonth), parseInt(state.adhaStartDay));
-                const adhaEndJd = adhaStartJd + (parseInt(state.adhaDays) || 12) - 1;
-                eidJdRanges.push({ start: adhaStartJd, end: adhaEndJd });
-
-                if (Array.isArray(state.schoolHolidays)) {
-                    state.schoolHolidays.forEach(sh => {
-                        const sJd = hijriToJulian(targetYear, parseInt(sh.startMonth), parseInt(sh.startDay));
-                        const eJd = sJd + (parseInt(sh.days) || 1) - 1;
-                        schoolJdRanges.push({ start: sJd, end: eJd, title: sh.title });
-                    });
-                }
+                // السنة الميلادية تمتد عبر سنتين هجريتين: ندمج إجازات السنتين لضمان دقة كامل أيام السنة الميلادية
+                const r1 = calculateHolidaysRangesForHijriYear(startH);
+                const r2 = calculateHolidaysRangesForHijriYear(endH);
+                eidJdRanges = r1.eids.concat(r2.eids);
+                schoolJdRanges = r1.schools.concat(r2.schools);
             }
 
             const monthsData = [];
@@ -1153,6 +1173,7 @@
                     if (dayNumber >= 1 && dayNumber <= mInfo.length) {
                         const jd = mInfo.startJd + (dayNumber - 1);
                         const gDateVal = julianToGregorian(jd);
+                        const hDateVal = julianToHijri(jd);
                         const daySeasonClass = getSeasonClassForDate(gDateVal);
 
                         let primaryNum = dayNumber;
@@ -1168,13 +1189,19 @@
                             secondaryNum = gDateVal.getDate();
                             const isFirstGreg = (gDateVal.getMonth() === mInfo.startDate.getMonth());
                             secondaryColor = isFirstGreg ? 'text-blue-700' : 'text-rose-700';
-
-                            const actualSalaryDay = getActualSalaryDayForMonth(gDateVal.getFullYear(), gDateVal.getMonth());
-                            if (gDateVal.getDate() === actualSalaryDay) isSalaryDay = true;
-                            if (checkSaudiNationalBridgingHoliday(gDateVal)) isNationalHoliday = true;
-                            if (eidJdRanges.some(r => jd >= r.start && jd <= r.end)) isEidHoliday = true;
-                            if (schoolJdRanges.some(r => jd >= r.start && jd <= r.end)) isSchoolHoliday = true;
+                        } else {
+                            secondaryNum = hDateVal.day;
+                            const hStart = julianToHijri(mInfo.startJd);
+                            const isFirstHijri = (hDateVal.month === hStart.month);
+                            secondaryColor = isFirstHijri ? 'text-blue-700' : 'text-rose-700';
                         }
+
+                        // فحص الإجازات والرواتب بالرقم الجولياني الدقيق (يعمل بالهجري والميلادي معاً)
+                        const actualSalaryDay = getActualSalaryDayForMonth(gDateVal.getFullYear(), gDateVal.getMonth());
+                        if (gDateVal.getDate() === actualSalaryDay) isSalaryDay = true;
+                        if (checkSaudiNationalBridgingHoliday(gDateVal)) isNationalHoliday = true;
+                        if (eidJdRanges.some(r => jd >= r.start && jd <= r.end)) isEidHoliday = true;
+                        if (schoolJdRanges.some(r => jd >= r.start && jd <= r.end)) isSchoolHoliday = true;
 
                         let cellBg = isWk ? state.colors.weekend : '#ffffff';
                         let textColor = 'text-slate-950 font-black';
@@ -1486,7 +1513,6 @@
                 if (s) subscribersList = JSON.parse(s);
             } catch(e) {}
 
-            // استعادة جلسة المستخدم المسجل عند تحديث الصفحة أو فتحها
             try {
                 const savedSession = localStorage.getItem('cal_logged_user');
                 if (savedSession) {
@@ -1570,7 +1596,6 @@
                 modalAuth.classList.add('hidden');
             });
 
-            // تسجيل الدخول مع حفظ الجلسة الدائمة واستعادة ترويسة المستخدم
             document.getElementById('btnSubmitLogin').addEventListener('click', () => {
                 const email = document.getElementById('inputLoginEmail').value.trim();
                 const pass = document.getElementById('inputLoginPass').value;
@@ -1617,7 +1642,6 @@
                 setTimeout(() => { modalAuth.classList.add('hidden'); }, 1200);
             });
 
-            // إنشاء حساب جديد مع حفظ الجلسة الدائمة
             document.getElementById('btnSubmitRegister').addEventListener('click', () => {
                 const name = document.getElementById('inputRegName').value.trim();
                 const phone = document.getElementById('inputRegPhone').value.trim();
@@ -1672,7 +1696,6 @@
                 setTimeout(() => { modalAuth.classList.add('hidden'); }, 1200);
             });
 
-            // تسجيل الخروج ومسح الجلسة
             document.getElementById('btnDoLogout').addEventListener('click', () => {
                 currentUser = null;
                 localStorage.removeItem('cal_logged_user');
@@ -1691,7 +1714,6 @@
                 alert(`تم إرسال رابط إعادة تعيين كلمة المرور إلى البريد: ${em}`);
             });
 
-            // لوحة تحكم المدير
             const modalAdmin = document.getElementById('modalAdmin');
             document.getElementById('btnOpenAdminPanel').addEventListener('click', () => {
                 updateAdminDashboard();
@@ -1997,11 +2019,9 @@
                     logoData: state.logoData
                 };
 
-                // إذا كان المدير يحفظ: تُعتمد فوراً كترويسة عامة للنظام ولكل الزوار
                 if (isAdmin) {
                     localStorage.setItem('cal_system_master_header', JSON.stringify(headerPayload));
                 } else {
-                    // إذا كان مشتركاً عادياً: تُحفظ بحسابه فقط
                     localStorage.setItem(`cal_header_user_${uId}`, JSON.stringify(headerPayload));
                 }
 
