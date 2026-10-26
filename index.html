@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>التقويم الهجري والميلادي السنوي - الإصدار 3.0 السحابي (1448 هـ)</title>
+    <title>التقويم الهجري والميلادي السنوي - الإصدار السحابي المعتمد 3.5 (1448 هـ)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +12,7 @@
     <!-- SheetJS لتصدير ملفات Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-    <!-- Firebase SDK (المزامنة السحابية العالمية) -->
+    <!-- مكتبات Firebase السحابية الحقيقية -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -203,8 +203,9 @@
                     🌐 English (LTR)
                 </button>
 
-                <span class="bg-indigo-950 text-indigo-300 border border-indigo-700/60 px-2 py-0.5 rounded text-[11px] font-bold" title="المزامنة السحابية العالمية مفعلة">
-                    الإصدار v3.0 سحابي
+                <span class="bg-emerald-950 text-emerald-300 border border-emerald-700/60 px-2 py-0.5 rounded text-[11px] font-bold flex items-center gap-1" title="قاعدة بيانات Firestore متصلة">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>سحابي v3.5 (Firestore)</span>
                 </span>
             </div>
 
@@ -251,8 +252,8 @@
     <div id="cloudStatusBanner" class="no-print bg-slate-800 border-b border-slate-700 px-4 py-1.5 text-[11px] text-slate-300 flex justify-between items-center">
         <div class="flex items-center gap-2">
             <span id="cloudPulse" class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span id="cloudStatusText">الوضع السحابي: متصل بالسحابة العالمية | الإعدادات معتمدة مركزياً</span>
-            <span class="text-indigo-300 font-bold bg-indigo-900/60 px-1.5 py-0.2 rounded border border-indigo-700/50">v3.0</span>
+            <span id="cloudStatusText">الوضع السحابي: متصل بقاعدة بيانات Firestore سحابياً | المزامنة فورية عالمياً</span>
+            <span class="text-indigo-300 font-bold bg-indigo-900/60 px-1.5 py-0.2 rounded border border-indigo-700/50">v3.5</span>
         </div>
         <div id="userGreetingBox" class="font-bold text-amber-300">
             الترويسة المعتمدة للنظام: حسين يوسف الشهيب (إمارة المنطقة الشرقية)
@@ -386,8 +387,8 @@
                 <div class="flex items-center gap-2">
                     <span class="text-xl">👑</span>
                     <div>
-                        <h3 class="font-black text-sm sm:text-base text-amber-400">لوحة تحكم مدير النظام - قاعدة المشتركين العالمية</h3>
-                        <p class="text-[11px] text-slate-300">المدير: حسين يوسف الشهيب (0500686807) | الإصدار v3.0</p>
+                        <h3 class="font-black text-sm sm:text-base text-amber-400">لوحة تحكم مدير النظام - قاعدة المشتركين السحابية</h3>
+                        <p class="text-[11px] text-slate-300">المدير: حسين يوسف الشهيب (0500686807) | متصل بـ Firestore</p>
                     </div>
                 </div>
                 <button type="button" id="btnCloseAdmin" class="text-slate-300 hover:text-red-400 text-xl font-bold">✕</button>
@@ -613,7 +614,7 @@
 
             <div class="bg-slate-100 p-3 border-t flex justify-end gap-2">
                 <button type="button" id="btnResetRules" class="px-3 py-1.5 bg-slate-300 hover:bg-slate-400 rounded text-slate-800 font-bold text-xs">استعادة الافتراضي</button>
-                <button type="button" id="btnSaveRules" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold text-xs">حفظ وتطبيق التغييرات</button>
+                <button type="button" id="btnSaveRules" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold text-xs">حفظ وتطبيق التغييرات سحابياً</button>
             </div>
         </div>
     </div>
@@ -652,7 +653,7 @@
                 </div>
             </div>
             <div class="border-t pt-2 flex justify-end gap-2">
-                <button type="button" id="btnSaveColors" class="px-4 py-1.5 bg-purple-700 hover:bg-purple-800 text-white rounded font-bold text-xs">حفظ الألوان</button>
+                <button type="button" id="btnSaveColors" class="px-4 py-1.5 bg-purple-700 hover:bg-purple-800 text-white rounded font-bold text-xs">حفظ الألوان سحابياً</button>
             </div>
         </div>
     </div>
@@ -680,12 +681,35 @@
                 </div>
             </div>
             <div class="pt-2 border-t flex justify-end gap-2">
-                <button type="button" id="btnSaveHeader" class="px-4 py-1.5 bg-teal-700 hover:bg-teal-800 text-white rounded font-bold text-xs">تطبيق وحفظ</button>
+                <button type="button" id="btnSaveHeader" class="px-4 py-1.5 bg-teal-700 hover:bg-teal-800 text-white rounded font-bold text-xs">تطبيق وحفظ سحابياً</button>
             </div>
         </div>
     </div>
 
     <script>
+        /* =========================================================================
+           إعداد وتهيئة Firebase و Firestore السحابية الحقيقية
+           ========================================================================= */
+        const firebaseConfig = {
+            apiKey: "AIzaSyCYxwS-WQHEh3X6xZTZ74BTpWjDM3zMiaY",
+            authDomain: "saudi-calendar-d3299.firebaseapp.com",
+            projectId: "saudi-calendar-d3299",
+            storageBucket: "saudi-calendar-d3299.firebasestorage.app",
+            messagingSenderId: "499774785279",
+            appId: "1:499774785279:web:a9b4f05c984e49419a6eca",
+            measurementId: "G-K7JCRM639H"
+        };
+
+        let db = null;
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            db = firebase.firestore();
+        } catch (err) {
+            console.error("Firebase init error:", err);
+        }
+
         // إعدادات مدير النظام الافتراضية الثابتة
         const SYSTEM_DEFAULT_HEADER = {
             headerNames: 'حسين يوسف الشهيب',
@@ -952,6 +976,77 @@
             };
         }
 
+        /* حساب نطاقات إجازات الأعياد والمدارس لسنة هجرية معينة */
+        function calculateHolidaysRangesForHijriYear(hYear) {
+            const ranges = { eids: [], schools: [] };
+            try {
+                const fitrStartJd = hijriToJulian(hYear, parseInt(state.fitrStartMonth), parseInt(state.fitrStartDay));
+                const fitrEndJd = fitrStartJd + (parseInt(state.fitrDays) || 12) - 1;
+                ranges.eids.push({ start: fitrStartJd, end: fitrEndJd });
+
+                const adhaStartJd = hijriToJulian(hYear, parseInt(state.adhaStartMonth), parseInt(state.adhaStartDay));
+                const adhaEndJd = adhaStartJd + (parseInt(state.adhaDays) || 12) - 1;
+                ranges.eids.push({ start: adhaStartJd, end: adhaEndJd });
+
+                if (Array.isArray(state.schoolHolidays)) {
+                    state.schoolHolidays.forEach(sh => {
+                        const sJd = hijriToJulian(hYear, parseInt(sh.startMonth), parseInt(sh.startDay));
+                        const eJd = sJd + (parseInt(sh.days) || 1) - 1;
+                        ranges.schools.push({ start: sJd, end: eJd, title: sh.title });
+                    });
+                }
+            } catch(e) {}
+            return ranges;
+        }
+
+        /* =========================================================================
+           المزامنة السحابية الحقيقية (Firestore Realtime Sync)
+           ========================================================================= */
+        function setupCloudSyncListeners(yearNum) {
+            if (!db) return;
+            const uId = getUserStorageId();
+            const isAdmin = currentUser && (currentUser.email.toLowerCase() === 'halshuhiyb@gmail.com' || currentUser.isAdmin);
+
+            // استماع دائم لترويسة النظام المعتمدة
+            db.collection("system_settings").doc("master_header").onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    localStorage.setItem('cal_system_master_header', JSON.stringify(data));
+                    if (!currentUser || currentUser.isAdmin) {
+                        state.headerNames = data.headerNames || SYSTEM_DEFAULT_HEADER.headerNames;
+                        state.headerOrg = data.headerOrg || SYSTEM_DEFAULT_HEADER.headerOrg;
+                        state.logoData = data.logoData || '';
+                        renderCalendar();
+                    }
+                }
+            }, (err) => console.log("Header sync notice:", err));
+
+            // استماع دائم لإعدادات السنة المعتمدة من مدير النظام
+            db.collection("system_settings").doc("year_" + yearNum).onSnapshot((doc) => {
+                if (doc.exists) {
+                    const cloudYearData = doc.data();
+                    localStorage.setItem(`cal_system_master_yr_${yearNum}`, JSON.stringify(cloudYearData));
+                    if (!currentUser || currentUser.isAdmin) {
+                        loadYearState(yearNum);
+                        renderCalendar();
+                    }
+                }
+            }, (err) => console.log("Year sync notice:", err));
+
+            // استماع لمشتركي النظام إذا كان الحساب مديراً
+            if (isAdmin) {
+                db.collection("subscribers").onSnapshot((querySnapshot) => {
+                    const list = [];
+                    querySnapshot.forEach((d) => list.push(d.data()));
+                    if (list.length > 0) {
+                        subscribersList = list;
+                        localStorage.setItem('cal_subscribers_data', JSON.stringify(subscribersList));
+                        updateAdminDashboard();
+                    }
+                }, (err) => console.log("Subscribers sync notice:", err));
+            }
+        }
+
         function loadYearState(yearNum) {
             try {
                 const userKey = getUserStorageId();
@@ -979,42 +1074,41 @@
                 const isAdmin = currentUser && (currentUser.email.toLowerCase() === 'halshuhiyb@gmail.com' || currentUser.isAdmin);
                 const userKey = getUserStorageId();
                 
+                // حفظ محلي احتياطي
                 localStorage.setItem(`cal_config_u_${userKey}_yr_${state.year}`, JSON.stringify(state));
 
-                if (isAdmin) {
-                    localStorage.setItem(`cal_system_master_yr_${state.year}`, JSON.stringify(state));
-                    localStorage.setItem(`cal_system_master_header`, JSON.stringify({
-                        headerNames: state.headerNames,
-                        headerOrg: state.headerOrg,
-                        logoData: state.logoData
-                    }));
+                // رفع سحابي مباشر على Firestore
+                if (db) {
+                    if (isAdmin) {
+                        // حفظ إعدادات النظام العامة بسحابة Firestore
+                        db.collection("system_settings").doc("year_" + state.year).set(JSON.parse(JSON.stringify(state)), { merge: true });
+                        db.collection("system_settings").doc("master_header").set({
+                            headerNames: state.headerNames,
+                            headerOrg: state.headerOrg,
+                            logoData: state.logoData
+                        }, { merge: true });
+
+                        localStorage.setItem(`cal_system_master_yr_${state.year}`, JSON.stringify(state));
+                        localStorage.setItem(`cal_system_master_header`, JSON.stringify({
+                            headerNames: state.headerNames,
+                            headerOrg: state.headerOrg,
+                            logoData: state.logoData
+                        }));
+                    } else if (currentUser) {
+                        // حفظ المشترك الخاص بسحابته
+                        db.collection("users").doc(userKey).collection("years").doc("year_" + state.year).set(JSON.parse(JSON.stringify(state)), { merge: true });
+                        db.collection("users").doc(userKey).set({
+                            headerNames: state.headerNames,
+                            headerOrg: state.headerOrg,
+                            logoData: state.logoData
+                        }, { merge: true });
+                    }
                 }
 
                 localStorage.setItem('cal_subscribers_data', JSON.stringify(subscribersList));
-            } catch(e) {}
-        }
-
-        /* حساب نطاقات إجازات الأعياد والمدارس لسنة هجرية معينة */
-        function calculateHolidaysRangesForHijriYear(hYear) {
-            const ranges = { eids: [], schools: [] };
-            try {
-                const fitrStartJd = hijriToJulian(hYear, parseInt(state.fitrStartMonth), parseInt(state.fitrStartDay));
-                const fitrEndJd = fitrStartJd + (parseInt(state.fitrDays) || 12) - 1;
-                ranges.eids.push({ start: fitrStartJd, end: fitrEndJd });
-
-                const adhaStartJd = hijriToJulian(hYear, parseInt(state.adhaStartMonth), parseInt(state.adhaStartDay));
-                const adhaEndJd = adhaStartJd + (parseInt(state.adhaDays) || 12) - 1;
-                ranges.eids.push({ start: adhaStartJd, end: adhaEndJd });
-
-                if (Array.isArray(state.schoolHolidays)) {
-                    state.schoolHolidays.forEach(sh => {
-                        const sJd = hijriToJulian(hYear, parseInt(sh.startMonth), parseInt(sh.startDay));
-                        const eJd = sJd + (parseInt(sh.days) || 1) - 1;
-                        ranges.schools.push({ start: sJd, end: eJd, title: sh.title });
-                    });
-                }
-            } catch(e) {}
-            return ranges;
+            } catch(e) {
+                console.error("Save error:", e);
+            }
         }
 
         function renderCalendar() {
@@ -1072,7 +1166,6 @@
                     ? `التقويم الميلادي لعام ${targetYear} م ( ${hSpan} هـ )`
                     : `Gregorian Calendar for Year ${targetYear} CE ( ${hSpan} AH )`;
 
-                // السنة الميلادية تمتد عبر سنتين هجريتين: ندمج إجازات السنتين لضمان دقة كامل أيام السنة الميلادية
                 const r1 = calculateHolidaysRangesForHijriYear(startH);
                 const r2 = calculateHolidaysRangesForHijriYear(endH);
                 eidJdRanges = r1.eids.concat(r2.eids);
@@ -1290,9 +1383,6 @@
             `;
         }
 
-        /* =========================================================================
-           لوحة تحكم مدير النظام الشاملة (CRUD Users Management)
-           ========================================================================= */
         function updateAdminDashboard() {
             try {
                 const savedUsers = localStorage.getItem('cal_subscribers_data');
@@ -1418,6 +1508,9 @@
             const user = subscribersList.find(u => u.id === userId);
             if (!user) return;
             user.status = (user.status === 'disabled') ? 'active' : 'disabled';
+            if (db) {
+                db.collection("subscribers").doc(user.id).set(user, { merge: true });
+            }
             saveYearStateLocally();
             updateAdminDashboard();
         }
@@ -1427,6 +1520,9 @@
             if (!user) return;
             if (confirm(`هل أنت متأكد من حذف حساب المشترك: "${user.name}" نهائياً من النظام؟`)) {
                 subscribersList = subscribersList.filter(u => u.id !== userId);
+                if (db) {
+                    db.collection("subscribers").doc(userId).delete();
+                }
                 saveYearStateLocally();
                 updateAdminDashboard();
             }
@@ -1533,9 +1629,13 @@
                 currentUser = null;
             }
 
-            loadYearState(document.getElementById('inputYear').value || 1448);
+            const initialYear = parseInt(document.getElementById('inputYear').value) || 1448;
+            loadYearState(initialYear);
             renderCalendar();
             updateAdminDashboard();
+
+            // تفعيل المزامنة السحابية المباشرة من Firestore
+            setupCloudSyncListeners(initialYear);
 
             if (currentUser) {
                 applyLoggedInUI(currentUser);
@@ -1638,6 +1738,7 @@
                 applyLoggedInUI(currentUser);
                 loadYearState(state.year);
                 renderCalendar();
+                setupCloudSyncListeners(state.year);
 
                 setTimeout(() => { modalAuth.classList.add('hidden'); }, 1200);
             });
@@ -1682,16 +1783,22 @@
                 subscribersList.push(newUser);
                 currentUser = newUser;
 
+                // حفظ محلي وسحابي في قاعدة بيانات Firestore
+                if (db) {
+                    db.collection("subscribers").doc(newUser.id).set(newUser);
+                }
+
                 localStorage.setItem('cal_logged_user', JSON.stringify(currentUser));
                 saveYearStateLocally();
                 updateAdminDashboard();
 
                 feedback.className = 'text-xs p-2 rounded bg-emerald-100 text-emerald-800 font-bold block';
-                feedback.textContent = 'تم إنشاء الحساب بنجاح وتوثيق بياناتك!';
+                feedback.textContent = 'تم إنشاء الحساب بنجاح ومزامنته سحابياً!';
 
                 applyLoggedInUI(currentUser);
                 loadYearState(state.year);
                 renderCalendar();
+                setupCloudSyncListeners(state.year);
 
                 setTimeout(() => { modalAuth.classList.add('hidden'); }, 1200);
             });
@@ -1714,6 +1821,7 @@
                 alert(`تم إرسال رابط إعادة تعيين كلمة المرور إلى البريد: ${em}`);
             });
 
+            // لوحة تحكم المدير
             const modalAdmin = document.getElementById('modalAdmin');
             document.getElementById('btnOpenAdminPanel').addEventListener('click', () => {
                 updateAdminDashboard();
@@ -1757,6 +1865,7 @@
                         user.phone = phone;
                         if (pass) user.password = pass;
                         user.status = status;
+                        if (db) db.collection("subscribers").doc(user.id).set(user, { merge: true });
                     }
                 } else {
                     if (subscribersList.some(u => u.email.toLowerCase() === email.toLowerCase())) {
@@ -1764,7 +1873,7 @@
                         feedback.textContent = 'البريد الإلكتروني مسجل مسبقاً لمستخدم آخر';
                         return;
                     }
-                    subscribersList.push({
+                    const newUserObj = {
                         id: 'user_' + Date.now(),
                         name: name,
                         email: email,
@@ -1774,7 +1883,9 @@
                         status: status,
                         createdAt: new Date().toISOString().split('T')[0],
                         isVerified: true
-                    });
+                    };
+                    subscribersList.push(newUserObj);
+                    if (db) db.collection("subscribers").doc(newUserObj.id).set(newUserObj);
                 }
 
                 saveYearStateLocally();
@@ -1788,6 +1899,7 @@
                 document.getElementById('inputYear').value = state.year;
                 loadYearState(state.year);
                 renderCalendar();
+                setupCloudSyncListeners(state.year);
             });
 
             document.getElementById('btnNextYear').addEventListener('click', () => {
@@ -1796,6 +1908,7 @@
                 document.getElementById('inputYear').value = state.year;
                 loadYearState(state.year);
                 renderCalendar();
+                setupCloudSyncListeners(state.year);
             });
 
             document.getElementById('inputYear').addEventListener('change', (e) => {
@@ -1804,6 +1917,7 @@
                 state.year = yr;
                 loadYearState(yr);
                 renderCalendar();
+                setupCloudSyncListeners(yr);
             });
 
             const btnH = document.getElementById('btnModeHijri');
@@ -2005,7 +2119,7 @@
                 document.getElementById('btnRemoveLogo').classList.add('hidden');
             });
 
-            // حفظ الترويسة والشعار بحساب المستخدم الحالي فقط، أو تعميمها كإعداد نظام إذا كان المعدل مدير النظام
+            // حفظ الترويسة والشعار بحساب المستخدم الحالي فقط، أو تعميمها سحابياً إذا كان المعدل مدير النظام
             document.getElementById('btnSaveHeader').addEventListener('click', () => {
                 state.headerNames = document.getElementById('inputHeaderNames').value.trim() || SYSTEM_DEFAULT_HEADER.headerNames;
                 state.headerOrg = document.getElementById('inputHeaderOrg').value.trim() || SYSTEM_DEFAULT_HEADER.headerOrg;
@@ -2019,9 +2133,13 @@
                     logoData: state.logoData
                 };
 
+                // إذا كان المدير يحفظ: تُعتمد فوراً بسحابة Firestore كترويسة عامة للنظام ولكل الزوار
                 if (isAdmin) {
+                    if (db) db.collection("system_settings").doc("master_header").set(headerPayload, { merge: true });
                     localStorage.setItem('cal_system_master_header', JSON.stringify(headerPayload));
                 } else {
+                    // إذا كان مشتركاً عادياً: تُحفظ بحسابه فقط في السحابة والمحلي
+                    if (db) db.collection("users").doc(uId).set(headerPayload, { merge: true });
                     localStorage.setItem(`cal_header_user_${uId}`, JSON.stringify(headerPayload));
                 }
 
