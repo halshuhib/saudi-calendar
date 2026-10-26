@@ -976,7 +976,6 @@
             };
         }
 
-        /* حساب نطاقات إجازات الأعياد والمدارس لسنة هجرية معينة */
         function calculateHolidaysRangesForHijriYear(hYear) {
             const ranges = { eids: [], schools: [] };
             try {
@@ -999,15 +998,11 @@
             return ranges;
         }
 
-        /* =========================================================================
-           المزامنة السحابية الحقيقية (Firestore Realtime Sync)
-           ========================================================================= */
         function setupCloudSyncListeners(yearNum) {
             if (!db) return;
             const uId = getUserStorageId();
             const isAdmin = currentUser && (currentUser.email.toLowerCase() === 'halshuhiyb@gmail.com' || currentUser.isAdmin);
 
-            // استماع دائم لترويسة النظام المعتمدة
             db.collection("system_settings").doc("master_header").onSnapshot((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
@@ -1021,7 +1016,6 @@
                 }
             }, (err) => console.log("Header sync notice:", err));
 
-            // استماع دائم لإعدادات السنة المعتمدة من مدير النظام
             db.collection("system_settings").doc("year_" + yearNum).onSnapshot((doc) => {
                 if (doc.exists) {
                     const cloudYearData = doc.data();
@@ -1033,7 +1027,6 @@
                 }
             }, (err) => console.log("Year sync notice:", err));
 
-            // استماع لمشتركي النظام إذا كان الحساب مديراً
             if (isAdmin) {
                 db.collection("subscribers").onSnapshot((querySnapshot) => {
                     const list = [];
@@ -1074,13 +1067,10 @@
                 const isAdmin = currentUser && (currentUser.email.toLowerCase() === 'halshuhiyb@gmail.com' || currentUser.isAdmin);
                 const userKey = getUserStorageId();
                 
-                // حفظ محلي احتياطي
                 localStorage.setItem(`cal_config_u_${userKey}_yr_${state.year}`, JSON.stringify(state));
 
-                // رفع سحابي مباشر على Firestore
                 if (db) {
                     if (isAdmin) {
-                        // حفظ إعدادات النظام العامة بسحابة Firestore
                         db.collection("system_settings").doc("year_" + state.year).set(JSON.parse(JSON.stringify(state)), { merge: true });
                         db.collection("system_settings").doc("master_header").set({
                             headerNames: state.headerNames,
@@ -1095,7 +1085,6 @@
                             logoData: state.logoData
                         }));
                     } else if (currentUser) {
-                        // حفظ المشترك الخاص بسحابته
                         db.collection("users").doc(userKey).collection("years").doc("year_" + state.year).set(JSON.parse(JSON.stringify(state)), { merge: true });
                         db.collection("users").doc(userKey).set({
                             headerNames: state.headerNames,
@@ -1141,7 +1130,6 @@
             const isHijri = (state.primaryMode === 'hijri');
             const targetYear = parseInt(state.year);
 
-            // تجميع نطاقات الإجازات فلكياً سواء كان العرض هجرياً أو ميلادياً
             let eidJdRanges = [];
             let schoolJdRanges = [];
 
@@ -1246,13 +1234,14 @@
                 bodyHtml += `<tr class="border-b border-slate-700 cal-row hover:bg-slate-50/50 transition">`;
 
                 const monthInitialSeasonClass = getSeasonClassForDate(mInfo.startDate);
+                // تم ضبط الألوان هنا لتتطابق تماماً: الأول أزرق والثاني أحمر
                 bodyHtml += `
                     <td class="border-r border-l border-slate-900 bg-white px-1 py-0.5 text-center align-middle ${monthInitialSeasonClass}">
                         <div class="flex flex-col items-center justify-center h-full text-center">
                             <div class="font-kashida font-black text-xs sm:text-[13px] text-slate-950 leading-tight tracking-wide text-center">${monthTitle}</div>
                             <div class="flex items-center justify-center gap-1.5 text-[9px] sm:text-[10px] font-black text-slate-700 mt-0.5 text-center">
-                                <span class="text-rose-700 font-extrabold">${subTitle1}</span>
-                                ${subTitle2 ? `<span class="text-blue-700 font-extrabold">${subTitle2}</span>` : ''}
+                                <span class="text-blue-700 font-extrabold">${subTitle1}</span>
+                                ${subTitle2 ? `<span class="text-rose-700 font-extrabold">${subTitle2}</span>` : ''}
                             </div>
                         </div>
                     </td>
@@ -1783,7 +1772,6 @@
                 subscribersList.push(newUser);
                 currentUser = newUser;
 
-                // حفظ محلي وسحابي في قاعدة بيانات Firestore
                 if (db) {
                     db.collection("subscribers").doc(newUser.id).set(newUser);
                 }
@@ -1821,7 +1809,6 @@
                 alert(`تم إرسال رابط إعادة تعيين كلمة المرور إلى البريد: ${em}`);
             });
 
-            // لوحة تحكم المدير
             const modalAdmin = document.getElementById('modalAdmin');
             document.getElementById('btnOpenAdminPanel').addEventListener('click', () => {
                 updateAdminDashboard();
