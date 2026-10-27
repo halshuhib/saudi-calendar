@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>التقويم الهجري والميلادي السنوي - الإصدار السحابي المعتمد 3.5 (1448 هـ)</title>
+    <title>التقويم الهجري والميلادي السنوي - الإصدار 3.7 (1448 هـ)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -205,7 +205,7 @@
 
                 <span class="bg-emerald-950 text-emerald-300 border border-emerald-700/60 px-2 py-0.5 rounded text-[11px] font-bold flex items-center gap-1" title="قاعدة بيانات Firestore متصلة">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>سحابي v3.5 (Firestore)</span>
+                    <span>سحابي v3.7 (أم القرى دقيق)</span>
                 </span>
             </div>
 
@@ -253,7 +253,7 @@
         <div class="flex items-center gap-2">
             <span id="cloudPulse" class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
             <span id="cloudStatusText">الوضع السحابي: متصل بقاعدة بيانات Firestore سحابياً | المزامنة فورية عالمياً</span>
-            <span class="text-indigo-300 font-bold bg-indigo-900/60 px-1.5 py-0.2 rounded border border-indigo-700/50">v3.5</span>
+            <span class="text-indigo-300 font-bold bg-indigo-900/60 px-1.5 py-0.2 rounded border border-indigo-700/50">v3.7</span>
         </div>
         <div id="userGreetingBox" class="font-bold text-amber-300">
             الترويسة المعتمدة للنظام: حسين يوسف الشهيب (إمارة المنطقة الشرقية)
@@ -660,7 +660,7 @@
 
     <!-- نافذة الترويسة والشعار -->
     <div id="modalHeader" class="no-print fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden" style="z-index: 99999;">
-        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-4 border border-slate-300 text-right space-y-3">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-300 overflow-hidden text-right">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 class="font-bold text-teal-800 text-sm sm:text-base">🏷️ تخصيص ترويسة التقويم والشعار</h3>
                 <button type="button" id="btnCloseHeader" class="text-slate-400 hover:text-red-500 font-bold text-lg">✕</button>
@@ -709,6 +709,13 @@
         } catch (err) {
             console.error("Firebase init error:", err);
         }
+
+        // محرك تقويم أم القرى الرسمي المعتمد في المملكة عبر Intl
+        const uqFormatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric'
+        });
 
         // إعدادات مدير النظام الافتراضية الثابتة
         const SYSTEM_DEFAULT_HEADER = {
@@ -860,8 +867,19 @@
             return Math.floor((11 * year + 3) / 30) + 354 * year + 30 * month - Math.floor((month - 1) / 2) + day + 1948440 - 385;
         }
 
+        // التحويل الدقيق الفلكي الموحد لتقويم أم القرى في كلا الوضعين (الهجري والميلادي)
         function julianToHijri(jd) {
-            if (parseInt(state.year) === 1448) {
+            try {
+                const gDate = julianToGregorian(jd);
+                const parts = uqFormatter.formatToParts(gDate);
+                let day = 1, month = 1, year = 1448;
+                for (const p of parts) {
+                    if (p.type === 'day') day = parseInt(p.value);
+                    if (p.type === 'month') month = parseInt(p.value);
+                    if (p.type === 'year') year = parseInt(p.value);
+                }
+                return { year, month, day };
+            } catch (e) {
                 for (let i = 0; i < 12; i++) {
                     const info = UMM_ALQURA_1448_STARTS[i];
                     const startJd = gregorianToJulian(info.gYear, info.gMonth, info.gDay);
@@ -870,16 +888,8 @@
                         return { year: 1448, month: info.m, day: Math.round(jd - startJd + 1) };
                     }
                 }
+                return { year: 1448, month: 1, day: 1 };
             }
-            const l = Math.floor(jd) - 1948440 + 10632;
-            const n = Math.floor((l - 1) / 10631);
-            const l1 = l - 10631 * n + 354;
-            const j = (Math.floor((10985 - l1) / 5316)) * (Math.floor((50 * l1) / 17719)) + (Math.floor(l1 / 5670)) * (Math.floor((43 * l1) / 15238));
-            const l2 = l1 - (Math.floor((30 - j) / 15)) * (Math.floor((17719 * j) / 50)) - (Math.floor(j / 16)) * (Math.floor((15238 * j) / 43)) + 29;
-            const month = Math.floor((24 * l2) / 709);
-            const day = l2 - Math.floor((709 * month) / 24);
-            const year = 30 * n + j - 30;
-            return { year, month, day };
         }
 
         function getHijriMonthLength(year, month) {
@@ -1809,6 +1819,7 @@
                 alert(`تم إرسال رابط إعادة تعيين كلمة المرور إلى البريد: ${em}`);
             });
 
+            // لوحة تحكم المدير
             const modalAdmin = document.getElementById('modalAdmin');
             document.getElementById('btnOpenAdminPanel').addEventListener('click', () => {
                 updateAdminDashboard();
@@ -2120,12 +2131,10 @@
                     logoData: state.logoData
                 };
 
-                // إذا كان المدير يحفظ: تُعتمد فوراً بسحابة Firestore كترويسة عامة للنظام ولكل الزوار
                 if (isAdmin) {
                     if (db) db.collection("system_settings").doc("master_header").set(headerPayload, { merge: true });
                     localStorage.setItem('cal_system_master_header', JSON.stringify(headerPayload));
                 } else {
-                    // إذا كان مشتركاً عادياً: تُحفظ بحسابه فقط في السحابة والمحلي
                     if (db) db.collection("users").doc(uId).set(headerPayload, { merge: true });
                     localStorage.setItem(`cal_header_user_${uId}`, JSON.stringify(headerPayload));
                 }
@@ -2139,3 +2148,4 @@
     </script>
 </body>
 </html>
+
